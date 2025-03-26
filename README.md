@@ -30,8 +30,6 @@ Após baixar o projeto, você pode abri-lo com o Visual Studio Code. Para isso, 
 
 ## 👥 Membros do Grupo
 
-## :round_pushpin: Equipe do projeto:
-
 <div align="center">
     <table>
     <tr>
