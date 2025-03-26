@@ -35,37 +35,30 @@ Após baixar o projeto, você pode abri-lo com o Visual Studio Code. Para isso, 
 <div align="center">
     <table>
     <tr>
-        <th>Foto</th>
         <th>Nome</th>
         <th>GitHub</th>
     </tr>
     <tr>
-        <td><img alt="img_Carla" src="" style="border-radius:50%" width="100"></td>
         <td>Carla A. C. Ribeiro</td>
         <td><a href="https://github.com/ccarlaa">@ccarlaa</a></td>
     </tr>
     <tr>
-        <td><img alt="img_Duda" src="" style="border-radius:50%" width="100"></td>
         <td>Clara Marcelino Ribeiro de Sousa </td>
         <td><a href="https://github.com/clara-ribeiro">@clara-ribeiro</a></td>
     </tr>
     <tr>
-        <td><img alt="img_Davi" src="" style="border-radius:50%" width="100"></td>
         <td>Kallyne Macedo Passos</td>
         <td><a href="https://github.com/kalipassos">@kalipassos</a></td>
     </tr>
     <tr>
-        <td><img alt="img_Joao" src="" style="border-radius:50%" width="100"></td>
         <td>Kauan de Torres Eiras</td>
        <td><a href="https://github.com/kauaneiras">@kauaneiras</a></td>
     </tr>
     <tr>
-        <td><img alt="img_Renata" src="" style="border-radius:50%" width="100"></td>
         <td>Leonardo Sobrinho de Aguiar</td>
         <td><a href="github.com/">@</a></td>
     </tr>
         <tr>
-        <td><img alt="img_Renata" src="" style="border-radius:50%" width="100"></td>
         <td>João Paulo Barros de Cristo</td>
         <td><a href="github.com/joaopb1-xps">@joaopb1-xps</a></td>
     </tr>
