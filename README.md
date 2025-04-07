@@ -46,7 +46,10 @@ Após baixar o projeto, você pode abri-lo com o Visual Studio Code. Para isso, 
 1. File > Open Folder
 2. Procure o local onde o projeto está e o selecione (Caso o projeto seja baixado via zip, é necessário extraí-lo antes de procurá-lo)
 3. Por fim clique em Abrir
-4. Certifique-se de ter os seguintes pré-requisitos instalados:
+
+### Pré-requisitos
+
+Certifique-se de ter os seguintes pré-requisitos instalados:
 
 ```bash
 # Ubuntu/Debian
@@ -55,12 +58,49 @@ sudo apt-get install flex bison build-essential
 # Fedora
 sudo dnf install flex bison gcc make
 
+# Arch Linux
+sudo pacman -S flex bison gcc make
+
 # macOS (usando Homebrew)
 brew install flex bison gcc
 
 # Windows (usando MSYS2/MinGW)
 pacman -S flex bison gcc make
 ```
+
+### Compilando e Executando no Linux
+
+Para compilar e executar no Linux, você pode usar o script incluído:
+
+```bash
+# Tornar o script executável
+chmod +x compilar-linux.sh
+
+# Executar o script
+./compilar-linux.sh
+```
+
+O script irá:
+1. Verificar e instalar as dependências necessárias
+2. Compilar o projeto
+3. Oferecer a opção de executar o teste padrão
+
+### Compilando e Executando no macOS
+
+Para compilar e executar no macOS, você pode usar o script incluído:
+
+```bash
+# Tornar o script executável
+chmod +x compilar-macos.sh
+
+# Executar o script
+./compilar-macos.sh
+```
+
+O script irá:
+1. Verificar e instalar as dependências necessárias usando Homebrew
+2. Compilar o projeto
+3. Oferecer a opção de executar o teste padrão
 
 ### Instalação do Flex e Bison no Windows
 
@@ -130,6 +170,56 @@ Este script irá:
 2. Compilar os arquivos fonte
 3. Gerar o executável `compilador.exe`
 4. Oferecer a opção de executar o teste padrão
+
+### Usando Docker
+
+O projeto inclui suporte para Docker, permitindo que você compile e execute o compilador em qualquer plataforma que suporte Docker, sem a necessidade de instalar dependências localmente.
+
+```bash
+# Tornar o script executável (Linux/macOS)
+chmod +x docker-run.sh
+
+# Executar o script
+./docker-run.sh
+```
+
+Para Windows, você pode construir e executar a imagem Docker diretamente:
+
+```bash
+# Construir a imagem
+docker build -t c-em-portugues .
+
+# Executar um teste
+docker run --rm -it c-em-portugues /bin/bash -c "cd /app && ./build/compilador < tests/teste1.txt"
+
+# Ou iniciar um shell interativo
+docker run --rm -it c-em-portugues
+```
+
+## Opções de Compilação e Execução
+
+```bash
+# Executa o teste padrão (teste1.txt)
+make test
+
+# Executa um teste específico
+make run TEST=seu_arquivo_de_teste.txt
+
+# Ou diretamente
+./build/compilador < tests/seu_arquivo_de_teste.txt
+
+# Compilar em modo debug (com informações para depuração)
+make DEBUG=1
+
+# Limpar arquivos gerados
+make clean
+
+# Limpar completamente (remove diretório build)
+make distclean
+
+# Gerar documentação (quando implementado)
+make docs
+```
 
 ## 👥 Membros do Grupo
 
