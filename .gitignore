@@ -45,3 +45,5 @@ actual_output.txt
 
 # Arquivos de dependência
 *.d 
+lex.yy.c
+parser_switch.output
