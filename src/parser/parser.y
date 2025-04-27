@@ -1,13 +1,13 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
-#include "tokens/tokens.h"
 #include "ast/ast.h"
 
 extern int yylex();
 extern char* yytext;
 extern FILE* yyin;
 
+/* Declaração da função yyerror, que será definida em main.c */
 void yyerror(const char* s);
 
 /* Raiz da AST */
@@ -23,6 +23,10 @@ AstNode* ast_root = NULL;
 %left ABRE_PAREN FECHA_PAREN
 
 /* Tipo dos valores semânticos */
+%code requires {
+    #include "ast/ast.h"
+}
+
 %union {
     int ival;
     AstNode* node;
@@ -65,11 +69,6 @@ fator
     ;
 
 %%
-
-/* Função chamada pelo Bison quando há erro de sintaxe */
-void yyerror(const char* s) {
-    fprintf(stderr, "Erro de sintaxe: %s\n", s);
-}
 
 /* Esta função será implementada em main.c */
 /* int main() {
