@@ -89,6 +89,11 @@ inteiro principal() {
         numeros[i] = numeros[i] * 2;
     }
     
+    // Teste do loop PARA
+    para (inteiro i = 0; i < 10; i = i + 1) {
+        escreva(i);
+    }
+    
     // Estrutura de repeticao FACA-ENQUANTO
     faca {
         b = b + 0.1;

@@ -76,6 +76,8 @@ AstNode* ast_root = NULL;
 %type <node> expressao_atribuicao expressao_logica expressao_relacional
 %type <node> expressao_aditiva expressao_multiplicativa expressao_unaria
 %type <node> expressao_primaria lista_argumentos
+%type <node> expressao_inicializacao expressao_condicao expressao_incremento
+%type <node> tipo_opcional
 
 %%
 
@@ -170,14 +172,14 @@ comandos
     ;
 
 comando
-    : declaracao_variavel        { }
-    | expressao PONTO_E_VIRGULA  { }
-    | bloco_comandos             { }
-    | comando_se                 { }
+    : comando_se                 { }
     | comando_enquanto           { }
-    | comando_para               { }
     | comando_faca_enquanto      { }
+    | comando_para               { }
     | comando_retorno            { }
+    | bloco_comandos             { }
+    | expressao PONTO_E_VIRGULA  { }
+    | declaracao_variavel        { }
     | QUEBRA PONTO_E_VIRGULA     { }
     | CONTINUE PONTO_E_VIRGULA   { }
     | PONTO_E_VIRGULA            { }
@@ -197,8 +199,7 @@ comando_faca_enquanto
     ;
 
 comando_para
-    : PARA ABRE_PAREN expressao_atribuicao PONTO_E_VIRGULA expressao PONTO_E_VIRGULA expressao FECHA_PAREN comando { }
-    | PARA ABRE_PAREN declaracao_variavel expressao PONTO_E_VIRGULA expressao FECHA_PAREN comando { }
+    : PARA ABRE_PAREN tipo_opcional IDENTIFICADOR IGUAL expressao PONTO_E_VIRGULA expressao_condicao PONTO_E_VIRGULA expressao_incremento FECHA_PAREN bloco_comandos { }
     ;
 
 comando_retorno
@@ -276,6 +277,27 @@ expressao_primaria
 lista_argumentos
     : expressao                              { }
     | lista_argumentos VIRGULA expressao     { }
+    ;
+
+expressao_inicializacao
+    : declaracao_variavel
+    | expressao
+    | /* vazio */
+    ;
+
+expressao_condicao
+    : expressao
+    | /* vazio */
+    ;
+
+expressao_incremento
+    : expressao
+    | /* vazio */
+    ;
+
+tipo_opcional
+    : tipo
+    | /* vazio */
     ;
 
 %%
