@@ -1,0 +1,17 @@
+#ifndef TOKENS_PONTUACAO_H
+#define TOKENS_PONTUACAO_H
+
+#define PONT_VIRGULA           256
+#define PONT_PONTO_VIRGULA     257
+#define PONT_PONTO             258
+#define PONT_ABRE_PARENTESES   259
+#define PONT_FECHA_PARENTESES  260
+#define PONT_ABRE_CHAVES       261
+#define PONT_FECHA_CHAVES      262
+#define PONT_ABRE_COLCHETES    263
+#define PONT_FECHA_COLCHETES   264
+
+#define COMENTARIO             265
+#define COMENTARIO_MULTILINHA  266
+
+#endif
