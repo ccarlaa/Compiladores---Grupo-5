@@ -1,0 +1,132 @@
+// Definicao de estrutura
+estrutura Pessoa {
+    caractere nome[50];
+    inteiro idade;
+    real altura;
+    duplo peso;
+};
+
+// Definicao de uma funcao com parametros
+real calcular_imc(duplo peso, real altura) {
+    retorne peso / (altura * altura);
+}
+
+// Funcao principal com varios tipos de variaveis e estruturas de controle
+inteiro principal() {
+    // Declaracao de variaveis com diferentes tipos
+    inteiro a = 10;
+    real b = 3.14;
+    caractere c = 'A';
+    duplo d = 2.71828;
+    longo e = 1000000;
+    curto f = 100;
+    sem_sinal g = 50;
+    com_sinal h = -50;
+    
+    // Declaracao de array
+    inteiro numeros[5];
+    
+    // Inicializacao de array
+    numeros[0] = 1;
+    numeros[1] = 2;
+    numeros[2] = 3;
+    numeros[3] = 4;
+    numeros[4] = 5;
+    
+    // Declaracao de estrutura
+    estrutura Pessoa pessoa;
+    pessoa.idade = 30;
+    pessoa.altura = 1.75;
+    pessoa.peso = 70.5;
+    
+    // Operadores de incremento/decremento
+    a++;
+    ++a;
+    b--;
+    --b;
+    
+    // Operadores compostos
+    a += 5;    // a = a + 5
+    b -= 1.0;  // b = b - 1.0
+    d *= 2.0;  // d = d * 2.0
+    e /= 2;    // e = e / 2
+    
+    // Estrutura condicional SE-SENAO
+    se (a > 5) {
+        b = b + 1.0;
+    } senao {
+        b = b - 1.0;
+    }
+    
+    // Estrutura condicional aninhada
+    se (a > 10) {
+        a = a - 1;
+    } senao se (a < 5) {
+        a = a + 1;
+    } senao {
+        a = 10;
+    }
+    
+    // Estrutura de repeticao ENQUANTO
+    enquanto (a > 0) {
+        a = a - 1;
+        
+        // Comando QUEBRA
+        se (a == 5) {
+            quebra;
+        }
+        
+        // Comando CONTINUE
+        inteiro resto = a;
+        resto = resto - ((resto / 2) * 2);
+        se (resto == 0) {
+            continue;
+        }
+    }
+    
+    // Estrutura de repeticao PARA
+    para (inteiro i = 0; i < 5; i = i + 1) {
+        numeros[i] = numeros[i] * 2;
+    }
+    
+    // Teste do loop PARA
+    para (inteiro i = 0; i < 10; i = i + 1) {
+        escreva(i);
+    }
+    
+    // Estrutura de repeticao FACA-ENQUANTO
+    faca {
+        b = b + 0.1;
+    } enquanto (b < 5.0);
+    
+    // Operadores logicos
+    se ((a == 0) && (b > 3.0)) {
+        retorne 1;
+    }
+    
+    se ((a > 0) || (b < 2.0)) {
+        a = a + 1;
+    }
+    
+    se (!(a == 10)) {
+        a = 10;
+    }
+    
+    // Operadores de comparacao
+    se (a == 10) { a = a + 1; }
+    se (a != 10) { a = a - 1; }
+    se (a < 10) { a = a + 1; }
+    se (a > 10) { a = a - 1; }
+    se (a <= 10) { a = a + 1; }
+    se (a >= 10) { a = a - 1; }
+    
+    // Chamada de funcao
+    real imc = calcular_imc(pessoa.peso, pessoa.altura);
+    
+    // Constantes e estaticos
+    constante inteiro MAX = 100;
+    estatico real PI = 3.14159;
+    
+    // Retorno da funcao principal
+    retorne 0;
+}

@@ -1,0 +1,9 @@
+inteiro principal() {
+    inteiro a = 10;
+    
+    se (a > 5) {
+        a = a - 1;
+    }
+    
+    retorne 0;
+}

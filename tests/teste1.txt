@@ -1,1 +1,9 @@
-3*5 = 15
+inteiro principal() {
+    inteiro resultado = 3 * 5;
+    se (resultado == 15) {
+        printf("3 * 5 = 15\n");
+    } senao {
+        printf("Erro no cálculo\n");
+    }
+    retorne 0;
+}

@@ -13,7 +13,8 @@ typedef enum {
     OP_ADD,          /* Adição (+) */
     OP_SUB,          /* Subtração (-) */
     OP_MUL,          /* Multiplicação (*) */
-    OP_DIV           /* Divisão (/) */
+    OP_DIV,          /* Divisão (/) */
+    OP_MOD           /* Módulo (%) */
 } BinOpType;
 
 /* Estrutura para um nó da AST */

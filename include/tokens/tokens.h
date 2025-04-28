@@ -1,22 +1,9 @@
 #ifndef TOKENS_H
 #define TOKENS_H
 
-/* Definição dos tokens para operações aritméticas básicas */
-#define NUMERO      1000
-#define SOMA        1001
-#define SUBTRACAO   1002
-#define MULTIPLICACAO 1003
-#define DIVISAO     1004
-#define IGUAL       1005
-#define ABRE_PAREN  1006
-#define FECHA_PAREN 1007
+/* Incluir as definições geradas pelo Bison */
+#include "parser.tab.h"
 
-/* União para armazenar valores associados a tokens */
-typedef union {
-    int ival;       /* Para números inteiros */
-    double dval;    /* Para números de ponto flutuante (para uso futuro) */
-} YYSTYPE;
-
-extern YYSTYPE yylval;
+/* Não precisamos definir os tokens aqui, pois o Bison já os define */
 
 #endif /* TOKENS_H */
