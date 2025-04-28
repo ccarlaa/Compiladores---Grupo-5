@@ -28,12 +28,12 @@ QUEBRA_LINHA \n
 {ESPACO}      { /* Ignora espaços em branco */ }
 {QUEBRA_LINHA} { line_number++; }
 
-/* Operadores Matemáticos */
+/* Operadores Matemáticos 
 "+"             { return OP_MAIS; }
 "-"             { return OP_MENOS; }
 "*"             { return OP_VEZES; }
 "/"             { return OP_DIVIDIDO; }
-"%"             { return OP_MODULO; }
+"%"             { return OP_MODULO; }*/
 
 /* Operadores Relacionais */
 "<"             { return OP_MENOR; }
