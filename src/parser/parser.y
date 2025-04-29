@@ -14,42 +14,28 @@ void yyerror(const char* s);
 AstNode* ast_root = NULL;
 %}
 
-/* Definição dos tokens */
-%token NUMERO SOMA SUBTRACAO MULTIPLICACAO DIVISAO IGUAL ABRE_PAREN FECHA_PAREN
-%token MODULO
+/* Tipos de dados */
+%token TIPO_REAL TIPO_DUPLO TIPO_CARACTERE TIPO_VAZIO TIPO_LONGO TIPO_CURTO
+%token TIPO_SEM_SINAL TIPO_COM_SINAL TIPO_INTEIRO
 
-/* Tokens para tipos de variáveis em português */
-%token TIPO_INTEIRO TIPO_REAL TIPO_DUPLO TIPO_CARACTERE TIPO_VAZIO
-%token TIPO_LONGO TIPO_CURTO TIPO_SEM_SINAL TIPO_COM_SINAL
+/* Estruturas de controle */
+%token SE SENAO ENQUANTO PARA FACA RETORNE QUEBRA CONTINUE ESCOLHA CASO PADRAO
 
-/* Tokens para estruturas de controle */
-%token SE SENAO ENQUANTO PARA FACA RETORNE QUEBRA CONTINUE
+/* Declarações */
+%token UNIAO ENUM CONST ESTATICO EXTERNO REGISTRO TYPEDEF ESTRUTURA PRINCIPAL
 
-/* Tokens para outras palavras-chave */
-%token ESTRUTURA UNIAO ENUM CONST ESTATICO EXTERNO REGISTRO TYPEDEF
-
-/* Tokens para operadores de comparação e lógicos */
+/* Operadores */
+%token MAIS_IGUAL MENOS_IGUAL MULT_IGUAL DIV_IGUAL INCREMENTO DECREMENTO
 %token IGUAL_IGUAL DIFERENTE MENOR MAIOR MENOR_IGUAL MAIOR_IGUAL
 %token E_LOGICO OU_LOGICO NAO_LOGICO
+%token SOMA SUBTRACAO MULTIPLICACAO DIVISAO MODULO IGUAL
 
-/* Tokens adicionais necessários para a gramática completa */
-%token IDENTIFICADOR LITERAL_STRING LITERAL_CHAR
-%token ABRE_CHAVE FECHA_CHAVE ABRE_COLCHETE FECHA_COLCHETE
+/* Pontuação */
+%token ABRE_PAREN FECHA_PAREN ABRE_CHAVE FECHA_CHAVE ABRE_COLCHETE FECHA_COLCHETE
 %token PONTO_E_VIRGULA VIRGULA PONTO DOIS_PONTOS
-%token INCREMENTO DECREMENTO
-%token MAIS_IGUAL MENOS_IGUAL MULT_IGUAL DIV_IGUAL
-%token PRINCIPAL
 
-/* Precedência e associatividade dos operadores */
-%right IGUAL MAIS_IGUAL MENOS_IGUAL MULT_IGUAL DIV_IGUAL
-%left OU_LOGICO
-%left E_LOGICO
-%left IGUAL_IGUAL DIFERENTE
-%left MENOR MAIOR MENOR_IGUAL MAIOR_IGUAL
-%left SOMA SUBTRACAO
-%left MULTIPLICACAO DIVISAO MODULO
-%right NAO_LOGICO
-%left ABRE_PAREN FECHA_PAREN ABRE_COLCHETE FECHA_COLCHETE
+/* Identificadores e literais */
+%token IDENTIFICADOR NUMERO LITERAL_STRING LITERAL_CHAR
 %nonassoc IFX
 %nonassoc SENAO
 
@@ -78,6 +64,7 @@ AstNode* ast_root = NULL;
 %type <node> expressao_primaria lista_argumentos
 %type <node> expressao_inicializacao expressao_condicao expressao_incremento
 %type <node> tipo_opcional
+%type <node> comando_switch
 
 %%
 
@@ -177,6 +164,7 @@ comando
     | comando_faca_enquanto      { }
     | comando_para               { }
     | comando_retorno            { }
+    | comando_switch             { }
     | bloco_comandos             { }
     | expressao PONTO_E_VIRGULA  { }
     | declaracao_variavel        { }
@@ -205,6 +193,10 @@ comando_para
 comando_retorno
     : RETORNE PONTO_E_VIRGULA    { }
     | RETORNE expressao PONTO_E_VIRGULA { }
+    ;
+
+comando_switch
+    : ESCOLHA ABRE_PAREN expressao FECHA_PAREN ABRE_CHAVE lista_casos FECHA_CHAVE { }
     ;
 
 expressao
@@ -300,6 +292,27 @@ tipo_opcional
     | /* vazio */
     ;
 
+lista_casos
+    : lista_casos caso  { }
+    |
+    caso                { }
+    ;
+
+caso
+    : CASO caso_escolha DOIS_PONTOS lista_comandos  { }
+    | PADRAO DOIS_PONTOS lista_comandos             { }
+    ;
+
+lista_comandos
+    : lista_comandos comando    { }
+    |
+    comando                     { }
+    ;
+
+caso_escolha
+    : IDENTIFICADOR
+    | NUMERO
+    ;
 %%
 
 /* Esta função será implementada em main.c */
