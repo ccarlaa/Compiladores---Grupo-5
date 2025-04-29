@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+//#include "../../include/tokens/tokens.h"
 #include "parser.tab.h"
 
 /* Variável definida por Bison */
@@ -28,7 +29,7 @@ ESPACO      [ \t\n\r]
 
 "//".*          { /* Ignora comentários de linha */ }
 
-"/*"([^*]|[\r\n]|("*"+([^*/]|[\r\n])))*"*"+"/" { /* Ignora comentários de bloco */ }
+"/*"([^*]|\*+[^*/])*\*+"/" { /* Ignora comentários de bloco */ }
 
 {INTEIRO}       { 
                     yylval.ival = atoi(yytext); 
@@ -46,7 +47,7 @@ ESPACO      [ \t\n\r]
                 }
 
 \'[^\']\' |
-\'\\[nrtbf0\'\"]\' {
+\'([^\\']|\\[nrtbf0'\"\\])\' {
                     yylval.sval = strdup(yytext);
                     return LITERAL_CHAR;
                 }
@@ -61,16 +62,6 @@ ESPACO      [ \t\n\r]
 "unsigned"      { return TIPO_SEM_SINAL; }
 "signed"        { return TIPO_COM_SINAL; }
 
-"inteiro"       { return TIPO_INTEIRO; }
-"real"          { return TIPO_REAL; }
-"duplo"         { return TIPO_DUPLO; }
-"caractere"     { return TIPO_CARACTERE; }
-"vazio"         { return TIPO_VAZIO; }
-"longo"         { return TIPO_LONGO; }
-"curto"         { return TIPO_CURTO; }
-"sem_sinal"     { return TIPO_SEM_SINAL; }
-"com_sinal"     { return TIPO_COM_SINAL; }
-
 "if"            { return SE; }
 "else"          { return SENAO; }
 "while"         { return ENQUANTO; }
@@ -78,15 +69,6 @@ ESPACO      [ \t\n\r]
 "do"            { return FACA; }
 "return"        { return RETORNE; }
 "break"         { return QUEBRA; }
-"continue"      { return CONTINUE; }
-
-"se"            { return SE; }
-"senao"         { return SENAO; }
-"enquanto"      { return ENQUANTO; }
-"para"          { return PARA; }
-"faca"          { return FACA; }
-"retorne"       { return RETORNE; }
-"quebra"        { return QUEBRA; }
 "continue"      { return CONTINUE; }
 
 "struct"        { return ESTRUTURA; }
@@ -98,16 +80,16 @@ ESPACO      [ \t\n\r]
 "register"      { return REGISTRO; }
 "typedef"       { return TYPEDEF; }
 
-"estrutura"     { return ESTRUTURA; }
-"uniao"         { return UNIAO; }
-"enumeracao"    { return ENUM; }
-"constante"     { return CONST; }
-"estatico"      { return ESTATICO; }
-"externo"       { return EXTERNO; }
-"registro"      { return REGISTRO; }
-"def_tipo"      { return TYPEDEF; }
+"switch"        { return ESCOLHA; }
+"case"          { return CASO; }
+"default"       { return PADRAO; }
 
-"principal"     { return PRINCIPAL; }
+"+="            { return MAIS_IGUAL; }
+"-="            { return MENOS_IGUAL; }
+"*="            { return MULT_IGUAL; }
+"/="            { return DIV_IGUAL; }
+"++"            { return INCREMENTO; }
+"--"            { return DECREMENTO; }
 
 "=="            { return IGUAL_IGUAL; }
 "!="            { return DIFERENTE; }
@@ -137,13 +119,9 @@ ESPACO      [ \t\n\r]
 "."             { return PONTO; }
 ":"             { return DOIS_PONTOS; }
 
-"+="            { return MAIS_IGUAL; }
-"-="            { return MENOS_IGUAL; }
-"*="            { return MULT_IGUAL; }
-"/="            { return DIV_IGUAL; }
+"principal"     { return PRINCIPAL; }
 
-"++"            { return INCREMENTO; }
-"--"            { return DECREMENTO; }
+
 
 {ID}            {
                     yylval.sval = strdup(yytext);

@@ -1,40 +1,38 @@
-// Definicao de estrutura
-estrutura Pessoa {
-    caractere nome[50];
-    inteiro idade;
-    real altura;
-    duplo peso;
+// Definição de estrutura
+struct Pessoa {
+    char nome[50];
+    int idade;
+    float altura;
+    double peso;
 };
 
-// Definicao de uma funcao com parametros
-real calcular_imc(duplo peso, real altura) {
-    retorne peso / (altura * altura);
+// Definição de uma função com parâmetros
+float calcular_imc(double peso, float altura) {
+    return peso / (altura * altura);
 }
 
-// Funcao principal com varios tipos de variaveis e estruturas de controle
-inteiro principal() {
-    // Declaracao de variaveis com diferentes tipos
-    inteiro a = 10;
-    real b = 3.14;
-    caractere c = 'A';
-    duplo d = 2.71828;
-    longo e = 1000000;
-    curto f = 100;
-    sem_sinal g = 50;
-    com_sinal h = -50;
+// Função principal com vários tipos de variáveis e estruturas de controle
+int main() {
+    // Declaração de variáveis com diferentes tipos
+    int a = 10;
+    float b = 3.14;
+    char c = 'A';
+    double d = 2.71828;
+    long e = 1000000;
+    short f = 100;
     
-    // Declaracao de array
-    inteiro numeros[5];
+    // Declaração de array
+    int numeros[5];
     
-    // Inicializacao de array
+    // Inicialização de array
     numeros[0] = 1;
     numeros[1] = 2;
     numeros[2] = 3;
     numeros[3] = 4;
     numeros[4] = 5;
     
-    // Declaracao de estrutura
-    estrutura Pessoa pessoa;
+    // Declaração de estrutura
+    struct Pessoa pessoa;
     pessoa.idade = 30;
     pessoa.altura = 1.75;
     pessoa.peso = 70.5;
@@ -47,86 +45,86 @@ inteiro principal() {
     
     // Operadores compostos
     a += 5;    // a = a + 5
-    b -= 1.0;  // b = b - 1.0
+    b -= 1.0; // b = b - 1.0
     d *= 2.0;  // d = d * 2.0
     e /= 2;    // e = e / 2
     
-    // Estrutura condicional SE-SENAO
-    se (a > 5) {
+    // Estrutura condicional IF-ELSE
+    if (a > 5) {
         b = b + 1.0;
-    } senao {
+    } else {
         b = b - 1.0;
     }
     
     // Estrutura condicional aninhada
-    se (a > 10) {
+    if (a > 10) {
         a = a - 1;
-    } senao se (a < 5) {
+    } else if (a < 5) {
         a = a + 1;
-    } senao {
+    } else {
         a = 10;
     }
     
-    // Estrutura de repeticao ENQUANTO
-    enquanto (a > 0) {
+    // Estrutura de repetição WHILE
+    while (a > 0) {
         a = a - 1;
         
-        // Comando QUEBRA
-        se (a == 5) {
-            quebra;
+        // Comando BREAK
+        if (a == 5) {
+            break;
         }
         
         // Comando CONTINUE
-        inteiro resto = a;
+        int resto = a;
         resto = resto - ((resto / 2) * 2);
-        se (resto == 0) {
+        if (resto == 0) {
             continue;
         }
     }
     
-    // Estrutura de repeticao PARA
-    para (inteiro i = 0; i < 5; i = i + 1) {
+    // Estrutura de repetição FOR
+    for (int i = 0; i < 5; i = i + 1) {
         numeros[i] = numeros[i] * 2;
     }
     
-    // Teste do loop PARA
-    para (inteiro i = 0; i < 10; i = i + 1) {
-        escreva(i);
+    // Teste do loop FOR
+    for (int i = 0; i < 10; i = i + 1) {
+        printf("%d\n", i);
     }
     
-    // Estrutura de repeticao FACA-ENQUANTO
-    faca {
+    // Estrutura de repetição DO-WHILE
+    do {
         b = b + 0.1;
-    } enquanto (b < 5.0);
+    } while (b < 5.0);
     
-    // Operadores logicos
-    se ((a == 0) && (b > 3.0)) {
-        retorne 1;
+    // Operadores lógicos
+    if ((a == 0) && (b > 3.0)) {
+        return 1;
     }
     
-    se ((a > 0) || (b < 2.0)) {
+    if ((a > 0) || (b < 2.0)) {
         a = a + 1;
     }
     
-    se (!(a == 10)) {
+    if (!(a == 10)) {
         a = 10;
     }
     
-    // Operadores de comparacao
-    se (a == 10) { a = a + 1; }
-    se (a != 10) { a = a - 1; }
-    se (a < 10) { a = a + 1; }
-    se (a > 10) { a = a - 1; }
-    se (a <= 10) { a = a + 1; }
-    se (a >= 10) { a = a - 1; }
+    // Operadores de comparação
+    if (a == 10) { a = a + 1; }
+    if (a != 10) { a = a - 1; }
+    if (a < 10) { a = a + 1; }
+    if (a > 10) { a = a - 1; }
+    if (a <= 10) { a = a + 1; }
+    if (a >= 10) { a = a - 1; }
     
-    // Chamada de funcao
-    real imc = calcular_imc(pessoa.peso, pessoa.altura);
+    // Chamada de função
+    float imc = calcular_imc(pessoa.peso, pessoa.altura);
     
-    // Constantes e estaticos
-    constante inteiro MAX = 100;
-    estatico real PI = 3.14159;
+    // Constantes e variáveis estáticas
+    const int MAX = 100;
+    static float PI = 3.14159;
     
-    // Retorno da funcao principal
-    retorne 0;
+    // Retorno da função principal
+    return 0;
 }
