@@ -1,0 +1,1245 @@
+
+<!doctype html>
+<html lang="pt" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Documentação do compilador para a linguagem C traduzida para português">
+      
+      
+        <meta name="author" content="Grupo 5">
+      
+      
+      
+        <link rel="prev" href="../analise-sintatica/">
+      
+      
+        <link rel="next" href="../../contribuicao/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
+    
+    
+      
+        <title>Gramática - Compilador C em Português</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.6f8fc17f.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#gramatica" class="md-skip">
+          Pular para conteúdo
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabeçalho">
+    <a href="../.." title="Compilador C em Português" class="md-header__button md-logo" aria-label="Compilador C em Português" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Compilador C em Português
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Gramática
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Buscar" placeholder="Buscar" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Pesquisar">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Limpar" aria-label="Limpar" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Inicializando busca
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ccarlaa/Compiladores---Grupo-5" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ccarlaa/Compiladores---Grupo-5
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Abas" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  Início
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../guia-usuario/instalacao/" class="md-tabs__link">
+          
+  
+  Guia do Usuário
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../visao-geral/" class="md-tabs__link">
+          
+  
+  Documentação Técnica
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../contribuicao/" class="md-tabs__link">
+        
+  
+    
+  
+  Contribuição
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../atas-reuniao/" class="md-tabs__link">
+          
+  
+  Atas de Reunião
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navegação" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Compilador C em Português" class="md-nav__button md-logo" aria-label="Compilador C em Português" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Compilador C em Português
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ccarlaa/Compiladores---Grupo-5" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ccarlaa/Compiladores---Grupo-5
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Início
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Guia do Usuário
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Guia do Usuário
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guia-usuario/instalacao/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Instalação
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guia-usuario/uso-basico/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Uso Básico
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guia-usuario/exemplos/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Exemplos
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Documentação Técnica
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Documentação Técnica
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../visao-geral/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Visão Geral
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../analise-lexica/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Análise Léxica
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../analise-sintatica/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Análise Sintática
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Gramática
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Gramática
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#notacao" class="md-nav__link">
+    <span class="md-ellipsis">
+      Notação
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gramatica-completa" class="md-nav__link">
+    <span class="md-ellipsis">
+      Gramática Completa
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Gramática Completa">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#programa" class="md-nav__link">
+    <span class="md-ellipsis">
+      Programa
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#declaracoes-de-variaveis" class="md-nav__link">
+    <span class="md-ellipsis">
+      Declarações de Variáveis
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#declaracoes-e-definicoes-de-funcoes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Declarações e Definições de Funções
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#declaracoes-de-estruturas" class="md-nav__link">
+    <span class="md-ellipsis">
+      Declarações de Estruturas
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#comandos" class="md-nav__link">
+    <span class="md-ellipsis">
+      Comandos
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#expressoes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Expressões
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exemplos-de-derivacoes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Exemplos de Derivações
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Exemplos de Derivações">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#exemplo-1-programa-simples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Exemplo 1: Programa Simples
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exemplo-2-declaracao-de-estrutura" class="md-nav__link">
+    <span class="md-ellipsis">
+      Exemplo 2: Declaração de Estrutura
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#observacoes-sobre-a-gramatica" class="md-nav__link">
+    <span class="md-ellipsis">
+      Observações sobre a Gramática
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#extensoes-futuras" class="md-nav__link">
+    <span class="md-ellipsis">
+      Extensões Futuras
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../contribuicao/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contribuição
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Atas de Reunião
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Atas de Reunião
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../atas-reuniao/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Visão Geral
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../atas-reuniao/reuniao-01/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Reunião 1
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="gramatica">Gramática</h1>
+<p>Esta seção apresenta a gramática formal da linguagem C traduzida para português, implementada no Compilador C em Português.</p>
+<h2 id="notacao">Notação</h2>
+<p>A gramática é apresentada em notação BNF (Backus-Naur Form), onde:</p>
+<ul>
+<li>Os símbolos não-terminais são escritos em minúsculas (ex: <code>programa</code>, <code>declaracao</code>)</li>
+<li>Os símbolos terminais são escritos em MAIÚSCULAS (ex: <code>IDENTIFICADOR</code>, <code>NUMERO</code>)</li>
+<li>O símbolo <code>|</code> representa alternativas</li>
+<li>Os símbolos entre colchetes <code>[ ]</code> são opcionais</li>
+<li>Os símbolos entre chaves <code>{ }</code> podem aparecer zero ou mais vezes</li>
+</ul>
+<h2 id="gramatica-completa">Gramática Completa</h2>
+<h3 id="programa">Programa</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>programa
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    : declaracoes
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    ;
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>declaracoes
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    : declaracao
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    | declaracoes declaracao
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    ;
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>declaracao
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    : declaracao_variavel
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    | declaracao_funcao
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    | definicao_funcao
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>    | declaracao_estrutura
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>    ;
+</code></pre></div>
+<h3 id="declaracoes-de-variaveis">Declarações de Variáveis</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>declaracao_variavel
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>    : tipo IDENTIFICADOR PONTO_E_VIRGULA
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    | tipo IDENTIFICADOR ATRIBUICAO expressao PONTO_E_VIRGULA
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    | tipo IDENTIFICADOR ABRE_COLCHETE NUMERO FECHA_COLCHETE PONTO_E_VIRGULA
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    | CONSTANTE tipo IDENTIFICADOR ATRIBUICAO expressao PONTO_E_VIRGULA
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    | ESTATICO tipo IDENTIFICADOR ATRIBUICAO expressao PONTO_E_VIRGULA
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    ;
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>tipo
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>    : TIPO_INTEIRO
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>    | TIPO_REAL
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>    | TIPO_DUPLO
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>    | TIPO_CARACTERE
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>    | TIPO_VAZIO
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>    | TIPO_LONGO
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>    | TIPO_CURTO
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>    | TIPO_SEM_SINAL
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>    | TIPO_COM_SINAL
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>    | ESTRUTURA IDENTIFICADOR
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>    ;
+</code></pre></div>
+<h3 id="declaracoes-e-definicoes-de-funcoes">Declarações e Definições de Funções</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>declaracao_funcao
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    : tipo IDENTIFICADOR ABRE_PAREN FECHA_PAREN PONTO_E_VIRGULA
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    | tipo IDENTIFICADOR ABRE_PAREN lista_parametros FECHA_PAREN PONTO_E_VIRGULA
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    ;
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>definicao_funcao
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>    : tipo IDENTIFICADOR ABRE_PAREN FECHA_PAREN bloco_comandos
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>    | tipo IDENTIFICADOR ABRE_PAREN lista_parametros FECHA_PAREN bloco_comandos
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>    | PRINCIPAL ABRE_PAREN FECHA_PAREN bloco_comandos
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>    | tipo PRINCIPAL ABRE_PAREN FECHA_PAREN bloco_comandos
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>    ;
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>lista_parametros
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>    : parametro
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>    | lista_parametros VIRGULA parametro
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>    ;
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>parametro
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a>    : tipo IDENTIFICADOR
+<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a>    | tipo IDENTIFICADOR ABRE_COLCHETE FECHA_COLCHETE
+<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a>    ;
+</code></pre></div>
+<h3 id="declaracoes-de-estruturas">Declarações de Estruturas</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>declaracao_estrutura
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>    : ESTRUTURA IDENTIFICADOR ABRE_CHAVE lista_campos FECHA_CHAVE PONTO_E_VIRGULA
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>    ;
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>lista_campos
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>    : declaracao_campo
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>    | lista_campos declaracao_campo
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>    ;
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>declaracao_campo
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>    : tipo IDENTIFICADOR PONTO_E_VIRGULA
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>    | tipo IDENTIFICADOR ABRE_COLCHETE NUMERO FECHA_COLCHETE PONTO_E_VIRGULA
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>    ;
+</code></pre></div>
+<h3 id="comandos">Comandos</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>bloco_comandos
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>    : ABRE_CHAVE FECHA_CHAVE
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>    | ABRE_CHAVE lista_comandos FECHA_CHAVE
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>    ;
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>lista_comandos
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>    : comando
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>    | lista_comandos comando
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>    ;
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>comando
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>    : SE ABRE_PAREN expressao FECHA_PAREN comando
+<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>    | SE ABRE_PAREN expressao FECHA_PAREN comando SENAO comando
+<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a>    | ENQUANTO ABRE_PAREN expressao FECHA_PAREN comando
+<a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a>    | PARA ABRE_PAREN expressao_opt PONTO_E_VIRGULA expressao_opt PONTO_E_VIRGULA expressao_opt FECHA_PAREN comando
+<a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a>    | FACA comando ENQUANTO ABRE_PAREN expressao FECHA_PAREN PONTO_E_VIRGULA
+<a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a>    | bloco_comandos
+<a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a>    | expressao PONTO_E_VIRGULA
+<a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a>    | RETORNE expressao_opt PONTO_E_VIRGULA
+<a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a>    | CONTINUE PONTO_E_VIRGULA
+<a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a>    | QUEBRE PONTO_E_VIRGULA
+<a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a>    | declaracao_variavel
+<a id="__codelineno-4-23" name="__codelineno-4-23" href="#__codelineno-4-23"></a>    | PONTO_E_VIRGULA
+<a id="__codelineno-4-24" name="__codelineno-4-24" href="#__codelineno-4-24"></a>    ;
+<a id="__codelineno-4-25" name="__codelineno-4-25" href="#__codelineno-4-25"></a>
+<a id="__codelineno-4-26" name="__codelineno-4-26" href="#__codelineno-4-26"></a>expressao_opt
+<a id="__codelineno-4-27" name="__codelineno-4-27" href="#__codelineno-4-27"></a>    : /* vazio */
+<a id="__codelineno-4-28" name="__codelineno-4-28" href="#__codelineno-4-28"></a>    | expressao
+<a id="__codelineno-4-29" name="__codelineno-4-29" href="#__codelineno-4-29"></a>    ;
+</code></pre></div>
+<h3 id="expressoes">Expressões</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>expressao
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>    : atribuicao
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>    ;
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>atribuicao
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>    : condicional
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>    | unario ATRIBUICAO atribuicao
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>    | unario MAIS_IGUAL atribuicao
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>    | unario MENOS_IGUAL atribuicao
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>    | unario VEZES_IGUAL atribuicao
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>    | unario DIVIDIDO_IGUAL atribuicao
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>    | unario MODULO_IGUAL atribuicao
+<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>    ;
+<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a>
+<a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a>condicional
+<a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a>    : logico_ou
+<a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a>    | logico_ou INTERROGACAO expressao DOIS_PONTOS condicional
+<a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a>    ;
+<a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a>
+<a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a>logico_ou
+<a id="__codelineno-5-21" name="__codelineno-5-21" href="#__codelineno-5-21"></a>    : logico_e
+<a id="__codelineno-5-22" name="__codelineno-5-22" href="#__codelineno-5-22"></a>    | logico_ou OU_LOGICO logico_e
+<a id="__codelineno-5-23" name="__codelineno-5-23" href="#__codelineno-5-23"></a>    ;
+<a id="__codelineno-5-24" name="__codelineno-5-24" href="#__codelineno-5-24"></a>
+<a id="__codelineno-5-25" name="__codelineno-5-25" href="#__codelineno-5-25"></a>logico_e
+<a id="__codelineno-5-26" name="__codelineno-5-26" href="#__codelineno-5-26"></a>    : ou
+<a id="__codelineno-5-27" name="__codelineno-5-27" href="#__codelineno-5-27"></a>    | logico_e E_LOGICO ou
+<a id="__codelineno-5-28" name="__codelineno-5-28" href="#__codelineno-5-28"></a>    ;
+<a id="__codelineno-5-29" name="__codelineno-5-29" href="#__codelineno-5-29"></a>
+<a id="__codelineno-5-30" name="__codelineno-5-30" href="#__codelineno-5-30"></a>ou
+<a id="__codelineno-5-31" name="__codelineno-5-31" href="#__codelineno-5-31"></a>    : xor
+<a id="__codelineno-5-32" name="__codelineno-5-32" href="#__codelineno-5-32"></a>    | ou OU xor
+<a id="__codelineno-5-33" name="__codelineno-5-33" href="#__codelineno-5-33"></a>    ;
+<a id="__codelineno-5-34" name="__codelineno-5-34" href="#__codelineno-5-34"></a>
+<a id="__codelineno-5-35" name="__codelineno-5-35" href="#__codelineno-5-35"></a>xor
+<a id="__codelineno-5-36" name="__codelineno-5-36" href="#__codelineno-5-36"></a>    : e
+<a id="__codelineno-5-37" name="__codelineno-5-37" href="#__codelineno-5-37"></a>    | xor XOR e
+<a id="__codelineno-5-38" name="__codelineno-5-38" href="#__codelineno-5-38"></a>    ;
+<a id="__codelineno-5-39" name="__codelineno-5-39" href="#__codelineno-5-39"></a>
+<a id="__codelineno-5-40" name="__codelineno-5-40" href="#__codelineno-5-40"></a>e
+<a id="__codelineno-5-41" name="__codelineno-5-41" href="#__codelineno-5-41"></a>    : igualdade
+<a id="__codelineno-5-42" name="__codelineno-5-42" href="#__codelineno-5-42"></a>    | e E igualdade
+<a id="__codelineno-5-43" name="__codelineno-5-43" href="#__codelineno-5-43"></a>    ;
+<a id="__codelineno-5-44" name="__codelineno-5-44" href="#__codelineno-5-44"></a>
+<a id="__codelineno-5-45" name="__codelineno-5-45" href="#__codelineno-5-45"></a>igualdade
+<a id="__codelineno-5-46" name="__codelineno-5-46" href="#__codelineno-5-46"></a>    : relacional
+<a id="__codelineno-5-47" name="__codelineno-5-47" href="#__codelineno-5-47"></a>    | igualdade IGUAL relacional
+<a id="__codelineno-5-48" name="__codelineno-5-48" href="#__codelineno-5-48"></a>    | igualdade DIFERENTE relacional
+<a id="__codelineno-5-49" name="__codelineno-5-49" href="#__codelineno-5-49"></a>    ;
+<a id="__codelineno-5-50" name="__codelineno-5-50" href="#__codelineno-5-50"></a>
+<a id="__codelineno-5-51" name="__codelineno-5-51" href="#__codelineno-5-51"></a>relacional
+<a id="__codelineno-5-52" name="__codelineno-5-52" href="#__codelineno-5-52"></a>    : shift
+<a id="__codelineno-5-53" name="__codelineno-5-53" href="#__codelineno-5-53"></a>    | relacional MENOR shift
+<a id="__codelineno-5-54" name="__codelineno-5-54" href="#__codelineno-5-54"></a>    | relacional MAIOR shift
+<a id="__codelineno-5-55" name="__codelineno-5-55" href="#__codelineno-5-55"></a>    | relacional MENOR_IGUAL shift
+<a id="__codelineno-5-56" name="__codelineno-5-56" href="#__codelineno-5-56"></a>    | relacional MAIOR_IGUAL shift
+<a id="__codelineno-5-57" name="__codelineno-5-57" href="#__codelineno-5-57"></a>    ;
+<a id="__codelineno-5-58" name="__codelineno-5-58" href="#__codelineno-5-58"></a>
+<a id="__codelineno-5-59" name="__codelineno-5-59" href="#__codelineno-5-59"></a>shift
+<a id="__codelineno-5-60" name="__codelineno-5-60" href="#__codelineno-5-60"></a>    : aditivo
+<a id="__codelineno-5-61" name="__codelineno-5-61" href="#__codelineno-5-61"></a>    | shift SHIFT_ESQUERDA aditivo
+<a id="__codelineno-5-62" name="__codelineno-5-62" href="#__codelineno-5-62"></a>    | shift SHIFT_DIREITA aditivo
+<a id="__codelineno-5-63" name="__codelineno-5-63" href="#__codelineno-5-63"></a>    ;
+<a id="__codelineno-5-64" name="__codelineno-5-64" href="#__codelineno-5-64"></a>
+<a id="__codelineno-5-65" name="__codelineno-5-65" href="#__codelineno-5-65"></a>aditivo
+<a id="__codelineno-5-66" name="__codelineno-5-66" href="#__codelineno-5-66"></a>    : multiplicativo
+<a id="__codelineno-5-67" name="__codelineno-5-67" href="#__codelineno-5-67"></a>    | aditivo MAIS multiplicativo
+<a id="__codelineno-5-68" name="__codelineno-5-68" href="#__codelineno-5-68"></a>    | aditivo MENOS multiplicativo
+<a id="__codelineno-5-69" name="__codelineno-5-69" href="#__codelineno-5-69"></a>    ;
+<a id="__codelineno-5-70" name="__codelineno-5-70" href="#__codelineno-5-70"></a>
+<a id="__codelineno-5-71" name="__codelineno-5-71" href="#__codelineno-5-71"></a>multiplicativo
+<a id="__codelineno-5-72" name="__codelineno-5-72" href="#__codelineno-5-72"></a>    : cast
+<a id="__codelineno-5-73" name="__codelineno-5-73" href="#__codelineno-5-73"></a>    | multiplicativo VEZES cast
+<a id="__codelineno-5-74" name="__codelineno-5-74" href="#__codelineno-5-74"></a>    | multiplicativo DIVIDIDO cast
+<a id="__codelineno-5-75" name="__codelineno-5-75" href="#__codelineno-5-75"></a>    | multiplicativo MODULO cast
+<a id="__codelineno-5-76" name="__codelineno-5-76" href="#__codelineno-5-76"></a>    ;
+<a id="__codelineno-5-77" name="__codelineno-5-77" href="#__codelineno-5-77"></a>
+<a id="__codelineno-5-78" name="__codelineno-5-78" href="#__codelineno-5-78"></a>cast
+<a id="__codelineno-5-79" name="__codelineno-5-79" href="#__codelineno-5-79"></a>    : unario
+<a id="__codelineno-5-80" name="__codelineno-5-80" href="#__codelineno-5-80"></a>    | ABRE_PAREN tipo FECHA_PAREN cast
+<a id="__codelineno-5-81" name="__codelineno-5-81" href="#__codelineno-5-81"></a>    ;
+<a id="__codelineno-5-82" name="__codelineno-5-82" href="#__codelineno-5-82"></a>
+<a id="__codelineno-5-83" name="__codelineno-5-83" href="#__codelineno-5-83"></a>unario
+<a id="__codelineno-5-84" name="__codelineno-5-84" href="#__codelineno-5-84"></a>    : postfix
+<a id="__codelineno-5-85" name="__codelineno-5-85" href="#__codelineno-5-85"></a>    | INCREMENTO unario
+<a id="__codelineno-5-86" name="__codelineno-5-86" href="#__codelineno-5-86"></a>    | DECREMENTO unario
+<a id="__codelineno-5-87" name="__codelineno-5-87" href="#__codelineno-5-87"></a>    | MAIS unario
+<a id="__codelineno-5-88" name="__codelineno-5-88" href="#__codelineno-5-88"></a>    | MENOS unario
+<a id="__codelineno-5-89" name="__codelineno-5-89" href="#__codelineno-5-89"></a>    | NAO_LOGICO unario
+<a id="__codelineno-5-90" name="__codelineno-5-90" href="#__codelineno-5-90"></a>    | NEGACAO unario
+<a id="__codelineno-5-91" name="__codelineno-5-91" href="#__codelineno-5-91"></a>    | VEZES unario
+<a id="__codelineno-5-92" name="__codelineno-5-92" href="#__codelineno-5-92"></a>    | E_COMERCIAL unario
+<a id="__codelineno-5-93" name="__codelineno-5-93" href="#__codelineno-5-93"></a>    ;
+<a id="__codelineno-5-94" name="__codelineno-5-94" href="#__codelineno-5-94"></a>
+<a id="__codelineno-5-95" name="__codelineno-5-95" href="#__codelineno-5-95"></a>postfix
+<a id="__codelineno-5-96" name="__codelineno-5-96" href="#__codelineno-5-96"></a>    : primario
+<a id="__codelineno-5-97" name="__codelineno-5-97" href="#__codelineno-5-97"></a>    | postfix ABRE_COLCHETE expressao FECHA_COLCHETE
+<a id="__codelineno-5-98" name="__codelineno-5-98" href="#__codelineno-5-98"></a>    | postfix ABRE_PAREN FECHA_PAREN
+<a id="__codelineno-5-99" name="__codelineno-5-99" href="#__codelineno-5-99"></a>    | postfix ABRE_PAREN lista_argumentos FECHA_PAREN
+<a id="__codelineno-5-100" name="__codelineno-5-100" href="#__codelineno-5-100"></a>    | postfix PONTO IDENTIFICADOR
+<a id="__codelineno-5-101" name="__codelineno-5-101" href="#__codelineno-5-101"></a>    | postfix SETA IDENTIFICADOR
+<a id="__codelineno-5-102" name="__codelineno-5-102" href="#__codelineno-5-102"></a>    | postfix INCREMENTO
+<a id="__codelineno-5-103" name="__codelineno-5-103" href="#__codelineno-5-103"></a>    | postfix DECREMENTO
+<a id="__codelineno-5-104" name="__codelineno-5-104" href="#__codelineno-5-104"></a>    ;
+<a id="__codelineno-5-105" name="__codelineno-5-105" href="#__codelineno-5-105"></a>
+<a id="__codelineno-5-106" name="__codelineno-5-106" href="#__codelineno-5-106"></a>primario
+<a id="__codelineno-5-107" name="__codelineno-5-107" href="#__codelineno-5-107"></a>    : IDENTIFICADOR
+<a id="__codelineno-5-108" name="__codelineno-5-108" href="#__codelineno-5-108"></a>    | NUMERO
+<a id="__codelineno-5-109" name="__codelineno-5-109" href="#__codelineno-5-109"></a>    | NUMERO_REAL
+<a id="__codelineno-5-110" name="__codelineno-5-110" href="#__codelineno-5-110"></a>    | LITERAL_CHAR
+<a id="__codelineno-5-111" name="__codelineno-5-111" href="#__codelineno-5-111"></a>    | LITERAL_STRING
+<a id="__codelineno-5-112" name="__codelineno-5-112" href="#__codelineno-5-112"></a>    | ABRE_PAREN expressao FECHA_PAREN
+<a id="__codelineno-5-113" name="__codelineno-5-113" href="#__codelineno-5-113"></a>    ;
+<a id="__codelineno-5-114" name="__codelineno-5-114" href="#__codelineno-5-114"></a>
+<a id="__codelineno-5-115" name="__codelineno-5-115" href="#__codelineno-5-115"></a>lista_argumentos
+<a id="__codelineno-5-116" name="__codelineno-5-116" href="#__codelineno-5-116"></a>    : atribuicao
+<a id="__codelineno-5-117" name="__codelineno-5-117" href="#__codelineno-5-117"></a>    | lista_argumentos VIRGULA atribuicao
+<a id="__codelineno-5-118" name="__codelineno-5-118" href="#__codelineno-5-118"></a>    ;
+</code></pre></div>
+<h2 id="exemplos-de-derivacoes">Exemplos de Derivações</h2>
+<h3 id="exemplo-1-programa-simples">Exemplo 1: Programa Simples</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">inteiro</span><span class="w"> </span><span class="nf">principal</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">    </span><span class="n">retorne</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="p">}</span>
+</code></pre></div>
+<p>Derivação:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>programa
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>-&gt; declaracoes
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>-&gt; declaracao
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>-&gt; definicao_funcao
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>-&gt; tipo PRINCIPAL ABRE_PAREN FECHA_PAREN bloco_comandos
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>-&gt; TIPO_INTEIRO PRINCIPAL ABRE_PAREN FECHA_PAREN bloco_comandos
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>-&gt; TIPO_INTEIRO PRINCIPAL ABRE_PAREN FECHA_PAREN ABRE_CHAVE lista_comandos FECHA_CHAVE
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>-&gt; TIPO_INTEIRO PRINCIPAL ABRE_PAREN FECHA_PAREN ABRE_CHAVE comando FECHA_CHAVE
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>-&gt; TIPO_INTEIRO PRINCIPAL ABRE_PAREN FECHA_PAREN ABRE_CHAVE RETORNE expressao_opt PONTO_E_VIRGULA FECHA_CHAVE
+<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>-&gt; TIPO_INTEIRO PRINCIPAL ABRE_PAREN FECHA_PAREN ABRE_CHAVE RETORNE expressao PONTO_E_VIRGULA FECHA_CHAVE
+<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>-&gt; TIPO_INTEIRO PRINCIPAL ABRE_PAREN FECHA_PAREN ABRE_CHAVE RETORNE atribuicao PONTO_E_VIRGULA FECHA_CHAVE
+<a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a>-&gt; TIPO_INTEIRO PRINCIPAL ABRE_PAREN FECHA_PAREN ABRE_CHAVE RETORNE condicional PONTO_E_VIRGULA FECHA_CHAVE
+<a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a>-&gt; ...
+<a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a>-&gt; TIPO_INTEIRO PRINCIPAL ABRE_PAREN FECHA_PAREN ABRE_CHAVE RETORNE primario PONTO_E_VIRGULA FECHA_CHAVE
+<a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a>-&gt; TIPO_INTEIRO PRINCIPAL ABRE_PAREN FECHA_PAREN ABRE_CHAVE RETORNE NUMERO PONTO_E_VIRGULA FECHA_CHAVE
+</code></pre></div></p>
+<h3 id="exemplo-2-declaracao-de-estrutura">Exemplo 2: Declaração de Estrutura</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="n">estrutura</span><span class="w"> </span><span class="n">Pessoa</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">    </span><span class="n">caractere</span><span class="w"> </span><span class="n">nome</span><span class="p">[</span><span class="mi">50</span><span class="p">];</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">    </span><span class="n">inteiro</span><span class="w"> </span><span class="n">idade</span><span class="p">;</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">    </span><span class="n">real</span><span class="w"> </span><span class="n">altura</span><span class="p">;</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="p">};</span>
+</code></pre></div>
+<p>Derivação:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>programa
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>-&gt; declaracoes
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>-&gt; declaracao
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>-&gt; declaracao_estrutura
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>-&gt; ESTRUTURA IDENTIFICADOR ABRE_CHAVE lista_campos FECHA_CHAVE PONTO_E_VIRGULA
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>-&gt; ESTRUTURA IDENTIFICADOR ABRE_CHAVE declaracao_campo FECHA_CHAVE PONTO_E_VIRGULA
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>-&gt; ESTRUTURA IDENTIFICADOR ABRE_CHAVE tipo IDENTIFICADOR ABRE_COLCHETE NUMERO FECHA_COLCHETE PONTO_E_VIRGULA FECHA_CHAVE PONTO_E_VIRGULA
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>-&gt; ESTRUTURA IDENTIFICADOR ABRE_CHAVE TIPO_CARACTERE IDENTIFICADOR ABRE_COLCHETE NUMERO FECHA_COLCHETE PONTO_E_VIRGULA FECHA_CHAVE PONTO_E_VIRGULA
+<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>-&gt; ...
+</code></pre></div></p>
+<h2 id="observacoes-sobre-a-gramatica">Observações sobre a Gramática</h2>
+<ol>
+<li>A gramática suporta todas as construções básicas da linguagem C, traduzidas para português.</li>
+<li>Foram adicionadas regras específicas para suportar a função principal (<code>principal</code>).</li>
+<li>A gramática suporta declarações de estruturas com campos que podem ser arrays.</li>
+<li>Foram adicionadas regras para suportar constantes e variáveis estáticas.</li>
+<li>A gramática suporta o operador de módulo (%) em expressões.</li>
+</ol>
+<h2 id="extensoes-futuras">Extensões Futuras</h2>
+<p>Possíveis extensões para a gramática incluem:</p>
+<ol>
+<li>Suporte para enumerações (<code>enum</code>)</li>
+<li>Suporte para definições de tipos (<code>typedef</code>)</li>
+<li>Suporte para diretivas de pré-processador</li>
+<li>Suporte para operadores bit a bit</li>
+<li>Suporte para inicializadores de arrays e estruturas</li>
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Voltar para o topo
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.sections", "toc.integrate", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copiado para \u00e1rea de transfer\u00eancia", "clipboard.copy": "Copiar para \u00e1rea de transfer\u00eancia", "search.result.more.one": "mais 1 nesta p\u00e1gina", "search.result.more.other": "# mais nesta p\u00e1gina", "search.result.none": "Nenhum documento encontrado", "search.result.one": "1 documento encontrado", "search.result.other": "# documentos encontrados", "search.result.placeholder": "Digite para iniciar a busca", "search.result.term.missing": "Ausente", "select.version": "Selecione a vers\u00e3o"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.88dd0f4e.min.js"></script>
+      
+    
+  </body>
+</html>
