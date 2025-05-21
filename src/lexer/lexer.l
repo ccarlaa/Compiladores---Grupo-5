@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 //#include "../../include/tokens/tokens.h"
+#include "ast/ast.h"
 #include "parser.tab.h"
 
 /* Variável definida por Bison */

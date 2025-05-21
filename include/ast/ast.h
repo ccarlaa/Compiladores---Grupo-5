@@ -47,6 +47,8 @@ AstNode* create_equal_node(AstNode *left, AstNode *right);
 /* Função para avaliar a AST */
 int evaluate_ast(AstNode *node);
 
+void print_ast(struct AstNode* node, int level);
+
 /* Função para liberar a memória da AST */
 void free_ast(AstNode *node);
 

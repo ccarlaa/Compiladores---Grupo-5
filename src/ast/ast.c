@@ -119,3 +119,39 @@ void free_ast(AstNode* node) {
     
     free(node);
 } 
+
+/* Função para imprimir a AST */
+void print_ast(AstNode* node, int level) {
+    if (!node) return;
+
+    for (int i = 0; i < level; i++) {
+        printf("  ");
+    }
+
+    switch (node->type) {
+        case NODE_LITERAL:
+            printf("Literal: %d\n", node->data.value);
+            break;
+
+        case NODE_BINOP: {
+            const char* op_symbol;
+            switch (node->data.binop.op) {
+                case OP_ADD: op_symbol = "+"; break;
+                case OP_SUB: op_symbol = "-"; break;
+                case OP_MUL: op_symbol = "*"; break;
+                case OP_DIV: op_symbol = "/"; break;
+                default: op_symbol = "?"; break;
+            }
+            printf("Operação Binária: %s\n", op_symbol);
+            print_ast(node->data.binop.left, level + 1);
+            print_ast(node->data.binop.right, level + 1);
+            break;
+        }
+
+        case NODE_EQUAL:
+            printf("Comparação de Igualdade (=)\n");
+            print_ast(node->data.equal.left, level + 1);
+            print_ast(node->data.equal.right, level + 1);
+            break;
+    }
+}

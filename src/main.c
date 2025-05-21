@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "ast/ast.h"
-#include "../parser.tab.h"
+#include "parser.tab.h"
 
 // Declarações externas do Flex e Bison
 extern FILE *yyin;
@@ -10,11 +10,12 @@ extern int yyparse(void);
 extern int yylex(void);
 extern void yyerror(const char *s);
 extern char* yytext;
+extern AstNode* ast_root; // raiz da AST definida no parser.y
 
-// Variável para ativar o modo de depuração
+// Ativa o modo de depuração
 int yydebug = 1;
 
-// Função para converter tokens em strings para depuração
+// Mapeia tokens para strings (útil para debug)
 const char* token_to_string(int token) {
     switch(token) {
         case NUMERO: return "NUMERO";
@@ -82,8 +83,15 @@ const char* token_to_string(int token) {
     }
 }
 
+// Função chamada pelo Bison em caso de erro
+void yyerror(const char *s) {
+    extern int yylineno;
+    extern char *yytext;
+    fprintf(stderr, "Erro: %s\nLinha: %d, Próximo token: '%s'\n", s, yylineno, yytext);
+}
+
 int main(int argc, char **argv) {
-    // Se um arquivo foi fornecido como argumento
+    // Entrada via arquivo, se fornecido
     if (argc > 1) {
         FILE *input = fopen(argv[1], "r");
         if (!input) {
@@ -92,31 +100,30 @@ int main(int argc, char **argv) {
         }
         yyin = input;
     } else {
-        // Caso contrário, usa a entrada padrão
+        // Ou entrada padrão (stdin)
         yyin = stdin;
-        printf("Digite uma expressão (ex: 3*5 = 15):\n");
+        printf("Digite uma expressão (ex: 3 * 5 = 15):\n");
     }
 
-    // Inicia a análise sintática
+    // Executa o parser
     int result = yyparse();
-    
+
     if (result == 0) {
         printf("Programa analisado com sucesso!\n");
+
+        if (ast_root) {
+            printf("\n--- Árvore Sintática Abstrata (AST) ---\n");
+            print_ast(ast_root, 0);
+        } else {
+            printf("AST não gerada ou vazia.\n");
+        }
     } else {
         printf("Erro durante a análise do programa.\n");
     }
-    
-    // Fecha o arquivo se foi aberto
+
     if (argc > 1 && yyin != stdin) {
         fclose(yyin);
     }
 
     return result;
-}
-
-// Função chamada pelo Bison em caso de erro
-void yyerror(const char *s) {
-    extern int yylineno;
-    extern char *yytext;
-    fprintf(stderr, "Erro: %s\nLinha: %d, Próximo token: '%s'\n", s, yylineno, yytext);
 }
