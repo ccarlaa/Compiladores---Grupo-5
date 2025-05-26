@@ -112,8 +112,14 @@ int main(int argc, char **argv) {
         printf("Programa analisado com sucesso!\n");
 
         if (ast_root) {
-            printf("\n--- Árvore Sintática Abstrata (AST) ---\n");
+            printf("\n--- Impressão da AST ---\n");
             print_ast(ast_root, 0);
+
+            printf("\n--- Avaliação da AST ---\n");
+            int resultado = evaluate_ast(ast_root);
+            printf("Resultado: %d\n", resultado);
+
+            free_ast(ast_root);
         } else {
             printf("AST não gerada ou vazia.\n");
         }
