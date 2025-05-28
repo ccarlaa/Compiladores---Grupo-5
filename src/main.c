@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include "ast/ast.h"
-#include "parser.tab.h"
+#include "parser/parser.tab.h"
+#include "semantic/tabela.h"
 
 // Declarações externas do Flex e Bison
 extern FILE *yyin;

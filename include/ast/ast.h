@@ -1,6 +1,8 @@
 #ifndef AST_H
 #define AST_H
 
+#include "semantic/tipos.h"  // Para o TipoSimples
+
 /* Tipos de nós na AST */
 typedef enum {
     NODE_LITERAL,    // Valor literal (número)
@@ -23,6 +25,8 @@ typedef enum {
 /* Estrutura de um nó da AST */
 typedef struct AstNode {
     NodeType type;
+    TipoSimples tipo; // <-- Campo adicionado para análise semântica
+
     union {
         int value;  // NODE_LITERAL
 

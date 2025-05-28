@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Iinclude
+CFLAGS = -Wall -Iinclude -Isrc/semantic -Isrc/ast
 FLEX = flex
 BISON = bison
 
@@ -11,9 +11,11 @@ LEXER = $(SRC)/lexer/lexer.l
 PARSER = $(SRC)/parser/parser.y
 MAIN = $(SRC)/main.c
 AST = $(SRC)/ast/ast.c
+TABELA = $(SRC)/semantic/tabela.c
+TIPOS = $(SRC)/semantic/tipos.c
 
 # Objetos
-OBJS = $(OBJ)/main.o $(OBJ)/lex.yy.o $(OBJ)/parser.tab.o $(OBJ)/ast.o
+OBJS = $(OBJ)/main.o $(OBJ)/lex.yy.o $(OBJ)/parser.tab.o $(OBJ)/ast.o $(OBJ)/tabela.o $(OBJ)/tipos.o
 
 # Executável
 TARGET = compilador.exe
@@ -30,6 +32,12 @@ $(OBJ)/main.o: $(MAIN) parser.tab.h | $(OBJ)
 $(OBJ)/ast.o: $(AST) | $(OBJ)
 	$(CC) $(CFLAGS) -c $< -o $@
 
+$(OBJ)/tabela.o: $(TABELA) | $(OBJ)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJ)/tipos.o: $(TIPOS) | $(OBJ)
+	$(CC) $(CFLAGS) -c $< -o $@
+
 $(OBJ)/parser.tab.o: parser.tab.c | $(OBJ)
 	$(CC) $(CFLAGS) -c parser.tab.c -o $@
 
@@ -38,11 +46,11 @@ $(OBJ)/lex.yy.o: lex.yy.c | $(OBJ)
 
 # Geração do parser
 parser.tab.c parser.tab.h: $(PARSER)
-	$(BISON) -d $<
+	$(BISON) -d -o parser.tab.c $<
 
 # Geração do scanner
 lex.yy.c: $(LEXER) parser.tab.h
-	$(FLEX) $<
+	$(FLEX) -o lex.yy.c $<
 
 # Diretório obj
 $(OBJ):
@@ -54,6 +62,6 @@ clean:
 	rm -f lex.yy.c parser.tab.*
 
 test: $(TARGET)
-	./$(TARGET) < tests/teste1.txt
+	./$(TARGET) tests/teste1.txt
 
 .PHONY: all clean test

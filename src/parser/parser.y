@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "ast/ast.h"
-#include "tabela/tabela.h"
-#include "tipos.h"
+#include "semantic/tabela.h"
+#include "semantic/tipos.h"
 
 extern int yylex();
 extern char* yytext;
@@ -43,17 +43,14 @@ TipoSimples tipo_atual;
 
 %type <ival> NUMERO
 %type <sval> IDENTIFICADOR LITERAL_STRING LITERAL_CHAR
-%type <node> expressao programa
-%type <node> declaracao declaracao_variavel declaracao_funcao definicao_funcao
-%type <node> tipo lista_parametros parametro
-%type <node> bloco_comandos comando comandos
-%type <node> comando_se comando_enquanto comando_para comando_retorno
-%type <node> expressao_atribuicao expressao_logica expressao_relacional
-%type <node> expressao_aditiva expressao_multiplicativa expressao_unaria
-%type <node> expressao_primaria lista_argumentos
-%type <node> expressao_inicializacao expressao_condicao expressao_incremento
-%type <node> tipo_opcional
-%type <node> comando_switch
+
+%type <node> programa declaracoes declaracao declaracao_variavel declaracao_funcao definicao_funcao declaracao_estrutura
+%type <node> lista_campos declaracao_campo tipo bloco_comandos comandos comando
+%type <node> comando_se comando_enquanto comando_para comando_retorno comando_faca_enquanto comando_switch
+%type <node> lista_argumentos lista_casos caso lista_comandos caso_escolha
+%type <node> expressao expressao_atribuicao expressao_logica expressao_relacional
+%type <node> expressao_aditiva expressao_multiplicativa expressao_unaria expressao_primaria
+%type <node> expressao_inicializacao expressao_condicao expressao_incremento tipo_opcional
 
 %%
 
@@ -91,6 +88,7 @@ declaracao_variavel
             exit(1);
         }
         $$ = create_equal_node(NULL, $4);
+        $$->tipo = tipo_atual;
     }
     ;
 
@@ -247,7 +245,7 @@ comando_faca_enquanto
             fprintf(stderr, "Erro: condição do 'faca-enquanto' deve ser do tipo inteiro.\n");
             exit(1);
         }
-        $$ = $2; // retorna o corpo, simplificado
+        $$ = $2;
     }
     ;
 
@@ -270,7 +268,7 @@ comando_para
             exit(1);
         }
 
-        $$ = $12; // simplificado: retorna o bloco
+        $$ = $12;
     }
     ;
 
@@ -280,7 +278,7 @@ comando_switch
             fprintf(stderr, "Erro: expressão do 'switch' deve ser do tipo inteiro.\n");
             exit(1);
         }
-        $$ = $3; // retorna expressão apenas para continuidade
+        $$ = $3;
     }
     ;
 
@@ -316,7 +314,7 @@ caso_escolha
             fprintf(stderr, "Erro: expressão 'caso' deve ser do tipo inteiro.\n");
             exit(1);
         }
-        $$ = create_literal_node(0); // placeholder
+        $$ = create_literal_node(0);
         $$->tipo = t;
     }
     | NUMERO {
@@ -354,9 +352,3 @@ expressao_inicializacao
 
 %%
 
-int main() {
-    return yyparse();
-}
-*/
-
-%%
