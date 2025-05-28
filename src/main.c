@@ -91,6 +91,7 @@ void yyerror(const char *s) {
 }
 
 int main(int argc, char **argv) {
+    inicializa_tabela();
     // Entrada via arquivo, se fornecido
     if (argc > 1) {
         FILE *input = fopen(argv[1], "r");

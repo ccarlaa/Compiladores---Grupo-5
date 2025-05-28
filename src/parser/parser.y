@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "ast/ast.h"
+#include "tabela/tabela.h"
+#include "tipos.h"
 
 extern int yylex();
 extern char* yytext;
@@ -9,6 +11,7 @@ extern FILE* yyin;
 void yyerror(const char* s);
 
 AstNode* ast_root = NULL;
+TipoSimples tipo_atual;
 %}
 
 /* Tokens e tipos */
@@ -55,7 +58,7 @@ AstNode* ast_root = NULL;
 %%
 
 programa
-    : declaracoes { ast_root = $1; printf("Programa analisado com sucesso!\\n"); }
+    : declaracoes { ast_root = $1; printf("Programa analisado com sucesso!\n"); }
     ;
 
 declaracoes
@@ -71,8 +74,24 @@ declaracao
     ;
 
 declaracao_variavel
-    : tipo IDENTIFICADOR PONTO_E_VIRGULA { $$ = NULL; }
-    | tipo IDENTIFICADOR IGUAL expressao PONTO_E_VIRGULA { $$ = create_equal_node(NULL, $4); }
+    : tipo IDENTIFICADOR PONTO_E_VIRGULA {
+        if (!insere_simbolo($2, tipo_atual)) {
+            fprintf(stderr, "Erro: variável '%s' já declarada.\n", $2);
+            exit(1);
+        }
+        $$ = NULL;
+    }
+    | tipo IDENTIFICADOR IGUAL expressao PONTO_E_VIRGULA {
+        if (!insere_simbolo($2, tipo_atual)) {
+            fprintf(stderr, "Erro: variável '%s' já declarada.\n", $2);
+            exit(1);
+        }
+        if (!verifica_tipo_atribuicao(tipo_atual, $4->tipo)) {
+            fprintf(stderr, "Erro: atribuição incompatível para '%s'.\n", $2);
+            exit(1);
+        }
+        $$ = create_equal_node(NULL, $4);
+    }
     ;
 
 declaracao_funcao
@@ -96,7 +115,8 @@ declaracao_campo
     ;
 
 tipo
-    : TIPO_INTEIRO { $$ = NULL; }
+    : TIPO_INTEIRO { tipo_atual = TIPO_INT; $$ = NULL; }
+    | TIPO_REAL    { tipo_atual = TIPO_REAL_; $$ = NULL; }
     ;
 
 bloco_comandos
@@ -137,7 +157,19 @@ expressao
 
 expressao_atribuicao
     : expressao_logica { $$ = $1; }
-    | IDENTIFICADOR IGUAL expressao_atribuicao { $$ = create_equal_node(NULL, $3); }
+    | IDENTIFICADOR IGUAL expressao_atribuicao {
+        TipoSimples t = busca_simbolo($1);
+        if (t == TIPO_INVALIDO) {
+            fprintf(stderr, "Erro: variável '%s' não declarada.\n", $1);
+            exit(1);
+        }
+        if (!verifica_tipo_atribuicao(t, $3->tipo)) {
+            fprintf(stderr, "Erro: tipos incompatíveis na atribuição a '%s'.\n", $1);
+            exit(1);
+        }
+        $$ = create_equal_node(NULL, $3);
+        $$->tipo = t;
+    }
     ;
 
 expressao_logica
@@ -146,17 +178,41 @@ expressao_logica
 
 expressao_relacional
     : expressao_aditiva { $$ = $1; }
-    | expressao_relacional IGUAL_IGUAL expressao_aditiva { $$ = create_equal_node($1, $3); }
+    | expressao_relacional IGUAL_IGUAL expressao_aditiva {
+        TipoSimples t = verifica_tipo_binario($1->tipo, $3->tipo);
+        if (t == TIPO_INVALIDO) {
+            fprintf(stderr, "Erro: tipos incompatíveis em comparação.\n");
+            exit(1);
+        }
+        $$ = create_equal_node($1, $3);
+        $$->tipo = TIPO_INT;
+    }
     ;
 
 expressao_aditiva
     : expressao_multiplicativa { $$ = $1; }
-    | expressao_aditiva SOMA expressao_multiplicativa { $$ = create_binop_node(OP_ADD, $1, $3); }
+    | expressao_aditiva SOMA expressao_multiplicativa {
+        TipoSimples t = verifica_tipo_binario($1->tipo, $3->tipo);
+        if (t == TIPO_INVALIDO) {
+            fprintf(stderr, "Erro: tipos incompatíveis em soma.\n");
+            exit(1);
+        }
+        $$ = create_binop_node(OP_ADD, $1, $3);
+        $$->tipo = t;
+    }
     ;
 
 expressao_multiplicativa
     : expressao_unaria { $$ = $1; }
-    | expressao_multiplicativa MULTIPLICACAO expressao_unaria { $$ = create_binop_node(OP_MUL, $1, $3); }
+    | expressao_multiplicativa MULTIPLICACAO expressao_unaria {
+        TipoSimples t = verifica_tipo_binario($1->tipo, $3->tipo);
+        if (t == TIPO_INVALIDO) {
+            fprintf(stderr, "Erro: tipos incompatíveis em multiplicação.\n");
+            exit(1);
+        }
+        $$ = create_binop_node(OP_MUL, $1, $3);
+        $$->tipo = t;
+    }
     ;
 
 expressao_unaria
@@ -164,7 +220,19 @@ expressao_unaria
     ;
 
 expressao_primaria
-    : NUMERO { $$ = create_literal_node($1); }
+    : NUMERO {
+        $$ = create_literal_node($1);
+        $$->tipo = TIPO_INT;
+    }
+    | IDENTIFICADOR {
+        TipoSimples t = busca_simbolo($1);
+        if (t == TIPO_INVALIDO) {
+            fprintf(stderr, "Erro: variável '%s' não declarada.\n", $1);
+            exit(1);
+        }
+        $$ = create_literal_node(0); // placeholder
+        $$->tipo = t;
+    }
     | ABRE_PAREN expressao FECHA_PAREN { $$ = $2; }
     ;
 
@@ -175,8 +243,11 @@ lista_argumentos
 
 comando_faca_enquanto
     : FACA comando ENQUANTO ABRE_PAREN expressao FECHA_PAREN PONTO_E_VIRGULA {
-        /* Nodo de laço do tipo "do-while" */
-        $$ = $2;  // simplificado para retornar o corpo
+        if ($5->tipo != TIPO_INT) {
+            fprintf(stderr, "Erro: condição do 'faca-enquanto' deve ser do tipo inteiro.\n");
+            exit(1);
+        }
+        $$ = $2; // retorna o corpo, simplificado
     }
     ;
 
@@ -184,13 +255,32 @@ comando_para
     : PARA ABRE_PAREN tipo_opcional IDENTIFICADOR IGUAL expressao
       PONTO_E_VIRGULA expressao_condicao PONTO_E_VIRGULA expressao_incremento
       FECHA_PAREN bloco_comandos {
-        $$ = $12; // também simplificado, o ideal seria criar um nó para "for"
+        if (!insere_simbolo($4, tipo_atual)) {
+            fprintf(stderr, "Erro: variável '%s' já declarada no 'para'.\n", $4);
+            exit(1);
+        }
+
+        if (!verifica_tipo_atribuicao(tipo_atual, $6->tipo)) {
+            fprintf(stderr, "Erro: tipo incompatível na inicialização de '%s' no 'para'.\n", $4);
+            exit(1);
+        }
+
+        if ($8 && $8->tipo != TIPO_INT) {
+            fprintf(stderr, "Erro: condição do 'para' deve ser do tipo inteiro.\n");
+            exit(1);
+        }
+
+        $$ = $12; // simplificado: retorna o bloco
     }
     ;
 
 comando_switch
     : ESCOLHA ABRE_PAREN expressao FECHA_PAREN ABRE_CHAVE lista_casos FECHA_CHAVE {
-        $$ = $3;
+        if ($3->tipo != TIPO_INT) {
+            fprintf(stderr, "Erro: expressão do 'switch' deve ser do tipo inteiro.\n");
+            exit(1);
+        }
+        $$ = $3; // retorna expressão apenas para continuidade
     }
     ;
 
@@ -200,7 +290,13 @@ lista_casos
     ;
 
 caso
-    : CASO caso_escolha DOIS_PONTOS lista_comandos { $$ = $4; }
+    : CASO caso_escolha DOIS_PONTOS lista_comandos {
+        if ($2 && $2->tipo != TIPO_INT) {
+            fprintf(stderr, "Erro: valor do 'caso' deve ser inteiro.\n");
+            exit(1);
+        }
+        $$ = $4;
+    }
     | PADRAO DOIS_PONTOS lista_comandos { $$ = $3; }
     ;
 
@@ -210,8 +306,23 @@ lista_comandos
     ;
 
 caso_escolha
-    : IDENTIFICADOR { $$ = NULL; }
-    | NUMERO { $$ = create_literal_node($1); }
+    : IDENTIFICADOR {
+        TipoSimples t = busca_simbolo($1);
+        if (t == TIPO_INVALIDO) {
+            fprintf(stderr, "Erro: identificador '%s' usado em 'caso' não declarado.\n", $1);
+            exit(1);
+        }
+        if (t != TIPO_INT) {
+            fprintf(stderr, "Erro: expressão 'caso' deve ser do tipo inteiro.\n");
+            exit(1);
+        }
+        $$ = create_literal_node(0); // placeholder
+        $$->tipo = t;
+    }
+    | NUMERO {
+        $$ = create_literal_node($1);
+        $$->tipo = TIPO_INT;
+    }
     ;
 
 tipo_opcional
@@ -220,7 +331,13 @@ tipo_opcional
     ;
 
 expressao_condicao
-    : expressao { $$ = $1; }
+    : expressao {
+        if ($1->tipo != TIPO_INT) {
+            fprintf(stderr, "Erro: condição de 'para' deve ser do tipo inteiro.\n");
+            exit(1);
+        }
+        $$ = $1;
+    }
     | /* vazio */ { $$ = NULL; }
     ;
 
@@ -237,11 +354,9 @@ expressao_inicializacao
 
 %%
 
-/* Função principal opcional
 int main() {
     return yyparse();
 }
 */
 
 %%
-
