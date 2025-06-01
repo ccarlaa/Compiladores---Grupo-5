@@ -42,6 +42,7 @@ nav:
     - Análise Léxica: documentacao-tecnica/analise-lexica.md
     - Análise Sintática: documentacao-tecnica/analise-sintatica.md
     - Gramática: documentacao-tecnica/gramatica.md
+    - Testes: documentacao-tecnica/testes.md
   - Contribuição: contribuicao.md
   - Atas de Reunião:
     - Visão Geral: atas-reuniao/index.md

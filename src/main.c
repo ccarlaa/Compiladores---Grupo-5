@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "ast/ast.h"
-#include "parser/parser.tab.h"
+#include "../parser.tab.h"
 #include "semantic/tabela.h"
 
 // Declarações externas do Flex e Bison
@@ -93,11 +93,23 @@ void yyerror(const char *s) {
 
 int main(int argc, char **argv) {
     inicializa_tabela();
+    int debug_mode = 0;
+    char *filename = NULL;
+    
+    // Verificar argumentos
+    for (int i = 1; i < argc; i++) {
+        if (strcmp(argv[i], "-d") == 0 || strcmp(argv[i], "--debug") == 0) {
+            debug_mode = 1;
+        } else {
+            filename = argv[i];
+        }
+    }
+    
     // Entrada via arquivo, se fornecido
-    if (argc > 1) {
-        FILE *input = fopen(argv[1], "r");
+    if (filename) {
+        FILE *input = fopen(filename, "r");
         if (!input) {
-            fprintf(stderr, "Erro: não foi possível abrir o arquivo '%s'\n", argv[1]);
+            fprintf(stderr, "Erro: não foi possível abrir o arquivo '%s'\n", filename);
             return 1;
         }
         yyin = input;
@@ -105,6 +117,24 @@ int main(int argc, char **argv) {
         // Ou entrada padrão (stdin)
         yyin = stdin;
         printf("Digite uma expressão (ex: 3 * 5 = 15):\n");
+    }
+    
+    // Modo de depuração léxica
+    if (debug_mode) {
+        printf("Modo de depuração ativado - mostrando tokens e erros léxicos\n");
+        int token;
+        while ((token = yylex()) != 0) {
+            if (token == -1) {
+                // Erro léxico já foi reportado pelo analisador léxico
+                continue;
+            } else {
+                printf("Token: %d (%s) - Lexema: '%s'\n", token, token_to_string(token), yytext);
+            }
+        }
+        if (filename && yyin != stdin) {
+            fclose(yyin);
+        }
+        return 0;
     }
 
     // Executa o parser

@@ -2,12 +2,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-//#include "../../include/tokens/tokens.h"
 #include "ast/ast.h"
-#include "parser.tab.h"
+#include "../parser.tab.h"
 
 /* Variável definida por Bison */
 extern YYSTYPE yylval;
+
+/* Variáveis para tratamento de erros */
+int erro_lexico = 0;
+char mensagem_erro[256];
 %}
 
 /* Opções do Flex */
@@ -42,15 +45,24 @@ ESPACO      [ \t\n\r]
                     return NUMERO; /* Por enquanto, tratamos como o mesmo token */
                 }
 
-\"[^\"]*\"      {
+\"[^\"\n]*\"    {
                     yylval.sval = strdup(yytext);
                     return LITERAL_STRING;
                 }
 
-\'[^\']\' |
-\'([^\\']|\\[nrtbf0'\"\\])\' {
+\"[^\"\n]*$     {
+                    fprintf(stderr, "Erro léxico (linha %d): String não fechada '%s'. Falta aspas duplas de fechamento.\n", yylineno, yytext);
+                    return -1;
+                }
+
+'[^'\n]'|'\\[nrtbf0\\\']' {
                     yylval.sval = strdup(yytext);
                     return LITERAL_CHAR;
+                }
+
+'[^'\n]*$       {
+                    fprintf(stderr, "Erro léxico (linha %d): Caractere não fechado '%s'. Falta aspas simples de fechamento.\n", yylineno, yytext);
+                    return -1;
                 }
 
 "int"           { return TIPO_INTEIRO; }
@@ -122,15 +134,21 @@ ESPACO      [ \t\n\r]
 
 "principal"     { return PRINCIPAL; }
 
-
-
 {ID}            {
                     yylval.sval = strdup(yytext);
                     return IDENTIFICADOR;
                 }
 
 .               { 
-                    fprintf(stderr, "Caractere não reconhecido: %s\n", yytext); 
+                    if (yytext[0] == '@' || yytext[0] == '#' || yytext[0] == '$') {
+                        fprintf(stderr, "Erro léxico (linha %d): Símbolo especial '%s' não permitido. A linguagem não suporta estes caracteres.\n", yylineno, yytext);
+                    } else if (yytext[0] == '\\' && yytext[1] != '0' && yytext[1] != 'n' && yytext[1] != 't' && yytext[1] != 'r') {
+                        fprintf(stderr, "Erro léxico (linha %d): Sequência de escape inválida '%s'. Sequências válidas: \\n, \\t, \\r, \\0.\n", yylineno, yytext);
+                    } else if (yytext[0] == '"' || yytext[0] == '\'') {
+                        fprintf(stderr, "Erro léxico (linha %d): Aspas não fechadas ou mal formadas em '%s'. Verifique se todas as aspas estão balanceadas.\n", yylineno, yytext);
+                    } else {
+                        fprintf(stderr, "Erro léxico (linha %d): Caractere não reconhecido '%s'. Verifique se há símbolos inválidos no seu código.\n", yylineno, yytext);
+                    }
                     return -1;
                 }
 

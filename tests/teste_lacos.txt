@@ -1,0 +1,85 @@
+// Arquivo de teste para demonstrar mensagens de erro específicas para laços
+// Cada seção contém erros que acionarão diferentes mensagens no analisador léxico de laços
+
+inteiro principal() {
+    inteiro contador = 10;
+    
+    // 1. USO DE PALAVRAS-CHAVE EM INGLÊS
+    // Deve mostrar mensagem sugerindo usar 'enquanto' em vez de 'while'
+    while (contador > 0) {
+        contador--;
+    }
+    
+    // Deve mostrar mensagem sugerindo usar 'para' em vez de 'for'
+    for (inteiro i = 0; i < 10; i++) {
+        imprime(i);
+    }
+    
+    // Deve mostrar mensagem sugerindo usar 'faca' em vez de 'do'
+    do {
+        contador++;
+    } while (contador < 20);
+    
+    // Combinação de laços em inglês
+    for (inteiro j = 0; j < 5; j++) {
+        while (contador > j) {
+            contador--;
+        }
+    }
+    
+    // 2. COMBINAÇÃO DE PALAVRAS-CHAVE EM INGLÊS E PORTUGUÊS
+    // Mistura de 'for' com 'enquanto'
+    for (inteiro k = 0; k < 3; k++) {
+        enquanto (k < contador) {
+            contador--;
+        }
+    }
+    
+    // Mistura de 'while' com 'para'
+    while (contador > 0) {
+        para (inteiro m = 0; m < 3; m++) {
+            contador--;
+        }
+    }
+    
+    // 3. ESTRUTURAS DE CONTROLE ANINHADAS COM ERROS
+    if (contador > 5) {
+        while (contador > 3) {
+            for (inteiro n = 0; n < 2; n++) {
+                contador--;
+            }
+        }
+    } else {
+        do {
+            contador++;
+        } while (contador < 8);
+    }
+    
+    retorne 0;
+}
+    // Estes não devem gerar erros
+    enquanto (contador > 0) {
+        contador--;
+    }
+    
+    para (inteiro i = 0; i < 10; i++) {
+        imprime(i);
+    }
+    
+    faca {
+        contador++;
+    } ate (contador < 20);
+    
+    // 4. Uso de laços funcionais
+    mapear(lista, funcao);
+    filtrar(lista, condicao);
+    reduzir(lista, funcao, inicial);
+    
+    // 5. Uso de laços assíncronos
+    aguardar paralelo {
+        tarefa1();
+        tarefa2();
+    }
+    
+    retorne 0;
+}

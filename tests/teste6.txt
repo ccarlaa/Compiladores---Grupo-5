@@ -1,0 +1,75 @@
+// Arquivo de teste para demonstrar mensagens de erro léxico
+// Cada seção contém erros específicos que acionarão diferentes mensagens
+
+// 1. Erros de caracteres não reconhecidos
+inteiro principal() {
+    // Símbolos especiais não permitidos
+    inteiro @contador = 10;
+    inteiro #valor = 20;
+    real $preco = 30.5;
+    
+    // Sequências de escape inválidas
+    caractere letra1 = '\z';
+    caractere letra2 = '\y';
+    caractere letra3 = '\p';
+    
+    // 2. Erros de strings e caracteres
+    // Strings não fechadas
+    imprime("Esta string não tem aspas de fechamento;
+    imprime("Outra string sem fechamento
+    
+    // Caracteres não fechados
+    caractere c1 = 'A;
+    caractere c2 = 'B
+    
+    // 3. Erros de palavras-chave em inglês (laços)
+    // Uso de palavras-chave em inglês em vez de português
+    while (contador > 0) {
+        contador--;
+    }
+    
+    for (inteiro i = 0; i < 10; i++) {
+        imprime(i);
+    }
+    
+    do {
+        contador++;
+    } while (contador < 20);
+    
+    // 4. Erros de pontuação
+    // Uso de pontuação não implementada
+    inteiro x = 10 <=> 20; // Operador de comparação não implementado
+    
+    // 5. Caracteres inválidos aleatórios
+    inteiro resultado = 10 ^ 2; // Operador de potência não implementado
+    inteiro valor = 10 | 5; // Operador bit a bit não implementado
+    
+    retorne 0;
+}
+        contador--;
+    }
+    
+    for (inteiro i = 0; i < 10; i++) {
+        imprime(i);
+    }
+    
+    do {
+        contador++;
+    } while (contador < 20);
+    
+    // 4. Erros de pontuação
+    // Símbolo de pontuação inválido
+    inteiro x = 5 | 3;
+    
+    // Pontuação não implementada
+    inteiro y = 10:
+    
+    // Uso incorreto de operadores no contexto de pontuação
+    inteiro z = (5 + 3);
+    
+    // 5. Outros erros léxicos
+    // Caractere Unicode não suportado
+    texto = "Olá, mundo!";
+    
+    retorne 0;
+}
