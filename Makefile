@@ -1,38 +1,67 @@
 CC = gcc
-CFLAGS = -Wall -Iinclude
+CFLAGS = -Wall -Iinclude -Isrc/semantic -Isrc/ast
 FLEX = flex
 BISON = bison
 
-all: compilador.exe
+SRC = src
+OBJ = obj
 
-compilador.exe: main.o lex.yy.o parser.tab.o ast.o
-	$(CC) $(CFLAGS) -o compilador.exe main.o lex.yy.o parser.tab.o ast.o
+# Arquivos de origem
+LEXER = $(SRC)/lexer/lexer.l
+PARSER = $(SRC)/parser/parser.y
+MAIN = $(SRC)/main.c
+AST = $(SRC)/ast/ast.c
+TABELA = $(SRC)/semantic/tabela.c
+TIPOS = $(SRC)/semantic/tipos.c
 
-main.o: src/main.c parser.tab.h
-	$(CC) $(CFLAGS) -c src/main.c
+# Objetos
+OBJS = $(OBJ)/main.o $(OBJ)/lex.yy.o $(OBJ)/parser.tab.o $(OBJ)/ast.o $(OBJ)/tabela.o $(OBJ)/tipos.o
 
-lex.yy.o: lex.yy.c
-	$(CC) $(CFLAGS) -c lex.yy.c
+# Executável
+TARGET = compilador.exe
 
-parser.tab.o: parser.tab.c
-	$(CC) $(CFLAGS) -c parser.tab.c
+all: $(TARGET)
 
-ast.o: src/ast/ast.c
-	$(CC) $(CFLAGS) -c src/ast/ast.c
+$(TARGET): $(OBJS)
+	$(CC) $(CFLAGS) -o $@ $^
 
-lex.yy.c: src/lexer/lexer.l parser.tab.h
-	$(FLEX) src/lexer/lexer.l
+# Compilar arquivos .o com dependência de headers
+$(OBJ)/main.o: $(MAIN) parser.tab.h | $(OBJ)
+	$(CC) $(CFLAGS) -c $< -o $@
 
-parser.tab.c parser.tab.h: src/parser/parser.y
-	$(BISON) -d src/parser/parser.y
+$(OBJ)/ast.o: $(AST) | $(OBJ)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJ)/tabela.o: $(TABELA) | $(OBJ)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJ)/tipos.o: $(TIPOS) | $(OBJ)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJ)/parser.tab.o: parser.tab.c | $(OBJ)
+	$(CC) $(CFLAGS) -c parser.tab.c -o $@
+
+$(OBJ)/lex.yy.o: lex.yy.c | $(OBJ)
+	$(CC) $(CFLAGS) -c lex.yy.c -o $@
+
+# Geração do parser
+parser.tab.c parser.tab.h: $(PARSER)
+	$(BISON) -d -o parser.tab.c $<
+
+# Geração do scanner
+lex.yy.c: $(LEXER) parser.tab.h
+	$(FLEX) -o lex.yy.c $<
+
+# Diretório obj
+$(OBJ):
+	mkdir -p $(OBJ)
 
 clean:
-	rm -f *.o
-	rm -f *.exe
-	rm -f lex.yy.c
-	rm -f parser.tab.*
+	rm -f $(OBJ)/*.o
+	rm -f $(TARGET)
+	rm -f lex.yy.c parser.tab.*
 
-test: compilador.exe
-	./compilador.exe < tests/teste1.txt
+test: $(TARGET)
+	./$(TARGET) tests/teste1.txt
 
 .PHONY: all clean test

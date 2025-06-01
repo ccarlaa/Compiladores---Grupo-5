@@ -1,3 +1,4 @@
+#line 1 "lex.yy.c"
 
 #line 3 "lex.yy.c"
 
@@ -46,6 +47,7 @@ typedef int16_t flex_int16_t;
 typedef uint16_t flex_uint16_t;
 typedef int32_t flex_int32_t;
 typedef uint32_t flex_uint32_t;
+typedef uint64_t flex_uint64_t;
 #else
 typedef signed char flex_int8_t;
 typedef short int flex_int16_t;
@@ -154,7 +156,7 @@ typedef struct yy_buffer_state *YY_BUFFER_STATE;
 typedef size_t yy_size_t;
 #endif
 
-extern int yyleng;
+extern yy_size_t yyleng;
 
 extern FILE *yyin, *yyout;
 
@@ -171,7 +173,7 @@ extern FILE *yyin, *yyout;
      */
     #define  YY_LESS_LINENO(n) \
             do { \
-                int yyl;\
+                yy_size_t yyl;\
                 for ( yyl = n; yyl < yyleng; ++yyl )\
                     if ( yytext[yyl] == '\n' )\
                         --yylineno;\
@@ -216,7 +218,7 @@ struct yy_buffer_state
 	/* Number of characters read into yy_ch_buf, not including EOB
 	 * characters.
 	 */
-	int yy_n_chars;
+	yy_size_t yy_n_chars;
 
 	/* Whether we "own" the buffer - i.e., we know we created it,
 	 * and can realloc() it to grow it, and should free() it to
@@ -285,8 +287,8 @@ static YY_BUFFER_STATE * yy_buffer_stack = NULL; /**< Stack as an array. */
 
 /* yy_hold_char holds the character lost when yytext is formed. */
 static char yy_hold_char;
-static int yy_n_chars;		/* number of characters read into yy_ch_buf */
-int yyleng;
+static yy_size_t yy_n_chars;		/* number of characters read into yy_ch_buf */
+yy_size_t yyleng;
 
 /* Points to current character in buffer. */
 static char *yy_c_buf_p = NULL;
@@ -313,7 +315,7 @@ static void yy_init_buffer ( YY_BUFFER_STATE b, FILE *file  );
 
 YY_BUFFER_STATE yy_scan_buffer ( char *base, yy_size_t size  );
 YY_BUFFER_STATE yy_scan_string ( const char *yy_str  );
-YY_BUFFER_STATE yy_scan_bytes ( const char *bytes, int len  );
+YY_BUFFER_STATE yy_scan_bytes ( const char *bytes, yy_size_t len  );
 
 void *yyalloc ( yy_size_t  );
 void *yyrealloc ( void *, yy_size_t  );
@@ -369,7 +371,7 @@ static void yynoreturn yy_fatal_error ( const char* msg  );
  */
 #define YY_DO_BEFORE_ACTION \
 	(yytext_ptr) = yy_bp; \
-	yyleng = (int) (yy_cp - yy_bp); \
+	yyleng = (yy_size_t) (yy_cp - yy_bp); \
 	(yy_hold_char) = *yy_cp; \
 	*yy_cp = '\0'; \
 	(yy_c_buf_p) = yy_cp;
@@ -600,15 +602,16 @@ char *yytext;
 #include <stdlib.h>
 #include <string.h>
 //#include "../../include/tokens/tokens.h"
+#include "ast/ast.h"
 #include "parser.tab.h"
 
 /* Variável definida por Bison */
 extern YYSTYPE yylval;
-#line 608 "lex.yy.c"
+#line 610 "lex.yy.c"
 /* Opções do Flex */
 #define YY_NO_INPUT 1
 /* Definições regulares */
-#line 612 "lex.yy.c"
+#line 614 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -647,7 +650,7 @@ FILE *yyget_out ( void );
 
 void yyset_out  ( FILE * _out_str  );
 
-			int yyget_leng ( void );
+			yy_size_t yyget_leng ( void );
 
 char *yyget_text ( void );
 
@@ -714,7 +717,7 @@ static int input ( void );
 	if ( YY_CURRENT_BUFFER_LVALUE->yy_is_interactive ) \
 		{ \
 		int c = '*'; \
-		int n; \
+		yy_size_t n; \
 		for ( n = 0; n < max_size && \
 			     (c = getc( yyin )) != EOF && c != '\n'; ++n ) \
 			buf[n] = (char) c; \
@@ -823,10 +826,10 @@ YY_DECL
 		}
 
 	{
-#line 26 "src/lexer/lexer.l"
+#line 27 "src/lexer/lexer.l"
 
 
-#line 830 "lex.yy.c"
+#line 832 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -874,7 +877,7 @@ yy_find_action:
 
 		if ( yy_act != YY_END_OF_BUFFER && yy_rule_can_match_eol[yy_act] )
 			{
-			int yyl;
+			yy_size_t yyl;
 			for ( yyl = 0; yyl < yyleng; ++yyl )
 				if ( yytext[yyl] == '\n' )
 					
@@ -896,23 +899,23 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 28 "src/lexer/lexer.l"
+#line 29 "src/lexer/lexer.l"
 { /* Ignora espaços em branco e quebras de linha */ }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 30 "src/lexer/lexer.l"
+#line 31 "src/lexer/lexer.l"
 { /* Ignora comentários de linha */ }
 	YY_BREAK
 case 3:
 /* rule 3 can match eol */
 YY_RULE_SETUP
-#line 32 "src/lexer/lexer.l"
+#line 33 "src/lexer/lexer.l"
 { /* Ignora comentários de bloco */ }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 34 "src/lexer/lexer.l"
+#line 35 "src/lexer/lexer.l"
 { 
                     yylval.ival = atoi(yytext); 
                     return NUMERO; 
@@ -920,7 +923,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 39 "src/lexer/lexer.l"
+#line 40 "src/lexer/lexer.l"
 {
                     yylval.fval = atof(yytext);
                     return NUMERO; /* Por enquanto, tratamos como o mesmo token */
@@ -929,7 +932,7 @@ YY_RULE_SETUP
 case 6:
 /* rule 6 can match eol */
 YY_RULE_SETUP
-#line 44 "src/lexer/lexer.l"
+#line 45 "src/lexer/lexer.l"
 {
                     yylval.sval = strdup(yytext);
                     return LITERAL_STRING;
@@ -937,11 +940,11 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 /* rule 7 can match eol */
-#line 50 "src/lexer/lexer.l"
+#line 51 "src/lexer/lexer.l"
 case 8:
 /* rule 8 can match eol */
 YY_RULE_SETUP
-#line 50 "src/lexer/lexer.l"
+#line 51 "src/lexer/lexer.l"
 {
                     yylval.sval = strdup(yytext);
                     return LITERAL_CHAR;
@@ -949,307 +952,307 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 55 "src/lexer/lexer.l"
+#line 56 "src/lexer/lexer.l"
 { return TIPO_INTEIRO; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 56 "src/lexer/lexer.l"
+#line 57 "src/lexer/lexer.l"
 { return TIPO_REAL; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 57 "src/lexer/lexer.l"
+#line 58 "src/lexer/lexer.l"
 { return TIPO_DUPLO; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 58 "src/lexer/lexer.l"
+#line 59 "src/lexer/lexer.l"
 { return TIPO_CARACTERE; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 59 "src/lexer/lexer.l"
+#line 60 "src/lexer/lexer.l"
 { return TIPO_VAZIO; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 60 "src/lexer/lexer.l"
+#line 61 "src/lexer/lexer.l"
 { return TIPO_LONGO; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 61 "src/lexer/lexer.l"
+#line 62 "src/lexer/lexer.l"
 { return TIPO_CURTO; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 62 "src/lexer/lexer.l"
+#line 63 "src/lexer/lexer.l"
 { return TIPO_SEM_SINAL; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 63 "src/lexer/lexer.l"
+#line 64 "src/lexer/lexer.l"
 { return TIPO_COM_SINAL; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 65 "src/lexer/lexer.l"
+#line 66 "src/lexer/lexer.l"
 { return SE; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 66 "src/lexer/lexer.l"
+#line 67 "src/lexer/lexer.l"
 { return SENAO; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 67 "src/lexer/lexer.l"
+#line 68 "src/lexer/lexer.l"
 { return ENQUANTO; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 68 "src/lexer/lexer.l"
+#line 69 "src/lexer/lexer.l"
 { return PARA; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 69 "src/lexer/lexer.l"
+#line 70 "src/lexer/lexer.l"
 { return FACA; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 70 "src/lexer/lexer.l"
+#line 71 "src/lexer/lexer.l"
 { return RETORNE; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 71 "src/lexer/lexer.l"
+#line 72 "src/lexer/lexer.l"
 { return QUEBRA; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 72 "src/lexer/lexer.l"
+#line 73 "src/lexer/lexer.l"
 { return CONTINUE; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 74 "src/lexer/lexer.l"
+#line 75 "src/lexer/lexer.l"
 { return ESTRUTURA; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 75 "src/lexer/lexer.l"
+#line 76 "src/lexer/lexer.l"
 { return UNIAO; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 76 "src/lexer/lexer.l"
+#line 77 "src/lexer/lexer.l"
 { return ENUM; }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 77 "src/lexer/lexer.l"
+#line 78 "src/lexer/lexer.l"
 { return CONST; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 78 "src/lexer/lexer.l"
+#line 79 "src/lexer/lexer.l"
 { return ESTATICO; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 79 "src/lexer/lexer.l"
+#line 80 "src/lexer/lexer.l"
 { return EXTERNO; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 80 "src/lexer/lexer.l"
+#line 81 "src/lexer/lexer.l"
 { return REGISTRO; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 81 "src/lexer/lexer.l"
+#line 82 "src/lexer/lexer.l"
 { return TYPEDEF; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 83 "src/lexer/lexer.l"
+#line 84 "src/lexer/lexer.l"
 { return ESCOLHA; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 84 "src/lexer/lexer.l"
+#line 85 "src/lexer/lexer.l"
 { return CASO; }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 85 "src/lexer/lexer.l"
+#line 86 "src/lexer/lexer.l"
 { return PADRAO; }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 87 "src/lexer/lexer.l"
+#line 88 "src/lexer/lexer.l"
 { return MAIS_IGUAL; }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 88 "src/lexer/lexer.l"
+#line 89 "src/lexer/lexer.l"
 { return MENOS_IGUAL; }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 89 "src/lexer/lexer.l"
+#line 90 "src/lexer/lexer.l"
 { return MULT_IGUAL; }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 90 "src/lexer/lexer.l"
+#line 91 "src/lexer/lexer.l"
 { return DIV_IGUAL; }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 91 "src/lexer/lexer.l"
+#line 92 "src/lexer/lexer.l"
 { return INCREMENTO; }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 92 "src/lexer/lexer.l"
+#line 93 "src/lexer/lexer.l"
 { return DECREMENTO; }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 94 "src/lexer/lexer.l"
+#line 95 "src/lexer/lexer.l"
 { return IGUAL_IGUAL; }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 95 "src/lexer/lexer.l"
+#line 96 "src/lexer/lexer.l"
 { return DIFERENTE; }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 96 "src/lexer/lexer.l"
+#line 97 "src/lexer/lexer.l"
 { return MENOR; }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 97 "src/lexer/lexer.l"
+#line 98 "src/lexer/lexer.l"
 { return MAIOR; }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 98 "src/lexer/lexer.l"
+#line 99 "src/lexer/lexer.l"
 { return MENOR_IGUAL; }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 99 "src/lexer/lexer.l"
+#line 100 "src/lexer/lexer.l"
 { return MAIOR_IGUAL; }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 100 "src/lexer/lexer.l"
+#line 101 "src/lexer/lexer.l"
 { return E_LOGICO; }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 101 "src/lexer/lexer.l"
+#line 102 "src/lexer/lexer.l"
 { return OU_LOGICO; }
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 102 "src/lexer/lexer.l"
+#line 103 "src/lexer/lexer.l"
 { return NAO_LOGICO; }
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 104 "src/lexer/lexer.l"
+#line 105 "src/lexer/lexer.l"
 { return SOMA; }
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 105 "src/lexer/lexer.l"
+#line 106 "src/lexer/lexer.l"
 { return SUBTRACAO; }
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 106 "src/lexer/lexer.l"
+#line 107 "src/lexer/lexer.l"
 { return MULTIPLICACAO; }
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 107 "src/lexer/lexer.l"
+#line 108 "src/lexer/lexer.l"
 { return DIVISAO; }
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 108 "src/lexer/lexer.l"
+#line 109 "src/lexer/lexer.l"
 { return MODULO; }
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 109 "src/lexer/lexer.l"
+#line 110 "src/lexer/lexer.l"
 { return IGUAL; }
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 110 "src/lexer/lexer.l"
+#line 111 "src/lexer/lexer.l"
 { return ABRE_PAREN; }
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 111 "src/lexer/lexer.l"
+#line 112 "src/lexer/lexer.l"
 { return FECHA_PAREN; }
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 113 "src/lexer/lexer.l"
+#line 114 "src/lexer/lexer.l"
 { return ABRE_CHAVE; }
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 114 "src/lexer/lexer.l"
+#line 115 "src/lexer/lexer.l"
 { return FECHA_CHAVE; }
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-#line 115 "src/lexer/lexer.l"
+#line 116 "src/lexer/lexer.l"
 { return ABRE_COLCHETE; }
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 116 "src/lexer/lexer.l"
+#line 117 "src/lexer/lexer.l"
 { return FECHA_COLCHETE; }
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 117 "src/lexer/lexer.l"
+#line 118 "src/lexer/lexer.l"
 { return PONTO_E_VIRGULA; }
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 118 "src/lexer/lexer.l"
+#line 119 "src/lexer/lexer.l"
 { return VIRGULA; }
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
-#line 119 "src/lexer/lexer.l"
+#line 120 "src/lexer/lexer.l"
 { return PONTO; }
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
-#line 120 "src/lexer/lexer.l"
+#line 121 "src/lexer/lexer.l"
 { return DOIS_PONTOS; }
 	YY_BREAK
 case 68:
 YY_RULE_SETUP
-#line 122 "src/lexer/lexer.l"
+#line 123 "src/lexer/lexer.l"
 { return PRINCIPAL; }
 	YY_BREAK
 case 69:
 YY_RULE_SETUP
-#line 126 "src/lexer/lexer.l"
+#line 127 "src/lexer/lexer.l"
 {
                     yylval.sval = strdup(yytext);
                     return IDENTIFICADOR;
@@ -1257,7 +1260,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 70:
 YY_RULE_SETUP
-#line 131 "src/lexer/lexer.l"
+#line 132 "src/lexer/lexer.l"
 { 
                     fprintf(stderr, "Caractere não reconhecido: %s\n", yytext); 
                     return -1;
@@ -1265,10 +1268,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 71:
 YY_RULE_SETUP
-#line 136 "src/lexer/lexer.l"
+#line 137 "src/lexer/lexer.l"
 ECHO;
 	YY_BREAK
-#line 1272 "lex.yy.c"
+#line 1274 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1455,7 +1458,7 @@ static int yy_get_next_buffer (void)
 
 	else
 		{
-			int num_to_read =
+			yy_size_t num_to_read =
 			YY_CURRENT_BUFFER_LVALUE->yy_buf_size - number_to_move - 1;
 
 		while ( num_to_read <= 0 )
@@ -1469,7 +1472,7 @@ static int yy_get_next_buffer (void)
 
 			if ( b->yy_is_our_buffer )
 				{
-				int new_size = b->yy_buf_size * 2;
+				yy_size_t new_size = b->yy_buf_size * 2;
 
 				if ( new_size <= 0 )
 					b->yy_buf_size += b->yy_buf_size / 8;
@@ -1527,7 +1530,7 @@ static int yy_get_next_buffer (void)
 
 	if (((yy_n_chars) + number_to_move) > YY_CURRENT_BUFFER_LVALUE->yy_buf_size) {
 		/* Extend the array by 50%, plus the number we really need. */
-		int new_size = (yy_n_chars) + number_to_move + ((yy_n_chars) >> 1);
+		yy_size_t new_size = (yy_n_chars) + number_to_move + ((yy_n_chars) >> 1);
 		YY_CURRENT_BUFFER_LVALUE->yy_ch_buf = (char *) yyrealloc(
 			(void *) YY_CURRENT_BUFFER_LVALUE->yy_ch_buf, (yy_size_t) new_size  );
 		if ( ! YY_CURRENT_BUFFER_LVALUE->yy_ch_buf )
@@ -1630,7 +1633,7 @@ static int yy_get_next_buffer (void)
 
 		else
 			{ /* need more input */
-			int offset = (int) ((yy_c_buf_p) - (yytext_ptr));
+			yy_size_t offset = (yy_c_buf_p) - (yytext_ptr);
 			++(yy_c_buf_p);
 
 			switch ( yy_get_next_buffer(  ) )
@@ -2004,12 +2007,12 @@ YY_BUFFER_STATE yy_scan_string (const char * yystr )
  * 
  * @return the newly allocated buffer state object.
  */
-YY_BUFFER_STATE yy_scan_bytes  (const char * yybytes, int  _yybytes_len )
+YY_BUFFER_STATE yy_scan_bytes  (const char * yybytes, yy_size_t  _yybytes_len )
 {
 	YY_BUFFER_STATE b;
 	char *buf;
 	yy_size_t n;
-	int i;
+	yy_size_t i;
     
 	/* Get memory for full buffer, including space for trailing EOB's. */
 	n = (yy_size_t) (_yybytes_len + 2);
@@ -2051,7 +2054,7 @@ static void yynoreturn yy_fatal_error (const char* msg )
 	do \
 		{ \
 		/* Undo effects of setting up yytext. */ \
-        int yyless_macro_arg = (n); \
+        yy_size_t yyless_macro_arg = (n); \
         YY_LESS_LINENO(yyless_macro_arg);\
 		yytext[yyleng] = (yy_hold_char); \
 		(yy_c_buf_p) = yytext + yyless_macro_arg; \
@@ -2091,7 +2094,7 @@ FILE *yyget_out  (void)
 /** Get the length of the current token.
  * 
  */
-int yyget_leng  (void)
+yy_size_t yyget_leng  (void)
 {
         return yyleng;
 }
@@ -2244,6 +2247,6 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 136 "src/lexer/lexer.l"
+#line 137 "src/lexer/lexer.l"
 
 
