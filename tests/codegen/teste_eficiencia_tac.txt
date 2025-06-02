@@ -1,0 +1,48 @@
+// Teste de eficiência do código intermediário TAC
+int main() {
+    int a = 10;
+    int b = 20;
+    int c = 30;
+    int i = 0;
+    int resultado = 0;
+    
+    // Bloco de código com muitas operações temporárias
+    // Deve gerar múltiplas instruções TAC com temporários
+    resultado = ((a + b) * (c - a) + (b * c)) / ((a + c) - (b - a));
+    
+    // Série de atribuições em cascata
+    // Teste para verificar reutilização de temporários
+    int t1 = a + b;
+    int t2 = t1 + c;
+    int t3 = t2 + a;
+    int t4 = t3 + b;
+    int t5 = t4 + c;
+    
+    // Loop com muitas operações
+    // Deve gerar código TAC com saltos e temporários
+    while (i < 100) {
+        if (i % 2 == 0) {
+            resultado = resultado + (i * a);
+        } else {
+            resultado = resultado - (i * b);
+        }
+        
+        if (resultado > 1000) {
+            resultado = resultado / 2;
+        }
+        
+        i = i + 1;
+    }
+    
+    // Expressões grandes com múltiplas subexpressões
+    // Teste para verificar decomposição em operações de três endereços
+    int x = ((a + b) * c) + ((b - a) * c) + ((c + a) * b);
+    int y = ((a * b * c) + (a * b) + (b * c) + (a * c)) / (a + b + c);
+    
+    // Acesso a array com índices complexos
+    int array[100];
+    array[a + b % c] = (a * b) + (c / a);
+    resultado = array[b - a % c] * array[c % (a + b)];
+    
+    return resultado;
+}

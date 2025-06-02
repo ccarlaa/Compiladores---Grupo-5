@@ -1,0 +1,83 @@
+// Teste integrado de vários recursos para o código intermediário
+int soma_array(int arr[], int tamanho) {
+    int soma = 0;
+    int i = 0;
+    
+    while (i < tamanho) {
+        soma = soma + arr[i];
+        i = i + 1;
+    }
+    
+    return soma;
+}
+
+int fibonacci(int n) {
+    if (n <= 1) {
+        return n;
+    }
+    
+    return fibonacci(n - 1) + fibonacci(n - 2);
+}
+
+real calcula_media(int valores[], int n) {
+    int soma = soma_array(valores, n);
+    real media = soma;
+    return media / n;
+}
+
+int busca_valor(int arr[], int tamanho, int valor) {
+    int i = 0;
+    
+    while (i < tamanho) {
+        if (arr[i] == valor) {
+            return i;
+        }
+        i = i + 1;
+    }
+    
+    return -1;  // Valor não encontrado
+}
+
+int main() {
+    // Declaração e inicialização de array
+    int numeros[10];
+    int i = 0;
+    
+    while (i < 10) {
+        numeros[i] = fibonacci(i);
+        i = i + 1;
+    }
+    
+    // Chamada de funções com arrays e condicionais
+    int soma = soma_array(numeros, 10);
+    real media = calcula_media(numeros, 10);
+    
+    // Busca e tomada de decisão
+    int indice = busca_valor(numeros, 10, 5);
+    int resultado = 0;
+    
+    if (indice >= 0) {
+        // Valor encontrado
+        resultado = numeros[indice] * 2;
+    } else {
+        // Valor não encontrado
+        resultado = -1;
+    }
+    
+    // Cálculos complexos combinando vários elementos
+    i = 0;
+    int total = 0;
+    
+    while (i < 5) {
+        if (numeros[i] % 2 == 0) {
+            // Número par
+            total = total + numeros[i] * 3;
+        } else {
+            // Número ímpar
+            total = total + numeros[i] * 2;
+        }
+        i = i + 1;
+    }
+    
+    return total;
+}

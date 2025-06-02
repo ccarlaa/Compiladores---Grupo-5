@@ -1,0 +1,53 @@
+// Teste de estruturas condicionais para o código intermediário
+int main() {
+    int a = 10;
+    int b = 20;
+    
+    // If simples
+    if (a < b) {
+        int c = a + b;
+    }
+    
+    // If-else
+    if (a > b) {
+        int d = a - b;
+    } else {
+        int e = b - a;
+    }
+    
+    // If aninhado
+    if (a == 10) {
+        if (b == 20) {
+            int f = a * b;
+        } else {
+            int g = a / b;
+        }
+    }
+    
+    // Expressões relacionais
+    if (a < b) {
+        int h = 1;
+    }
+    
+    if (a <= b) {
+        int i = 2;
+    }
+    
+    if (a > b) {
+        int j = 3;
+    }
+    
+    if (a >= b) {
+        int k = 4;
+    }
+    
+    if (a == b) {
+        int l = 5;
+    }
+    
+    if (a != b) {
+        int m = 6;
+    }
+    
+    return 0;
+}

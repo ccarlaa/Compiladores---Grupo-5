@@ -1,0 +1,24 @@
+// Teste de expressões aritméticas para o código intermediário
+int main() {
+    int a = 5;
+    int b = 10;
+    int c = 15;
+    
+    // Expressões simples
+    int soma = a + b;
+    int subtracao = c - a;
+    int multiplicacao = a * b;
+    int divisao = c / a;
+    int modulo = c % a;
+    
+    // Expressões complexas
+    int expr1 = a + b * c;
+    int expr2 = (a + b) * c;
+    int expr3 = a * b + c * (a + b);
+    
+    // Expressões com constantes
+    int expr4 = 100 + a * 5;
+    int expr5 = 50 / (2 + 3);
+    
+    return 0;
+}

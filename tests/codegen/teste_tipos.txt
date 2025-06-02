@@ -1,0 +1,29 @@
+// Teste de tipos de dados para o código intermediário
+int main() {
+    // Variáveis de diferentes tipos
+    int a = 10;
+    real b = 3.14;
+    
+    // Operações com mesmo tipo
+    int soma_int = a + 5;
+    real soma_real = b + 2.5;
+    
+    // Operações mistas (que devem gerar conversões implícitas)
+    real mista1 = a + b;  // int + real -> real
+    real mista2 = b * a;  // real * int -> real
+    
+    // Atribuições que exigem conversão
+    int truncado = b;     // real para int (truncamento)
+    real promovido = a;   // int para real (promoção)
+    
+    // Comparações entre tipos diferentes
+    if (a == b) {         // Compara int com real
+        int c = 1;
+    }
+    
+    if (a < b) {          // Compara int com real
+        int d = 2;
+    }
+    
+    return 0;
+}
