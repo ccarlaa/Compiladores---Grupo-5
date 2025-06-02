@@ -72,6 +72,9 @@ executar_teste "$DIR_RAIZ/tests/testes_lexicos/teste_pontuacao.txt" "Erros de Po
 echo -e "${AMARELO}Iniciando testes sintáticos...${RESET}\n"
 executar_teste "$DIR_RAIZ/tests/teste6.txt" "Teste Sintático" "normal"
 
+# Executar testes sintáticos e semânticos
+executar_teste "$DIR_RAIZ/tests/testes_sint_sem/teste_erros_sint_sem.txt" "Erros Sintáticos e Semânticos Gerais" "debug"
+
 # Executar testes de estruturas de controle
 echo -e "${AMARELO}Iniciando testes de estruturas de controle...${RESET}\n"
 executar_teste "$DIR_RAIZ/tests/teste_lacos.txt" "Estruturas de Controle" "normal"

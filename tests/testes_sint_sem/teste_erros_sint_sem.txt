@@ -1,0 +1,357 @@
+// Arquivo de teste para demonstrar todos os erros sintáticos e semânticos possíveis
+// Cada seção contém erros específicos que acionarão diferentes mensagens do parser
+
+// ===================== ERROS SINTÁTICOS =====================
+
+// 1. ERROS NA ESTRUTURA GERAL DO PROGRAMA
+// Programa sem função principal
+inteiro x = 10;
+real y = 20.5;
+// (sem função principal)
+
+// 2. ERROS EM DECLARAÇÕES DE VARIÁVEIS
+inteiro principal() {
+    // Falta nome da variável após tipo
+    inteiro = 10;
+    
+    // Falta ponto e vírgula
+    inteiro idade = 25
+    real altura = 1.75
+    
+    // Falta inicialização após '='
+    inteiro contador = ;
+    
+    // Tipo inválido
+    xyz variavel = 10;
+}
+
+// 3. ERROS EM DECLARAÇÕES DE FUNÇÕES
+// Falta parênteses
+inteiro minhaFuncao {
+    retorne 0;
+}
+
+// Parênteses não balanceados
+real calcular( inteiro a, real b {
+    retorne a + b;
+}
+
+// Erro na lista de parâmetros
+inteiro somar(inteiro a, , real c) {
+    retorne a + c;
+}
+
+// 4. ERROS EM ESTRUTURAS
+estrutura Pessoa {
+    // Falta tipo do campo
+    nome;
+    inteiro idade
+    // Falta ponto e vírgula
+    real altura
+}
+
+estrutura Carro {
+    // Campo malformado
+    inteiro ano = 2020;  // Não pode inicializar em estrutura
+}
+
+// 5. ERROS EM BLOCOS DE COMANDOS
+inteiro principal() {
+    // Chaves não balanceadas
+    {
+        inteiro x = 10;
+        // Falta fechar chave
+    
+    // Bloco sem abertura
+    inteiro y = 20;
+    }
+    
+    retorne 0;
+}
+
+// 6. ERROS EM COMANDOS SE (IF)
+inteiro testarSe() {
+    inteiro x = 10;
+    
+    // Falta parênteses na condição
+    se x > 5 {
+        x = x + 1;
+    }
+    
+    // Expressão inválida na condição
+    se (x ++ == 5) {
+        x = 0;
+    }
+    
+    // Parênteses não balanceados
+    se (x > 5 {
+        x = x - 1;
+    }
+    
+    retorne x;
+}
+
+// 7. ERROS EM COMANDOS ENQUANTO (WHILE)
+inteiro testarEnquanto() {
+    inteiro contador = 0;
+    
+    // Falta parênteses
+    enquanto contador < 10 {
+        contador++;
+    }
+    
+    // Expressão malformada
+    enquanto (contador + + < 20) {
+        contador++;
+    }
+    
+    retorne contador;
+}
+
+// 8. ERROS EM COMANDOS PARA (FOR)
+inteiro testarPara() {
+    // Estrutura malformada do for
+    para (inteiro i = 0 i < 10; i++) {
+        // Falta ponto e vírgula
+    }
+    
+    // Inicialização inválida
+    para (; i < 5; i++) {
+        // Variável não declarada
+    }
+    
+    // Parênteses não balanceados
+    para (inteiro j = 0; j < 3; j++ {
+        
+    }
+    
+    retorne 0;
+}
+
+// 9. ERROS EM COMANDOS FACA-ENQUANTO (DO-WHILE)
+inteiro testarFacaEnquanto() {
+    inteiro x = 0;
+    
+    // Estrutura incompleta
+    faca {
+        x++;
+    } // Falta 'enquanto'
+    
+    // Condição malformada
+    faca {
+        x++;
+    } enquanto (x + + < 10);
+    
+    retorne x;
+}
+
+// 10. ERROS EM COMANDOS SWITCH (ESCOLHA)
+inteiro testarSwitch() {
+    inteiro opcao = 1;
+    
+    // Expressão inválida
+    escolha (opcao + +) {
+        caso 1:
+            opcao = 2;
+        padrao:
+            opcao = 0;
+    }
+    
+    // Valor inválido no caso
+    escolha (opcao) {
+        caso 1.5:  // Deve ser inteiro
+            opcao = 2;
+        caso :     // Falta valor
+            opcao = 3;
+    }
+    
+    retorne opcao;
+}
+
+// 11. ERROS EM EXPRESSÕES
+inteiro testarExpressoes() {
+    inteiro a = 10, b = 20;
+    
+    // Operadores malformados
+    inteiro resultado1 = a + + b;
+    inteiro resultado2 = a * * b;
+    inteiro resultado3 = a = = b;
+    
+    // Parênteses não balanceados
+    inteiro resultado4 = (a + b * 2;
+    inteiro resultado5 = a + (b - 3));
+    
+    // Expressão incompleta
+    inteiro resultado6 = a + ;
+    inteiro resultado7 = * b;
+    
+    retorne resultado1;
+}
+
+// 12. ERROS EM COMANDOS RETORNE (RETURN)
+inteiro funcaoComRetorno() {
+    // Retorno malformado
+    retorne 10 + ;
+    retorne ;  // OK para função void, mas estamos em inteiro
+}
+
+// ===================== ERROS SEMÂNTICOS =====================
+
+// 13. VARIÁVEIS NÃO DECLARADAS
+inteiro testarVariaveisNaoDeclaradas() {
+    inteiro x = 10;
+    
+    // Uso de variável não declarada
+    y = x + 5;
+    z = y * 2;
+    
+    // Em expressões
+    inteiro resultado = x + variavel_inexistente;
+    
+    retorne resultado;
+}
+
+// 14. REDECLARAÇÃO DE VARIÁVEIS
+inteiro testarRedeclaracao() {
+    inteiro contador = 0;
+    inteiro contador = 10;  // Redeclaração da mesma variável
+    
+    real valor = 3.14;
+    inteiro valor = 100;    // Redeclaração com tipo diferente
+    
+    retorne contador;
+}
+
+// 15. INCOMPATIBILIDADE DE TIPOS EM ATRIBUIÇÕES
+inteiro testarTipos() {
+    inteiro numero = 42;
+    real decimal = 3.14;
+    
+    // Atribuições incompatíveis (dependendo da implementação)
+    numero = decimal;       // real para inteiro
+    decimal = numero;       // inteiro para real (pode ser válido)
+    
+    // Inicialização com tipo incompatível
+    inteiro x = 10.5;       // real para inteiro
+    real y = "texto";       // string para real
+    
+    retorne numero;
+}
+
+// 16. INCOMPATIBILIDADE DE TIPOS EM OPERAÇÕES
+inteiro testarOperacoes() {
+    inteiro a = 10;
+    real b = 5.5;
+    
+    // Operações entre tipos incompatíveis
+    inteiro resultado1 = a + b;  // int + real
+    real resultado2 = a * b;     // int * real
+    
+    // Comparações com tipos incompatíveis
+    se (a == b) {
+        a = 0;
+    }
+    
+    retorne resultado1;
+}
+
+// 17. CONDIÇÕES COM TIPOS INADEQUADOS
+inteiro testarCondicoes() {
+    real valor = 10.5;
+    
+    // Condições que não são inteiras
+    se (valor) {           // real em condição
+        valor = 0.0;
+    }
+    
+    enquanto (valor) {     // real em condição
+        valor = valor - 1.0;
+    }
+    
+    faca {
+        valor = valor + 1.0;
+    } enquanto (valor);    // real em condição
+    
+    para (inteiro i = 0; valor; i++) {  // real em condição
+        valor = valor - 0.5;
+    }
+    
+    retorne 0;
+}
+
+// 18. ERROS EM SWITCH COM TIPOS INADEQUADOS
+inteiro testarSwitchSemantico() {
+    real opcao = 1.5;
+    
+    // Switch com expressão não-inteira
+    escolha (opcao) {
+        caso 1:
+            opcao = 2.0;
+        padrao:
+            opcao = 0.0;
+    }
+    
+    inteiro escolha = 1;
+    real caso_valor = 1.5;
+    
+    // Caso com valor não-inteiro
+    escolha (escolha) {
+        caso caso_valor:  // real em caso
+            escolha = 2;
+        padrao:
+            escolha = 0;
+    }
+    
+    retorne escolha;
+}
+
+// 19. USO DE IDENTIFICADORES NÃO DECLARADOS EM CASOS
+inteiro testarCasosSemanticos() {
+    inteiro opcao = 1;
+    
+    escolha (opcao) {
+        caso CONSTANTE_NAO_DECLARADA:  // Identificador não declarado
+            opcao = 2;
+        caso outra_constante:          // Identificador não declarado
+            opcao = 3;
+        padrao:
+            opcao = 0;
+    }
+    
+    retorne opcao;
+}
+
+// 20. ERROS EM LOOPS FOR
+inteiro testarForSemantico() {
+    // Redeclaração da variável do for
+    inteiro i = 5;
+    para (inteiro i = 0; i < 10; i++) {  // Redeclaração de 'i'
+        i = i + 1;
+    }
+    
+    // Tipos incompatíveis na inicialização
+    para (inteiro j = 3.14; j < 10; j++) {  // real para inteiro
+        j = j + 1;
+    }
+    
+    // Condição não-inteira
+    real condicao = 5.5;
+    para (inteiro k = 0; condicao; k++) {   // real em condição
+        condicao = condicao - 1.0;
+    }
+    
+    retorne i;
+}
+
+// 21. PROGRAMA PRINCIPAL PARA TESTAR COMPILAÇÃO
+inteiro principal() {
+    // Este é um programa principal válido para testar os erros acima
+    inteiro resultado = 0;
+    
+    // Chama funções com erros (se elas compilarem)
+    // resultado = testarVariaveisNaoDeclaradas();
+    // resultado = testarRedeclaracao();
+    // resultado = testarTipos();
+    
+    retorne resultado;
+}

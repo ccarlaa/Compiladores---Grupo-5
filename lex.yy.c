@@ -1,6 +1,5 @@
-#line 2 "lex.yy.c"
 
-#line 4 "lex.yy.c"
+#line 3 "lex.yy.c"
 
 #define  YY_INT_ALIGNED short int
 
@@ -615,11 +614,11 @@ extern YYSTYPE yylval;
 /* Variáveis para tratamento de erros */
 int erro_lexico = 0;
 char mensagem_erro[256];
-#line 619 "lex.yy.c"
+#line 618 "lex.yy.c"
 /* Opções do Flex */
 #define YY_NO_INPUT 1
 /* Definições regulares */
-#line 623 "lex.yy.c"
+#line 622 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -837,7 +836,7 @@ YY_DECL
 #line 30 "src/lexer/lexer.l"
 
 
-#line 841 "lex.yy.c"
+#line 840 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -1304,7 +1303,7 @@ YY_RULE_SETUP
 #line 155 "src/lexer/lexer.l"
 ECHO;
 	YY_BREAK
-#line 1308 "lex.yy.c"
+#line 1307 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
