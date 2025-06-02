@@ -72,8 +72,23 @@ QUEBRA_LINHA \n
 
 /* Erro para caracteres não reconhecidos */
 .            { 
-    printf("Erro léxico na linha %d: caractere não reconhecido '%s'\n", 
-           line_number, yytext);
+    if (yytext[0] == '@' || yytext[0] == '#' || yytext[0] == '$') {
+        printf("Erro léxico na linha %d: Símbolo especial '%s' não permitido em construções de laços.\n", 
+               line_number, yytext);
+    } else if (strcmp(yytext, "while") == 0) {
+        printf("Erro léxico na linha %d: Palavra-chave em inglês '%s' detectada. Use 'enquanto' em vez de 'while'.\n", 
+               line_number, yytext);
+    } else if (strcmp(yytext, "for") == 0) {
+        printf("Erro léxico na linha %d: Palavra-chave em inglês '%s' detectada. Use 'para' em vez de 'for'.\n", 
+               line_number, yytext);
+    } else if (strcmp(yytext, "do") == 0) {
+        printf("Erro léxico na linha %d: Palavra-chave em inglês '%s' detectada. Use 'faca' em vez de 'do'.\n", 
+               line_number, yytext);
+    } else {
+        printf("Erro léxico na linha %d: caractere não reconhecido '%s'. Verifique a sintaxe do seu código de laço.\n", 
+               line_number, yytext);
+    }
+    return -1; /* Retorna código de erro para o parser */
 }
 
 %%
