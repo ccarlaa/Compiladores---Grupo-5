@@ -4,6 +4,8 @@
 #include "ast/ast.h"
 #include "../parser.tab.h"
 #include "semantic/tabela.h"
+#include "codegen/codegen.h"
+#include "codegen/backend.h"
 
 // Declarações externas do Flex e Bison
 extern FILE *yyin;
@@ -94,12 +96,25 @@ void yyerror(const char *s) {
 int main(int argc, char **argv) {
     inicializa_tabela();
     int debug_mode = 0;
+    int codegen_mode = 0;
+    int optimize_mode = 0;
+    int backend_mode = 0;
     char *filename = NULL;
+    char *output_file = NULL;
     
     // Verificar argumentos
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "-d") == 0 || strcmp(argv[i], "--debug") == 0) {
             debug_mode = 1;
+        } else if (strcmp(argv[i], "-t") == 0 || strcmp(argv[i], "--tac") == 0) {
+            codegen_mode = 1;
+        } else if (strcmp(argv[i], "-o") == 0 || strcmp(argv[i], "--optimize") == 0) {
+            optimize_mode = 1;
+        } else if (strcmp(argv[i], "-b") == 0 || strcmp(argv[i], "--backend") == 0) {
+            backend_mode = 1;
+        } else if (strcmp(argv[i], "-out") == 0 && i + 1 < argc) {
+            output_file = argv[i + 1];
+            i++; // Pular o próximo argumento, que é o nome do arquivo
         } else {
             filename = argv[i];
         }
@@ -147,9 +162,77 @@ int main(int argc, char **argv) {
             printf("\n--- Impressão da AST ---\n");
             print_ast(ast_root, 0);
 
-            printf("\n--- Avaliação da AST ---\n");
-            int resultado = evaluate_ast(ast_root);
-            printf("Resultado: %d\n", resultado);
+            // Geração de código intermediário
+            if (codegen_mode || optimize_mode || backend_mode) {
+                printf("\n--- Gerando código intermediário ---\n");
+                inicializa_codegen();
+                if (gera_codigo_intermediario(ast_root) == 0) {
+                    printf("Código intermediário gerado com sucesso!\n");
+                    
+                    // Mostrar código intermediário se solicitado
+                    if (codegen_mode) {
+                        printf("\n--- Código Intermediário (TAC) ---\n");
+                        imprime_codigo_intermediario(NULL);
+                    }
+                    
+                    // Otimizar código intermediário se solicitado
+                    if (optimize_mode) {
+                        printf("\n--- Otimizando código intermediário ---\n");
+                        if (otimiza_codigo_intermediario() == 0) {
+                            printf("Otimização concluída!\n");
+                            
+                            if (codegen_mode) {
+                                printf("\n--- Código Intermediário Otimizado ---\n");
+                                imprime_codigo_intermediario(NULL);
+                            }
+                        } else {
+                            printf("Erro durante a otimização do código intermediário.\n");
+                        }
+                    }
+                    
+                    // Salvar código intermediário em arquivo se especificado
+                    if (output_file && codegen_mode && !backend_mode) {
+                        char tac_filename[256];
+                        sprintf(tac_filename, "%s.tac", output_file);
+                        if (salva_codigo_intermediario(tac_filename) == 0) {
+                            printf("Código intermediário salvo em '%s'\n", tac_filename);
+                        }
+                    }
+                    
+                    // Gerar código de máquina se solicitado
+                    if (backend_mode) {
+                        printf("\n--- Gerando código de máquina ---\n");
+                        inicializa_backend();
+                        if (gera_codigo_maquina() == 0) {
+                            printf("Código de máquina gerado com sucesso!\n");
+                            
+                            // Mostrar código de máquina
+                            printf("\n--- Código Assembly ---\n");
+                            imprime_codigo_maquina(NULL);
+                            
+                            // Salvar código de máquina em arquivo executável
+                            if (output_file) {
+                                if (salva_codigo_maquina(output_file) == 0) {
+                                    printf("Código de máquina salvo em '%s'\n", output_file);
+                                }
+                            }
+                            
+                            finaliza_backend();
+                        } else {
+                            printf("Erro durante a geração do código de máquina.\n");
+                        }
+                    }
+                    
+                    finaliza_codegen();
+                } else {
+                    printf("Erro durante a geração do código intermediário.\n");
+                }
+            } else {
+                // Comportamento padrão (apenas avaliação da AST)
+                printf("\n--- Avaliação da AST ---\n");
+                int resultado = evaluate_ast(ast_root);
+                printf("Resultado: %d\n", resultado);
+            }
 
             free_ast(ast_root);
         } else {

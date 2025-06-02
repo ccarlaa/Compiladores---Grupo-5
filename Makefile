@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Iinclude -Isrc/semantic -Isrc/ast
+CFLAGS = -Wall -Iinclude -Isrc/semantic -Isrc/ast -Isrc/codegen
 FLEX = flex
 BISON = bison
 
@@ -13,9 +13,12 @@ MAIN = $(SRC)/main.c
 AST = $(SRC)/ast/ast.c
 TABELA = $(SRC)/semantic/tabela.c
 TIPOS = $(SRC)/semantic/tipos.c
+TAC = $(SRC)/codegen/tac.c
+CODEGEN = $(SRC)/codegen/codegen.c
+BACKEND = $(SRC)/codegen/backend.c
 
 # Objetos
-OBJS = $(OBJ)/main.o $(OBJ)/lex.yy.o $(OBJ)/parser.tab.o $(OBJ)/ast.o $(OBJ)/tabela.o $(OBJ)/tipos.o
+OBJS = $(OBJ)/main.o $(OBJ)/lex.yy.o $(OBJ)/parser.tab.o $(OBJ)/ast.o $(OBJ)/tabela.o $(OBJ)/tipos.o $(OBJ)/tac.o $(OBJ)/codegen.o $(OBJ)/backend.o
 
 # Executável
 TARGET = compilador.exe
@@ -36,6 +39,15 @@ $(OBJ)/tabela.o: $(TABELA) | $(OBJ)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJ)/tipos.o: $(TIPOS) | $(OBJ)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJ)/tac.o: $(TAC) | $(OBJ)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJ)/codegen.o: $(CODEGEN) | $(OBJ)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJ)/backend.o: $(BACKEND) | $(OBJ)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJ)/parser.tab.o: parser.tab.c | $(OBJ)
@@ -64,4 +76,7 @@ clean:
 test: $(TARGET)
 	./$(TARGET) tests/teste1.txt
 
-.PHONY: all clean test
+codegen-test: $(TARGET)
+	./$(TARGET) -t tests/codegen/teste_expressoes.txt
+
+.PHONY: all clean test codegen-test
