@@ -1,0 +1,44 @@
+// Teste de estruturas de repetição para o código intermediário
+int main() {
+    int i = 0;
+    int soma = 0;
+    
+    // Loop while simples
+    while (i < 10) {
+        soma = soma + i;
+        i = i + 1;
+    }
+    
+    // Loop while com condicional
+    i = 0;
+    while (i < 20) {
+        if (i % 2 == 0) {
+            soma = soma + i;
+        }
+        i = i + 1;
+    }
+    
+    // Loop while aninhado
+    i = 0;
+    int j = 0;
+    while (i < 5) {
+        j = 0;
+        while (j < 5) {
+            soma = soma + i * j;
+            j = j + 1;
+        }
+        i = i + 1;
+    }
+    
+    // Loop while com break implícito
+    i = 0;
+    while (i < 100) {
+        soma = soma + i;
+        if (soma > 1000) {
+            i = 100; // Forçar saída do loop
+        }
+        i = i + 1;
+    }
+    
+    return soma;
+}
