@@ -15,10 +15,9 @@ TABELA = $(SRC)/semantic/tabela.c
 TIPOS = $(SRC)/semantic/tipos.c
 TAC = $(SRC)/codegen/tac.c
 CODEGEN = $(SRC)/codegen/codegen.c
-BACKEND = $(SRC)/codegen/backend.c
 
-# Objetos
-OBJS = $(OBJ)/main.o $(OBJ)/lex.yy.o $(OBJ)/parser.tab.o $(OBJ)/ast.o $(OBJ)/tabela.o $(OBJ)/tipos.o $(OBJ)/tac.o $(OBJ)/codegen.o $(OBJ)/backend.o
+# Objetos 
+OBJS = $(OBJ)/main.o $(OBJ)/lex.yy.o $(OBJ)/parser.tab.o $(OBJ)/ast.o $(OBJ)/tabela.o $(OBJ)/tipos.o $(OBJ)/tac.o $(OBJ)/codegen.o
 
 # Executável
 TARGET = compilador.exe
@@ -45,9 +44,6 @@ $(OBJ)/tac.o: $(TAC) | $(OBJ)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJ)/codegen.o: $(CODEGEN) | $(OBJ)
-	$(CC) $(CFLAGS) -c $< -o $@
-
-$(OBJ)/backend.o: $(BACKEND) | $(OBJ)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJ)/parser.tab.o: parser.tab.c | $(OBJ)

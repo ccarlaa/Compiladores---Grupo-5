@@ -5,7 +5,6 @@
 #include "../parser.tab.h"
 #include "semantic/tabela.h"
 #include "codegen/codegen.h"
-#include "codegen/backend.h"
 
 // Declarações externas do Flex e Bison
 extern FILE *yyin;
@@ -98,7 +97,6 @@ int main(int argc, char **argv) {
     int debug_mode = 0;
     int codegen_mode = 0;
     int optimize_mode = 0;
-    int backend_mode = 0;
     char *filename = NULL;
     char *output_file = NULL;
     
@@ -110,8 +108,6 @@ int main(int argc, char **argv) {
             codegen_mode = 1;
         } else if (strcmp(argv[i], "-o") == 0 || strcmp(argv[i], "--optimize") == 0) {
             optimize_mode = 1;
-        } else if (strcmp(argv[i], "-b") == 0 || strcmp(argv[i], "--backend") == 0) {
-            backend_mode = 1;
         } else if (strcmp(argv[i], "-out") == 0 && i + 1 < argc) {
             output_file = argv[i + 1];
             i++; // Pular o próximo argumento, que é o nome do arquivo
@@ -163,7 +159,7 @@ int main(int argc, char **argv) {
             print_ast(ast_root, 0);
 
             // Geração de código intermediário
-            if (codegen_mode || optimize_mode || backend_mode) {
+            if (codegen_mode || optimize_mode) { 
                 printf("\n--- Gerando código intermediário ---\n");
                 inicializa_codegen();
                 if (gera_codigo_intermediario(ast_root) == 0) {
@@ -191,35 +187,11 @@ int main(int argc, char **argv) {
                     }
                     
                     // Salvar código intermediário em arquivo se especificado
-                    if (output_file && codegen_mode && !backend_mode) {
+                    if (output_file && codegen_mode) { 
                         char tac_filename[256];
                         sprintf(tac_filename, "%s.tac", output_file);
                         if (salva_codigo_intermediario(tac_filename) == 0) {
                             printf("Código intermediário salvo em '%s'\n", tac_filename);
-                        }
-                    }
-                    
-                    // Gerar código de máquina se solicitado
-                    if (backend_mode) {
-                        printf("\n--- Gerando código de máquina ---\n");
-                        inicializa_backend();
-                        if (gera_codigo_maquina() == 0) {
-                            printf("Código de máquina gerado com sucesso!\n");
-                            
-                            // Mostrar código de máquina
-                            printf("\n--- Código Assembly ---\n");
-                            imprime_codigo_maquina(NULL);
-                            
-                            // Salvar código de máquina em arquivo executável
-                            if (output_file) {
-                                if (salva_codigo_maquina(output_file) == 0) {
-                                    printf("Código de máquina salvo em '%s'\n", output_file);
-                                }
-                            }
-                            
-                            finaliza_backend();
-                        } else {
-                            printf("Erro durante a geração do código de máquina.\n");
                         }
                     }
                     
