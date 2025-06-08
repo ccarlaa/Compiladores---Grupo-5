@@ -53,7 +53,7 @@ executar_teste() {
 echo -e "${AMARELO}Iniciando testes básicos...${RESET}\n"
 
 for i in {1..5}; do
-    executar_teste "$DIR_RAIZ/tests/teste$i.txt" "Teste Básico $i" "normal"
+    executar_teste "$DIR_RAIZ/tests/testes_lexicos/testes_analise_lexica/teste$i.txt" "Teste Básico da Analise Léxica $i" "normal"
 done
 
 # Executar testes léxicos
@@ -63,7 +63,7 @@ echo -e "${AMARELO}Iniciando testes léxicos...${RESET}\n"
 executar_teste "$DIR_RAIZ/tests/testes_lexicos/teste_erros_lexicos.txt" "Erros Léxicos Gerais" "debug"
 
 # Teste de erros em laços
-executar_teste "$DIR_RAIZ/tests/teste_lacos.txt" "Erros em Laços" "debug"
+executar_teste "$DIR_RAIZ/tests/testes_lexicos/testes_analise_lexica/teste_lacos.txt" "Erros em Laços" "debug"
 
 # Teste de erros de pontuação
 executar_teste "$DIR_RAIZ/tests/testes_lexicos/teste_pontuacao.txt" "Erros de Pontuação" "debug"

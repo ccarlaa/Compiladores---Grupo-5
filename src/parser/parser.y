@@ -226,7 +226,10 @@ caso
         }
     | PADRAO DOIS_PONTOS lista_comandos
     ;
-
+lista_comandos
+    : comando
+    | lista_comandos comando
+    ;
 caso_escolha
     : IDENTIFICADOR
         {
