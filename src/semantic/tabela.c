@@ -5,7 +5,8 @@
 
 #define MAX_SIMBOLOS 1024
 
-typedef struct {
+typedef struct
+{
     char nome[64];
     TipoSimples tipo;
 } Simbolo;
@@ -13,18 +14,23 @@ typedef struct {
 static Simbolo tabela[MAX_SIMBOLOS];
 static int contador = 0;
 
-void inicializa_tabela() {
+void inicializa_tabela()
+{
     contador = 0;
 }
 
-int insere_simbolo(const char* nome, TipoSimples tipo) {
-    for (int i = 0; i < contador; i++) {
-        if (strcmp(tabela[i].nome, nome) == 0) {
-            return 0; // símbolo já existe
+int insere_simbolo(const char *nome, TipoSimples tipo)
+{
+    for (int i = 0; i < contador; i++)
+    {
+        if (strcmp(tabela[i].nome, nome) == 0)
+        {
+            return 0;
         }
     }
 
-    if (contador < MAX_SIMBOLOS) {
+    if (contador < MAX_SIMBOLOS)
+    {
         strncpy(tabela[contador].nome, nome, sizeof(tabela[contador].nome) - 1);
         tabela[contador].nome[sizeof(tabela[contador].nome) - 1] = '\0';
         tabela[contador].tipo = tipo;
@@ -36,9 +42,12 @@ int insere_simbolo(const char* nome, TipoSimples tipo) {
     exit(1);
 }
 
-TipoSimples busca_simbolo(const char* nome) {
-    for (int i = 0; i < contador; i++) {
-        if (strcmp(tabela[i].nome, nome) == 0) {
+TipoSimples busca_simbolo(const char *nome)
+{
+    for (int i = 0; i < contador; i++)
+    {
+        if (strcmp(tabela[i].nome, nome) == 0)
+        {
             return tabela[i].tipo;
         }
     }

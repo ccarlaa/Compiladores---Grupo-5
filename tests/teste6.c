@@ -2,17 +2,18 @@
 // Cada seção contém erros específicos que acionarão diferentes mensagens
 
 // 1. Erros de caracteres não reconhecidos
-inteiro principal() {
+inteiro principal()
+{
     // Símbolos especiais não permitidos
     inteiro @contador = 10;
     inteiro #valor = 20;
     real $preco = 30.5;
-    
+
     // Sequências de escape inválidas
     caractere letra1 = '\z';
     caractere letra2 = '\y';
     caractere letra3 = '\p';
-    
+
     // 2. Erros de strings e caracteres
     // Strings não fechadas
     imprime("Esta string não tem aspas de fechamento;
@@ -46,30 +47,32 @@ inteiro principal() {
     
     retorne 0;
 }
-        contador--;
-    }
-    
-    for (inteiro i = 0; i < 10; i++) {
-        imprime(i);
-    }
-    
-    do {
-        contador++;
-    } while (contador < 20);
-    
-    // 4. Erros de pontuação
-    // Símbolo de pontuação inválido
-    inteiro x = 5 | 3;
-    
-    // Pontuação não implementada
-    inteiro y = 10:
-    
+contador--;
+}
+
+for (inteiro i = 0; i < 10; i++)
+{
+    imprime(i);
+}
+
+do
+{
+    contador++;
+} while (contador < 20);
+
+// 4. Erros de pontuação
+// Símbolo de pontuação inválido
+inteiro x = 5 | 3;
+
+// Pontuação não implementada
+inteiro y = 10 :
+
     // Uso incorreto de operadores no contexto de pontuação
     inteiro z = (5 + 3);
-    
-    // 5. Outros erros léxicos
-    // Caractere Unicode não suportado
-    texto = "Olá, mundo!";
-    
-    retorne 0;
+
+// 5. Outros erros léxicos
+// Caractere Unicode não suportado
+texto = "Olá, mundo!";
+
+retorne 0;
 }

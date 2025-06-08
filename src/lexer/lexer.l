@@ -4,22 +4,21 @@
 #include <string.h>
 #include "ast/ast.h"
 #include "../parser.tab.h"
-
-/* Variável definida por Bison */
+/* Variável definida pelo Bison */
 extern YYSTYPE yylval;
 
-/* Variáveis para tratamento de erros */
+/* Para mensagens de erro opcionais */
 int erro_lexico = 0;
 char mensagem_erro[256];
 %}
 
-/* Opções do Flex */
+/* ---------- Opções do Flex ---------- */
 %option noyywrap
 %option nounput
 %option noinput
 %option yylineno
 
-/* Definições regulares */
+/* ---------- Definições regulares ---------- */
 DIGITO      [0-9]
 LETRA       [a-zA-Z_]
 ID          {LETRA}({LETRA}|{DIGITO})*
@@ -29,116 +28,137 @@ ESPACO      [ \t\n\r]
 
 %%
 
-{ESPACO}        { /* Ignora espaços em branco e quebras de linha */ }
+ /* -------- Espaços e comentários -------- */
+{ESPACO}                { /* ignorar */ }
+"//".*                  { /* comentário de linha */ }
+"/*"([^*]|\*+[^*/])*\*+"/" { /* comentário de bloco */ }
 
-"//".*          { /* Ignora comentários de linha */ }
+ /* -------- Literais numéricos e textuais -------- */
+{INTEIRO}               { yylval.ival = atoi(yytext);  return NUMERO; }
+{REAL}                  { yylval.fval = atof(yytext);  return NUMERO; }
 
-"/*"([^*]|\*+[^*/])*\*+"/" { /* Ignora comentários de bloco */ }
-
-{INTEIRO}       { 
-                    yylval.ival = atoi(yytext); 
-                    return NUMERO; 
-                }
-
-{REAL}          {
-                    yylval.fval = atof(yytext);
-                    return NUMERO; /* Por enquanto, tratamos como o mesmo token */
-                }
-
-\"[^\"\n]*\"    {
-                    yylval.sval = strdup(yytext);
-                    return LITERAL_STRING;
-                }
-
-\"[^\"\n]*$     {
-                    fprintf(stderr, "Erro léxico (linha %d): String não fechada '%s'. Falta aspas duplas de fechamento.\n", yylineno, yytext);
-                    return -1;
-                }
+\"[^\"\n]*\"            { yylval.sval = strdup(yytext); return LITERAL_STRING; }
+\"[^\"\n]*$             {
+                            fprintf(stderr,
+                                    "Erro léxico (linha %d): string não fechada \"%s\".\n",
+                                    yylineno, yytext); return -1;
+                        }
 
 '[^'\n]'|'\\[nrtbf0\\\']' {
-                    yylval.sval = strdup(yytext);
-                    return LITERAL_CHAR;
-                }
+                            yylval.sval = strdup(yytext);
+                            return LITERAL_CHAR;
+                        }
+'[^'\n]*$               {
+                            fprintf(stderr,
+                                    "Erro léxico (linha %d): caractere não fechado '%s'.\n",
+                                    yylineno, yytext); return -1;
+                        }
 
-'[^'\n]*$       {
-                    fprintf(stderr, "Erro léxico (linha %d): Caractere não fechado '%s'. Falta aspas simples de fechamento.\n", yylineno, yytext);
-                    return -1;
-                }
+ /* -------- Palavras-chave: tipos e qualificadores -------- */
+"int"                   { return TIPO_INTEIRO; }
+"float"                 { return TIPO_REAL; }
+"double"                { return TIPO_DUPLO; }
+"char"                  { return TIPO_CARACTERE; }
+"void"                  { return TIPO_VAZIO; }
+"long"                  { return TIPO_LONGO; }
+"short"                 { return TIPO_CURTO; }
+"unsigned"              { return TIPO_SEM_SINAL; }
+"signed"                { return TIPO_COM_SINAL; }
 
-"int"           { return TIPO_INTEIRO; }
-"float"         { return TIPO_REAL; }
-"double"        { return TIPO_DUPLO; }
-"char"          { return TIPO_CARACTERE; }
-"void"          { return TIPO_VAZIO; }
-"long"          { return TIPO_LONGO; }
-"short"         { return TIPO_CURTO; }
-"unsigned"      { return TIPO_SEM_SINAL; }
-"signed"        { return TIPO_COM_SINAL; }
+"typedef"               { return TYPEDEF; }
+"auto"                  { return AUTO; }
+"register"              { return REGISTRO; }
+"static"                { return ESTATICO; }
+"extern"                { return EXTERNO; }
+"inline"                { return INLINE; }
+"volatile"              { return VOLATIL; }
+"restrict"              { return RESTRICT; }
 
-"if"            { return SE; }
-"else"          { return SENAO; }
-"while"         { return ENQUANTO; }
-"for"           { return PARA; }
-"do"            { return FACA; }
-"return"        { return RETORNE; }
-"break"         { return QUEBRA; }
-"continue"      { return CONTINUE; }
 
-"struct"        { return ESTRUTURA; }
-"union"         { return UNIAO; }
-"enum"          { return ENUM; }
-"const"         { return CONST; }
-"static"        { return ESTATICO; }
-"extern"        { return EXTERNO; }
-"register"      { return REGISTRO; }
-"typedef"       { return TYPEDEF; }
+ /* -------- Palavras-chave: controle de fluxo -------- */
+"if"                    { return SE; }
+"else"                  { return SENAO; }
+"while"                 { return ENQUANTO; }
+"for"                   { return PARA; }
+"do"                    { return FACA; }
+"switch"                { return ESCOLHA; }
+"case"                  { return CASO; }
+"default"               { return PADRAO; }
+"break"                 { return QUEBRA; }
+"continue"              { return CONTINUE; }
+"return"                { return RETORNE; }
+"goto"                  { return GOTO; }
 
-"switch"        { return ESCOLHA; }
-"case"          { return CASO; }
-"default"       { return PADRAO; }
+ /* -------- Estruturas de dados -------- */
+"struct"                { return ESTRUTURA; }
+"union"                 { return UNIAO; }
+"enum"                  { return ENUM; }
+"const"                 { return CONST; }
 
-"+="            { return MAIS_IGUAL; }
-"-="            { return MENOS_IGUAL; }
-"*="            { return MULT_IGUAL; }
-"/="            { return DIV_IGUAL; }
-"++"            { return INCREMENTO; }
-"--"            { return DECREMENTO; }
+ /* -------- Operadores compostos (+=, <<=, etc.) -------- */
+"+="                    { return MAIS_IGUAL; }
+"-="                    { return MENOS_IGUAL; }
+"*="                    { return MULT_IGUAL; }
+"/="                    { return DIV_IGUAL; }
+"%="                    { return MOD_IGUAL; }
+"&="                    { return E_BIT_IGUAL; }
+"|="                    { return OU_BIT_IGUAL; }
+"^="                    { return XOR_IGUAL; }
+"<<="                   { return SHIFT_ESQ_IGUAL; }
+">>="                   { return SHIFT_DIR_IGUAL; }
 
-"=="            { return IGUAL_IGUAL; }
-"!="            { return DIFERENTE; }
-"<"             { return MENOR; }
-">"             { return MAIOR; }
-"<="            { return MENOR_IGUAL; }
-">="            { return MAIOR_IGUAL; }
-"&&"            { return E_LOGICO; }
-"||"            { return OU_LOGICO; }
-"!"             { return NAO_LOGICO; }
+ /* -------- Operadores de incremento/decremento -------- */
+"++"                    { return INCREMENTO; }
+"--"                    { return DECREMENTO; }
 
-"+"             { return SOMA; }
-"-"             { return SUBTRACAO; }
-"*"             { return MULTIPLICACAO; }
-"/"             { return DIVISAO; }
-"%"             { return MODULO; }
-"="             { return IGUAL; }
-"("             { return ABRE_PAREN; }
-")"             { return FECHA_PAREN; }
+ /* -------- Operadores relacionais e lógicos -------- */
+"=="                    { return IGUAL_IGUAL; }
+"!="                    { return DIFERENTE; }
+"<="                    { return MENOR_IGUAL; }
+">="                    { return MAIOR_IGUAL; }
+"<"                     { return MENOR; }
+">"                     { return MAIOR; }
+"&&"                    { return E_LOGICO; }
+"||"                    { return OU_LOGICO; }
+"!"                     { return NAO_LOGICO; }
 
-"{"             { return ABRE_CHAVE; }
-"}"             { return FECHA_CHAVE; }
-"["             { return ABRE_COLCHETE; }
-"]"             { return FECHA_COLCHETE; }
-";"             { return PONTO_E_VIRGULA; }
-","             { return VIRGULA; }
-"."             { return PONTO; }
-":"             { return DOIS_PONTOS; }
+ /* -------- Operadores aritméticos e bit-a-bit -------- */
+"<<"                    { return SHIFT_ESQ; }
+">>"                    { return SHIFT_DIR; }
+"&"                     { return E_BIT; }
+"|"                     { return OU_BIT; }
+"^"                     { return XOR; }
+"~"                     { return COMPLEMENTO; }
+"+"                     { return SOMA; }
+"-"                     { return SUBTRACAO; }
+"*"                     { return MULTIPLICACAO; }
+"/"                     { return DIVISAO; }
+"%"                     { return MODULO; }
+"->"                    { return SETA; }
+"."                     { return PONTO; }
+"sizeof"                { return SIZEOF; }
+"?"                     { return INTERROGACAO; }
+":"                     { return DOIS_PONTOS; }
+"..."                   { return RETICENCIAS; }
 
-"principal"     { return PRINCIPAL; }
+ /* -------- Atribuição simples e parênteses/colchetes -------- */
+"="                     { return IGUAL; }
+"("                     { return ABRE_PAREN; }
+")"                     { return FECHA_PAREN; }
+"{"                     { return ABRE_CHAVE; }
+"}"                     { return FECHA_CHAVE; }
+"["                     { return ABRE_COLCHETE; }
+"]"                     { return FECHA_COLCHETE; }
+";"                     { return PONTO_E_VIRGULA; }
+","                     { return VIRGULA; }
 
-{ID}            {
-                    yylval.sval = strdup(yytext);
-                    return IDENTIFICADOR;
-                }
+ /* -------- ponto de entrada customizado (opcional) -------- */
+"principal"             { return PRINCIPAL; }
 
+ /* -------- Identificadores -------- */
+{ID}                    { yylval.sval = strdup(yytext); return IDENTIFICADOR; }
+
+ /* -------- Erro genérico -------- */
 .               { 
                     if (yytext[0] == '@' || yytext[0] == '#' || yytext[0] == '$') {
                         fprintf(stderr, "Erro léxico (linha %d): Símbolo especial '%s' não permitido. A linguagem não suporta estes caracteres.\n", yylineno, yytext);
@@ -153,3 +173,4 @@ ESPACO      [ \t\n\r]
                 }
 
 %%
+
