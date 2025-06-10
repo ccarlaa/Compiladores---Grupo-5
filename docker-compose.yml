@@ -1,0 +1,21 @@
+version: "3.9"
+
+services:
+  tester:
+    build: .
+    # Executa todos os testes logo que o container é iniciado
+    command: ["make", "test-all"]
+    environment:
+      - TERM=xterm-256color
+    volumes:
+      - .:/app
+
+  repl:
+    build: .
+    tty: true
+    stdin_open: true
+    entrypoint: ["/bin/bash"]
+    environment:
+      - TERM=xterm-256color
+    volumes:
+      - .:/app
