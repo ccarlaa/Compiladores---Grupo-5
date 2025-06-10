@@ -1,17 +1,22 @@
-// Test 2: Control structures (if/else)
-int main() {
+/* ========== IF/ELSE ========== */
+int main()
+{
     int x = 10;
     int y = 5;
-    
-    if (x > y) {
+
+    if (x > y)
+    {
         x = x + 1;
-    } else {
+    }
+    else
+    {
         y = y + 1;
     }
-    
-    if (x == 11) {
+
+    if (x == 11)
+    {
         return 1;
     }
-    
+
     return 0;
 }
