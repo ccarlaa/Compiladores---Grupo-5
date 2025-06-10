@@ -1,0 +1,73 @@
+name: Verificação de Dependências
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'  # Toda segunda-feira às 6h UTC
+  workflow_dispatch:
+
+jobs:
+  check-dependencies:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        
+    steps:
+    - name: Checkout do código
+      uses: actions/checkout@v4
+      
+    - name: Verificar ferramentas essenciais
+      run: |
+        echo "=== Verificação de Dependências - ${{ matrix.os }} ==="
+        
+        # Verificar GCC
+        if command -v gcc >/dev/null 2>&1; then
+          echo "✅ GCC encontrado: $(gcc --version | head -n1)"
+        else
+          echo "❌ GCC não encontrado"
+        fi
+        
+        # Verificar Make (quando disponível)
+        if command -v make >/dev/null 2>&1; then
+          echo "✅ Make encontrado: $(make --version | head -n1)"
+        else
+          echo "⚠️ Make não encontrado (opcional)"
+        fi
+        
+        # Verificar Git
+        if command -v git >/dev/null 2>&1; then
+          echo "✅ Git encontrado: $(git --version)"
+        else
+          echo "❌ Git não encontrado"
+        fi
+      shell: bash
+      
+    - name: Teste de compilação mínima
+      run: |
+        echo "=== Teste de Compilação ==="
+        gcc -std=c99 -Wall -Wextra -DMANUAL_MODE -o test_compile src/main.c
+        
+        if [ -f "test_compile" ] || [ -f "test_compile.exe" ]; then
+          echo "✅ Compilação bem-sucedida"
+        else
+          echo "❌ Falha na compilação"
+          exit 1
+        fi
+      shell: bash
+      
+    - name: Criar relatório
+      run: |
+        echo "## 📋 Relatório de Dependências - ${{ matrix.os }}" >> dependency_report.md
+        echo "" >> dependency_report.md
+        echo "- **Sistema**: ${{ matrix.os }}" >> dependency_report.md
+        echo "- **Data**: $(date)" >> dependency_report.md
+        echo "- **GCC**: $(gcc --version | head -n1)" >> dependency_report.md
+        echo "- **Status**: ✅ Funcional" >> dependency_report.md
+        echo "" >> dependency_report.md
+      shell: bash
+      
+    - name: Upload do relatório
+      uses: actions/upload-artifact@v4
+      with:
+        name: dependency-report-${{ matrix.os }}
+        path: dependency_report.md

@@ -4,31 +4,67 @@
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
+RED='\033[0;31m'
 NC='\033[0m' # No Color
 
-echo -e "${BLUE}=== C em Português - Compilador (macOS) ===${NC}"
+echo -e "${BLUE}=== TRADUTOR C PARA PORTUGOL (macOS) ===${NC}"
 
 # Verificar dependências
 echo -e "${GREEN}Verificando dependências...${NC}"
 
-# Verificar se o brew está instalado
-if ! command -v brew &> /dev/null; then
-    echo -e "${YELLOW}Homebrew não encontrado. Por favor, instale o Homebrew primeiro:${NC}"
-    echo "/bin/bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\""
-    exit 1
+# Verificar se gcc está disponível
+if ! command -v gcc &> /dev/null; then
+    echo -e "${YELLOW}GCC não encontrado. Tentando instalar...${NC}"
+    
+    # Verificar se Xcode Command Line Tools estão instalados
+    if ! xcode-select -p &> /dev/null; then
+        echo -e "${GREEN}Instalando Xcode Command Line Tools...${NC}"
+        xcode-select --install
+        echo -e "${YELLOW}Aguarde a instalação das ferramentas de desenvolvimento...${NC}"
+        echo -e "${YELLOW}Execute este script novamente após a instalação.${NC}"
+        exit 0
+    fi
+    
+    # Verificar se Homebrew está instalado
+    if command -v brew &> /dev/null; then
+        echo -e "${GREEN}Instalando GCC via Homebrew...${NC}"
+        brew install gcc
+    else
+        echo -e "${YELLOW}Homebrew não encontrado.${NC}"
+        echo -e "${GREEN}Instale o Homebrew para obter a versão mais recente do GCC:${NC}"
+        echo "/bin/bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\""
+        echo ""
+        echo -e "${GREEN}Usando GCC do Xcode Command Line Tools...${NC}"
+    fi
+else
+    echo -e "${GREEN}✓ GCC encontrado: $(gcc --version | head -n1)${NC}"
 fi
 
-# Verificar e instalar dependências
-for pkg in flex bison gcc; do
-    if ! brew list $pkg &> /dev/null; then
-        echo -e "${YELLOW}Pacote $pkg não encontrado. Instalando...${NC}"
-        brew install $pkg
-    else
-        echo -e "${GREEN}$pkg já está instalado.${NC}"
-    fi
-done
+# Compilar projeto
+echo -e "${GREEN}Compilando tradutor...${NC}"
+gcc -std=c99 -Wall -Wextra -DMANUAL_MODE -o compilador src/main.c
 
-# Criar diretórios necessários
+if [ $? -eq 0 ]; then
+    echo -e "${GREEN}✓ Compilação concluída com sucesso!${NC}"
+    echo -e "${GREEN}Executável criado: ./compilador${NC}"
+    echo -e "${GREEN}Modo: Manual (sem flex/bison)${NC}"
+    echo ""
+    echo -e "${BLUE}Para testar:${NC}"
+    echo -e "${YELLOW}  ./compilador tests/test_01_basic.c${NC}"
+    echo -e "${YELLOW}  ./compilador tests/test_01_basic.c -o saida.ptg${NC}"
+    echo ""
+    
+    # Perguntar se deseja executar teste
+    read -p "Deseja executar um teste básico? (s/N): " run_test
+    if [[ $run_test =~ ^[Ss]$ ]]; then
+        echo -e "${GREEN}Executando teste básico...${NC}"
+        ./compilador tests/test_01_basic.c
+    fi
+else
+    echo -e "${RED}✗ Erro na compilação!${NC}"
+    echo -e "${RED}Verifique se o GCC está instalado corretamente.${NC}"
+    exit 1
+fi
 mkdir -p build
 
 # Compilar o parser com Bison

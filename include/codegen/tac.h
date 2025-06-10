@@ -5,10 +5,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include "semantic/tipos.h"
+#include "ast/ast.h"
 
 /* Tipos de operações em TAC */
 typedef enum {
-    TAC_NONE,         // Nenhuma operação (placeholder)
+    TAC_NONE,
     
     // Operações aritméticas
     TAC_ADD,          // Adição: t1 = t2 + t3

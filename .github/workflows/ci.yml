@@ -1,0 +1,189 @@
+name: CI - Tradutor C para Portugol
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-windows:
+    runs-on: windows-latest
+    name: Test on Windows
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup MinGW
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: MINGW64
+        update: false
+        install: mingw-w64-x86_64-gcc mingw-w64-x86_64-make
+        
+    - name: Build project
+      shell: msys2 {0}
+      run: |
+        gcc --version
+        gcc -std=c99 -Wall -Wextra -DMANUAL_MODE -o compilador.exe src/main.c
+        
+    - name: Test basic functionality
+      shell: msys2 {0}
+      run: |
+        echo "Testing basic compilation..."
+        ./compilador.exe tests/test_01_basic.c
+        echo "✓ Basic test passed"
+        
+    - name: Run all tests
+      shell: msys2 {0}
+      run: |
+        echo "Running all test cases..."
+        for test_file in tests/test_*.c; do
+          echo "Testing $test_file..."
+          ./compilador.exe "$test_file"
+          echo "✓ $test_file passed"
+        done
+        echo "All tests completed successfully!"
+        
+    - name: Test output to file
+      shell: msys2 {0}
+      run: |
+        echo "Testing output to file..."
+        ./compilador.exe tests/test_01_basic.c -o output_test.ptg
+        if [ -f "output_test.ptg" ]; then
+          echo "✓ Output file created successfully"
+          head -5 output_test.ptg
+        else
+          echo "✗ Output file not created"
+          exit 1
+        fi
+
+  test-ubuntu:
+    runs-on: ubuntu-latest
+    name: Test on Ubuntu
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential
+        
+    - name: Build project
+      run: |
+        gcc --version
+        gcc -std=c99 -Wall -Wextra -DMANUAL_MODE -o compilador src/main.c
+        
+    - name: Test basic functionality
+      run: |
+        echo "Testing basic compilation..."
+        ./compilador tests/test_01_basic.c
+        echo "✓ Basic test passed"
+        
+    - name: Run all tests
+      run: |
+        echo "Running all test cases..."
+        for test_file in tests/test_*.c; do
+          echo "Testing $test_file..."
+          ./compilador "$test_file"
+          echo "✓ $test_file passed"
+        done
+        echo "All tests completed successfully!"
+        
+    - name: Test output to file
+      run: |
+        echo "Testing output to file..."
+        ./compilador tests/test_01_basic.c -o output_test.ptg
+        if [ -f "output_test.ptg" ]; then
+          echo "✓ Output file created successfully"
+          head -5 output_test.ptg
+        else
+          echo "✗ Output file not created"
+          exit 1
+        fi
+        
+    - name: Test with Make
+      run: |
+        echo "Testing with Make..."
+        make clean || true
+        make
+        echo "✓ Make build successful"
+
+  test-macos:
+    runs-on: macos-latest
+    name: Test on macOS
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Install dependencies
+      run: |
+        # GCC já está disponível via Xcode Command Line Tools
+        gcc --version
+        
+    - name: Build project
+      run: |
+        gcc --version
+        gcc -std=c99 -Wall -Wextra -DMANUAL_MODE -o compilador src/main.c
+        
+    - name: Test basic functionality
+      run: |
+        echo "Testing basic compilation..."
+        ./compilador tests/test_01_basic.c
+        echo "✓ Basic test passed"
+        
+    - name: Run all tests
+      run: |
+        echo "Running all test cases..."
+        for test_file in tests/test_*.c; do
+          echo "Testing $test_file..."
+          ./compilador "$test_file"
+          echo "✓ $test_file passed"
+        done
+        echo "All tests completed successfully!"
+        
+    - name: Test output to file
+      run: |
+        echo "Testing output to file..."
+        ./compilador tests/test_01_basic.c -o output_test.ptg
+        if [ -f "output_test.ptg" ]; then
+          echo "✓ Output file created successfully"
+          head -5 output_test.ptg
+        else
+          echo "✗ Output file not created"
+          exit 1
+        fi
+        
+    - name: Test with Make
+      run: |
+        echo "Testing with Make..."
+        make clean || true
+        make
+        echo "✓ Make build successful"
+
+  summary:
+    runs-on: ubuntu-latest
+    name: Test Summary
+    needs: [test-windows, test-ubuntu, test-macos]
+    if: always()
+    
+    steps:
+    - name: Display results
+      run: |
+        echo "## Test Results Summary"
+        echo "- Windows: ${{ needs.test-windows.result }}"
+        echo "- Ubuntu: ${{ needs.test-ubuntu.result }}"
+        echo "- macOS: ${{ needs.test-macos.result }}"
+        
+        if [ "${{ needs.test-windows.result }}" = "success" ] && 
+           [ "${{ needs.test-ubuntu.result }}" = "success" ] && 
+           [ "${{ needs.test-macos.result }}" = "success" ]; then
+          echo "🎉 All tests passed on all platforms!"
+        else
+          echo "❌ Some tests failed. Check the logs above."
+          exit 1
+        fi

@@ -14,7 +14,6 @@ int linha_atual = 1;
 %option noinput
 %option yylineno
 
-/* ========== DEFINIÇÕES REGULARES ========== */
 DIGITO      [0-9]
 LETRA       [a-zA-Z_]
 ID          {LETRA}({LETRA}|{DIGITO})*
@@ -25,24 +24,17 @@ NOVA_LINHA  \n
 
 %%
 
- /* ========== ESPAÇOS E COMENTÁRIOS ========== */
-{ESPACO}                
-{NOVA_LINHA}            
-"//".*                  
-"/*"([^*]|\*+[^*/])*\*+"/"
+{ESPACO}                { /* ignorar espaços */ }
+{NOVA_LINHA}            { /* ignorar quebras de linha */ }
+"//".*                  { /* comentário de linha */ }
+"/*"([^*]|\*+[^*/])*\*+"/" { /* comentário de bloco */ }
 
- /* ========== TIPOS C → PORTUGOL ========== */
-"int"                   { return TIPO_INTEIRO; }
-"float"                 { return TIPO_REAL; }
-"double"                { return TIPO_DUPLO; }
-"char"                  { return TIPO_CARACTERE; }
-"void"                  { return TIPO_VAZIO; }
-"long"                  { return TIPO_LONGO; }
-"short"                 { return TIPO_CURTO; }
-"unsigned"              { return TIPO_SEM_SINAL; }
-"signed"                { return TIPO_COM_SINAL; }
+"int"                   { yylval.sval = strdup("inteiro"); return TIPO_INTEIRO; }
+"float"                 { yylval.sval = strdup("real"); return TIPO_REAL; }
+"double"                { yylval.sval = strdup("duplo"); return TIPO_DUPLO; }
+"char"                  { yylval.sval = strdup("caractere"); return TIPO_CARACTERE; }
+"void"                  { yylval.sval = strdup("vazio"); return TIPO_VAZIO; }
 
- /* ========== ESTRUTURAS DE CONTROLE C → PORTUGOL ========== */
 "if"                    { return SE; }
 "else"                  { return SENAO; }
 "while"                 { return ENQUANTO; }
@@ -55,28 +47,22 @@ NOVA_LINHA  \n
 "case"                  { return CASO; }
 "default"               { return PADRAO; }
 
- /* ========== ESTRUTURAS DE DADOS C → PORTUGOL ========== */
-"struct"                { return ESTRUTURA; }
-"union"                 { return UNIAO; }
-"enum"                  { return ENUM; }
+"struct"                { yylval.sval = strdup("estrutura"); return ESTRUTURA; }
+"union"                 { yylval.sval = strdup("uniao"); return UNIAO; }
+"enum"                  { yylval.sval = strdup("enumeracao"); return ENUM; }
 
- /* ========== FUNÇÃO PRINCIPAL ========== */
-"main"                  { return PRINCIPAL; }
+"main"                  { yylval.sval = strdup("principal"); return PRINCIPAL; }
 
- /* ========== OPERADORES DE COMPARAÇÃO ========== */
 "=="                    { return IGUAL_IGUAL; }
 "!="                    { return DIFERENTE; }
 "<="                    { return MENOR_IGUAL; }
 ">="                    { return MAIOR_IGUAL; }
 "<"                     { return MENOR; }
 ">"                     { return MAIOR; }
-
- /* ========== OPERADORES LÓGICOS ========== */
 "&&"                    { return E_LOGICO; }
 "||"                    { return OU_LOGICO; }
 "!"                     { return NAO_LOGICO; }
 
- /* ========== OPERADORES DE ATRIBUIÇÃO ========== */
 "++"                    { return INCREMENTO; }
 "--"                    { return DECREMENTO; }
 "+="                    { return MAIS_IGUAL; }
@@ -84,7 +70,6 @@ NOVA_LINHA  \n
 "*="                    { return MULT_IGUAL; }
 "/="                    { return DIV_IGUAL; }
 
- /* ========== OPERADORES ARITMÉTICOS ========== */
 "+"                     { return SOMA; }
 "-"                     { return SUBTRACAO; }
 "*"                     { return MULTIPLICACAO; }
@@ -92,7 +77,6 @@ NOVA_LINHA  \n
 "%"                     { return MODULO; }
 "="                     { return IGUAL; }
 
- /* ========== DELIMITADORES ========== */
 "("                     { return ABRE_PAREN; }
 ")"                     { return FECHA_PAREN; }
 "{"                     { return ABRE_CHAVE; }
@@ -104,11 +88,9 @@ NOVA_LINHA  \n
 "."                     { return PONTO; }
 ":"                     { return DOIS_PONTOS; }
 
- /* ========== LITERAIS NUMÉRICOS ========== */
 {INTEIRO}               { yylval.ival = atoi(yytext); return NUMERO; }
 {REAL}                  { yylval.fval = atof(yytext); return NUMERO_REAL; }
 
- /* ========== LITERAIS DE STRING E CHAR ========== */
 \"[^\"\n]*\"            { yylval.sval = strdup(yytext); return LITERAL_STRING; }
 \"[^\"\n]*$             { 
                             fprintf(stderr, "Erro: string não fechada na linha %d\n", yylineno); 
@@ -121,10 +103,8 @@ NOVA_LINHA  \n
                             return -1; 
                         }
 
- /* ========== IDENTIFICADORES ========== */
 {ID}                    { yylval.sval = strdup(yytext); return IDENTIFICADOR; }
 
- /* ========== CARACTERES INVÁLIDOS ========== */
 .                       { 
                             fprintf(stderr, "Erro léxico: caractere inválido '%s' na linha %d\n", 
                                     yytext, yylineno); 

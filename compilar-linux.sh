@@ -4,21 +4,65 @@
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
+RED='\033[0;31m'
 NC='\033[0m' # No Color
 
-echo -e "${BLUE}=== C em Português - Compilador (Linux) ===${NC}"
+echo -e "${BLUE}=== TRADUTOR C PARA PORTUGOL (Linux) ===${NC}"
 
 # Verificar dependências
 echo -e "${GREEN}Verificando dependências...${NC}"
 
-# Detectar o gerenciador de pacotes
-if command -v apt-get &> /dev/null; then
-    PKG_MANAGER="apt-get"
-    INSTALL_CMD="sudo apt-get install -y flex bison build-essential"
-elif command -v dnf &> /dev/null; then
-    PKG_MANAGER="dnf"
-    INSTALL_CMD="sudo dnf install -y flex bison gcc make"
-elif command -v pacman &> /dev/null; then
+# Verificar se gcc está instalado
+if ! command -v gcc &> /dev/null; then
+    echo -e "${YELLOW}GCC não encontrado. Tentando instalar...${NC}"
+    
+    # Detectar o gerenciador de pacotes
+    if command -v apt-get &> /dev/null; then
+        echo -e "${GREEN}Detectado: apt-get (Ubuntu/Debian)${NC}"
+        sudo apt-get update
+        sudo apt-get install -y build-essential
+    elif command -v dnf &> /dev/null; then
+        echo -e "${GREEN}Detectado: dnf (Fedora)${NC}"
+        sudo dnf install -y gcc make
+    elif command -v pacman &> /dev/null; then
+        echo -e "${GREEN}Detectado: pacman (Arch Linux)${NC}"
+        sudo pacman -S --noconfirm base-devel
+    elif command -v yum &> /dev/null; then
+        echo -e "${GREEN}Detectado: yum (CentOS/RHEL)${NC}"
+        sudo yum install -y gcc make
+    else
+        echo -e "${RED}Gerenciador de pacotes não suportado. Instale o GCC manualmente.${NC}"
+        exit 1
+    fi
+else
+    echo -e "${GREEN}✓ GCC encontrado: $(gcc --version | head -n1)${NC}"
+fi
+
+# Compilar projeto
+echo -e "${GREEN}Compilando tradutor...${NC}"
+gcc -std=c99 -Wall -Wextra -DMANUAL_MODE -o compilador src/main.c
+
+if [ $? -eq 0 ]; then
+    echo -e "${GREEN}✓ Compilação concluída com sucesso!${NC}"
+    echo -e "${GREEN}Executável criado: ./compilador${NC}"
+    echo -e "${GREEN}Modo: Manual (sem flex/bison)${NC}"
+    echo ""
+    echo -e "${BLUE}Para testar:${NC}"
+    echo -e "${YELLOW}  ./compilador tests/test_01_basic.c${NC}"
+    echo -e "${YELLOW}  ./compilador tests/test_01_basic.c -o saida.ptg${NC}"
+    echo ""
+    
+    # Perguntar se deseja executar teste
+    read -p "Deseja executar um teste básico? (s/N): " run_test
+    if [[ $run_test =~ ^[Ss]$ ]]; then
+        echo -e "${GREEN}Executando teste básico...${NC}"
+        ./compilador tests/test_01_basic.c
+    fi
+else
+    echo -e "${RED}✗ Erro na compilação!${NC}"
+    echo -e "${RED}Verifique se o GCC está instalado corretamente.${NC}"
+    exit 1
+fi
     PKG_MANAGER="pacman"
     INSTALL_CMD="sudo pacman -S --needed flex bison gcc make"
 else

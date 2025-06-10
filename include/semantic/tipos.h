@@ -4,7 +4,10 @@
 typedef enum {
     TIPO_INVALIDO,
     TIPO_INT,
-    TIPO_REAL_
+    TIPO_REAL_,
+    TIPO_DUPLO_,
+    TIPO_CHAR,
+    TIPO_VOID
 } TipoSimples;
 
 TipoSimples verifica_tipo_atribuicao(TipoSimples esperado, TipoSimples recebido);

@@ -1,14 +1,34 @@
 # Arquivos compilados
 build/
+obj/
 *.o
 *.obj
 *.exe
 *.out
 
 # Arquivos gerados pelo Flex e Bison
+lex.yy.c
 *.lex.c
 *.tab.c
 *.tab.h
+parser.tab.*
+
+# Arquivos de teste e debug gerados
+tradutor_simples.exe
+tradutor_simples.c
+debug_test.c
+debug_test.exe
+test_runner.ps1
+
+# Arquivos de saída de testes
+tests/output_*.ptg
+tests/*.ptg
+test_output*
+actual_output.txt
+expected_portugol_output.ptg
+
+# Relatórios temporários
+RELATORIO_*.md
 
 # Arquivos de assembly
 *.asm
@@ -26,6 +46,11 @@ build/
 *.swp
 *~
 
+# Arquivos de backup
+*_backup.*
+*_new.*
+*_old.*
+
 # Arquivos de IDE
 .vscode/
 .idea/
@@ -36,12 +61,7 @@ build/
 .DS_Store
 Thumbs.db
 
-# Arquivos de log
+# Logs e cache
 *.log
-
-# Arquivos de teste
-test_output
-actual_output.txt
-
-# Arquivos de dependência
-*.d 
+cache/
+.cache/

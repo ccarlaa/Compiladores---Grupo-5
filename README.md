@@ -1,257 +1,292 @@
-# Compiladores - Grupo 5
+# Tradutor C para Portugol - Grupo 5
 
-## 📝 Sobre
+[![CI Status](https://github.com/ccarlaa/Compiladores---Grupo-5/actions/workflows/ci.yml/badge.svg)](https://github.com/ccarlaa/Compiladores---Grupo-5/actions/workflows/ci.yml)
+![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-blue)
+![Language](https://img.shields.io/badge/language-C-orange)
 
-**C em Português: Derrubando barreiras linguísticas na programação**
+## Sobre
 
-Este projeto implementa um compilador que permite escrever código na linguagem C utilizando sintaxe e palavras-chave em português. Nosso objetivo é democratizar o acesso à programação, permitindo que estudantes brasileiros sem fluência em inglês possam aprender conceitos fundamentais de programação sem a barreira linguística adicional.
+**Tradutor C para Portugol: Convertendo código C para sintaxe em português**
 
-O compilador é desenvolvido utilizando as ferramentas clássicas de construção de compiladores: **Flex** para análise léxica e **Bison** para análise sintática, com implementação em C. O sistema traduz código-fonte escrito com comandos em português para C padrão, permitindo que o programa seja executado normalmente em qualquer ambiente que suporte C.
+Este projeto implementa um tradutor que converte código-fonte C padrão para código em Portugol (português estruturado). O objetivo é facilitar o ensino de programação em português, permitindo que estudantes visualizem conceitos de programação usando palavras-chave em sua língua nativa.
 
-## 📂 Estrutura do Repositório
+O tradutor funciona em **modo manual**, realizando substituição inteligente de palavras-chave C por seus equivalentes em português, preservando a estrutura e lógica do código original.
 
-```
-.
-├── build/                  # Diretório para arquivos compilados
-├── docs/                   # Documentação do projeto
-│   ├── CONTRIBUTING.md     # Guia de contribuição
-│   ├── design/             # Documentos de design do compilador
-│   └── grammar/            # Definição formal da gramática
-├── include/                # Arquivos de cabeçalho
-│   ├── ast/                # Estruturas da Árvore Sintática Abstrata (AST)
-│   └── tokens/             # Definições de tokens
-├── src/                    # Código-fonte
-│   ├── codegen/            # Geração de código
-│   ├── lexer/              # Analisador léxico (Flex)
-│   │   └── lexer.l         # Arquivo Flex para análise léxica
-│   ├── main.c              # Ponto de entrada da aplicação
-│   ├── parser/             # Analisador sintático (Bison)
-│   │   └── parser.y        # Arquivo Bison para análise sintática
-│   └── semantic/           # Análise semântica
-├── tests/                  # Testes do compilador
-│   └── teste1.txt          # Exemplo de arquivo de teste
-├── .gitignore              # Arquivos ignorados pelo Git
-├── Makefile                # Regras de compilação do projeto
-└── README.md               # Este arquivo
-```
+## Funcionalidades
 
-## 📁 Acesso ao projeto
+- **Tradução de tipos de dados**: `int` → `inteiro`, `float` → `real`, `char` → `caractere`
+- **Tradução de estruturas de controle**: `if` → `se`, `else` → `senao`, `while` → `enquanto`
+- **Tradução de palavras-chave**: `main` → `principal`, `return` → `retorne`, `for` → `para`
+- **Preservação de sintaxe**: Operadores, parênteses e estrutura mantidos
+- **Processamento de comentários**: Comentários preservados integralmente
+- **Modo standalone**: Funciona sem dependências externas
+- **Multiplataforma**: Funciona em Windows, Linux e macOS
 
-Você pode [acessar o código fonte do projeto](https://github.com/ccarlaa/Compiladores---Grupo-5) ou [baixá-lo](https://github.com/ccarlaa/Compiladores---Grupo-5/archive/refs/heads/main.zip).
-
-## 🛠️ Abrir e rodar o projeto
-
-Após baixar o projeto, você pode abri-lo com o Visual Studio Code. Para isso, na tela de launcher clique em:
-
-1. File > Open Folder
-2. Procure o local onde o projeto está e o selecione (Caso o projeto seja baixado via zip, é necessário extraí-lo antes de procurá-lo)
-3. Por fim clique em Abrir
+## Instalação e Compilação
 
 ### Pré-requisitos
 
-Certifique-se de ter os seguintes pré-requisitos instalados:
+O projeto requer apenas um compilador C (GCC ou similar). Não há dependências externas.
 
-```bash
-# Ubuntu/Debian
-sudo apt-get install flex bison build-essential
+#### Windows
+```cmd
+# Instalar MinGW-w64 ou usar Visual Studio
+# Download: https://www.mingw-w64.org/downloads/
+# Ou usar chocolatey:
+choco install mingw
 
-# Fedora
-sudo dnf install flex bison gcc make
-
-# Arch Linux
-sudo pacman -S flex bison gcc make
-
-# macOS (usando Homebrew)
-brew install flex bison gcc
-
-# Windows (usando MSYS2/MinGW)
-pacman -S flex bison gcc make
+# Verificar instalação
+gcc --version
 ```
 
-### Compilando e Executando no Linux
-
-Para compilar e executar no Linux, você pode usar o script incluído:
-
+#### Linux (Ubuntu/Debian)
 ```bash
-# Tornar o script executável
-chmod +x compilar-linux.sh
+sudo apt update
+sudo apt install build-essential
 
-# Executar o script
-./compilar-linux.sh
+# Verificar instalação
+gcc --version
 ```
 
-O script irá:
-1. Verificar e instalar as dependências necessárias
-2. Compilar o projeto
-3. Oferecer a opção de executar o teste padrão
-
-### Compilando e Executando no macOS
-
-Para compilar e executar no macOS, você pode usar o script incluído:
-
+#### Linux (Fedora/CentOS)
 ```bash
-# Tornar o script executável
-chmod +x compilar-macos.sh
+sudo dnf install gcc make
+# ou para CentOS mais antigo:
+sudo yum install gcc make
 
-# Executar o script
-./compilar-macos.sh
+# Verificar instalação
+gcc --version
 ```
 
-O script irá:
-1. Verificar e instalar as dependências necessárias usando Homebrew
-2. Compilar o projeto
-3. Oferecer a opção de executar o teste padrão
-
-### Instalação do Flex e Bison no Windows
-
-Para instalar o Flex e o Bison no Windows, você pode usar o MSYS2:
-
-1. Baixe e instale o [MSYS2](https://www.msys2.org/)
-2. Abra o terminal do MSYS2 MinGW64
-3. Execute os seguintes comandos:
-
+#### macOS
 ```bash
-pacman -Syu
-pacman -S mingw-w64-x86_64-gcc mingw-w64-x86_64-flex mingw-w64-x86_64-bison make
+# Instalar Xcode Command Line Tools
+xcode-select --install
+
+# Ou usar Homebrew
+brew install gcc
+
+# Verificar instalação
+gcc --version
 ```
 
-4. Adicione o diretório `C:\msys64\mingw64\bin` ao PATH do Windows:
-   - Clique com o botão direito em "Este Computador" > Propriedades
-   - Clique em "Configurações avançadas do sistema"
-   - Clique em "Variáveis de ambiente"
-   - Edite a variável "Path" e adicione o diretório
+### Compilação
 
-5. Para compilar o projeto, execute:
+#### Método 1: Usando Make (Recomendado)
 
+**Windows:**
+```cmd
+make
+```
+
+**Linux/macOS:**
 ```bash
 make
 ```
 
-6. Para executar um teste com um arquivo de entrada:
+#### Método 2: Compilação Direta
+
+**Windows:**
+```cmd
+gcc -std=c99 -Wall -Wextra -DMANUAL_MODE -o compilador.exe src\main.c
+```
+
+**Linux/macOS:**
+```bash
+gcc -std=c99 -Wall -Wextra -DMANUAL_MODE -o compilador src/main.c
+```
+
+#### Método 3: Scripts de Compilação
+
+**Windows:**
+```cmd
+compilar_simples.bat
+```
+
+**Linux:**
+```bash
+chmod +x compilar-linux.sh
+./compilar-linux.sh
+```
+
+**macOS:**
+```bash
+chmod +x compilar-macos.sh
+./compilar-macos.sh
+```
+
+## Uso
+
+### Sintaxe Básica
 
 ```bash
-# Executa o teste padrão (teste1.txt)
+# Traduzir arquivo e exibir no terminal
+./compilador programa.c                    # Linux/Mac
+compilador.exe programa.c                  # Windows
+
+# Traduzir arquivo e salvar em arquivo
+./compilador programa.c -o programa.ptg    # Linux/Mac  
+compilador.exe programa.c -o programa.ptg  # Windows
+
+# Ver ajuda
+./compilador --help                        # Linux/Mac
+compilador.exe --help                      # Windows
+```
+
+### Comandos Make Disponíveis
+
+```bash
+make              # Compila o tradutor
+make test         # Executa teste básico  
+make test-all     # Executa todos os testes
+make clean        # Remove arquivos compilados
+make help         # Mostra ajuda completa
+
+# Específicos por sistema
+make windows      # Compila para Windows (.exe)
+make linux        # Compila para Linux
+make macos        # Compila para macOS
+```
+
+### Exemplo de Tradução
+
+**Entrada (C):**
+```c
+#include <stdio.h>
+
+int main() {
+    int x = 10;
+    float y = 3.14;
+    
+    if (x > 5) {
+        printf("Maior que 5");
+        return 1;
+    }
+    
+    while (x > 0) {
+        x = x - 1;
+    }
+    
+    return 0;
+}
+```
+
+**Saída (Portugol):**
+```portugol
+#inclua <stdio.h>
+
+inteiro principal() {
+    inteiro x = 10;
+    real y = 3.14;
+    
+    se (x > 5) {
+        escreva("Maior que 5");
+        retorne 1;
+    }
+    
+    enquanto (x > 0) {
+        x = x - 1;
+    }
+    
+    retorne 0;
+}
+```
+
+## Testes
+
+O projeto inclui uma suite de testes para validar as traduções:
+
+### Executar Testes
+
+```bash
+# Teste básico
 make test
 
-# Executa um teste específico
-make run TEST=seu_arquivo_de_teste.txt
+# Todos os testes
+make test-all
 
-# Ou diretamente
-./build/compilador < tests/seu_arquivo_de_teste.txt
+# Teste individual (exemplo)
+./compilador tests/test_01_basic.c           # Linux/Mac
+compilador.exe tests\test_01_basic.c         # Windows
 ```
 
-7. Outras opções de compilação e execução:
+### Arquivos de Teste Incluídos
 
-```bash
-# Compilar em modo debug (com informações para depuração)
-make DEBUG=1
+- `test_01_basic.c` - Declarações básicas de variáveis
+- `test_02_conditionals.c` - Estruturas condicionais (if/else)
+- `test_03_loops.c` - Estruturas de repetição (while/for)
+- `test_04_functions.c` - Funções e parâmetros
+- `test_05_expressions.c` - Expressões complexas
 
-# Limpar arquivos gerados
-make clean
+## Estrutura do Projeto
 
-# Limpar completamente (remove diretório build)
-make distclean
-
-# Gerar documentação (quando implementado)
-make docs
+```
+Compiladores---Grupo-5/
+├── src/
+│   └── main.c              # Código principal do tradutor
+├── tests/                  # Arquivos de teste
+│   ├── test_01_basic.c
+│   ├── test_02_conditionals.c
+│   ├── test_03_loops.c
+│   ├── test_04_functions.c
+│   └── test_05_expressions.c
+├── .github/
+│   └── workflows/
+│       └── ci.yml          # GitHub Actions para CI/CD
+├── compilador.exe          # Executável (Windows)
+├── compilador              # Executável (Linux/Mac)
+├── Makefile                # Build system multiplataforma
+├── compilar_simples.bat    # Script de compilação Windows
+├── compilar-linux.sh       # Script de compilação Linux
+├── compilar-macos.sh       # Script de compilação macOS
+└── README.md               # Esta documentação
 ```
 
-### Compilando no Windows
+## Acesso ao Projeto
 
-Para facilitar a compilação no Windows, você pode usar o script batch fornecido:
+- **Repositório GitHub**: [Compiladores---Grupo-5](https://github.com/ccarlaa/Compiladores---Grupo-5)
+- **Download ZIP**: [Baixar projeto](https://github.com/ccarlaa/Compiladores---Grupo-5/archive/refs/heads/main.zip)
 
-```batch
-compilar.bat
-```
+## Integração Contínua
 
-Este script irá:
+O projeto utiliza GitHub Actions para automatizar testes em múltiplas plataformas:
 
-1. Verificar se o Flex e o Bison estão instalados
-2. Compilar os arquivos fonte
-3. Gerar o executável `compilador.exe`
-4. Oferecer a opção de executar o teste padrão
+- **Windows**: Testa com MinGW-w64
+- **Linux**: Testa com GCC em Ubuntu
+- **macOS**: Testa com GCC via Homebrew
 
-### Usando Docker
+Os testes são executados automaticamente a cada push e pull request.
 
-O projeto inclui suporte para Docker, permitindo que você compile e execute o compilador em qualquer plataforma que suporte Docker, sem a necessidade de instalar dependências localmente.
+## Solução de Problemas
 
-```bash
-# Tornar o script executável (Linux/macOS)
-chmod +x docker-run.sh
+### Erro: "gcc não encontrado"
+**Windows**: Instale MinGW-w64 ou Visual Studio Build Tools  
+**Linux**: `sudo apt install build-essential` (Ubuntu/Debian)  
+**macOS**: `xcode-select --install` ou `brew install gcc`
 
-# Executar o script
-./docker-run.sh
-```
+### Erro: "make não encontrado" 
+**Windows**: Use Git Bash ou instale via MSYS2  
+**Linux**: `sudo apt install make` (Ubuntu/Debian)  
+**macOS**: Incluído no Xcode Command Line Tools
 
-Para Windows, você pode construir e executar a imagem Docker diretamente:
+### Compilação falhando
+1. Verifique se o GCC está instalado: `gcc --version`
+2. Compile diretamente: `gcc -std=c99 -DMANUAL_MODE -o compilador src/main.c`
+3. Verifique se o arquivo `src/main.c` existe
 
-```bash
-# Construir a imagem
-docker build -t c-em-portugues .
+## Membros do Grupo
 
-# Executar um teste
-docker run --rm -it c-em-portugues /bin/bash -c "cd /app && ./build/compilador < tests/teste1.txt"
+| Nome | GitHub |
+|------|--------|
+| Carla A. C. Ribeiro | [@ccarlaa](https://github.com/ccarlaa) |
+| Clara Marcelino Ribeiro de Sousa | [@clara-ribeiro](https://github.com/clara-ribeiro) |
+| Kallyne Macedo Passos | [@kalipassos](https://github.com/kalipassos) |
+| Kauan de Torres Eiras | [@kauaneiras](https://github.com/kauaneiras) |
+| Leonardo Sobrinho de Aguiar | [@Leonardo0o0](https://github.com/Leonardo0o0) |
+| João Paulo Barros de Cristo | [@joaopb1-xps](https://github.com/joaopb1-xps) |
 
-# Ou iniciar um shell interativo
-docker run --rm -it c-em-portugues
-```
+---
 
-## Opções de Compilação e Execução
-
-```bash
-# Executa o teste padrão (teste1.txt)
-make test
-
-# Executa um teste específico
-make run TEST=seu_arquivo_de_teste.txt
-
-# Ou diretamente
-./build/compilador < tests/seu_arquivo_de_teste.txt
-
-# Compilar em modo debug (com informações para depuração)
-make DEBUG=1
-
-# Limpar arquivos gerados
-make clean
-
-# Limpar completamente (remove diretório build)
-make distclean
-
-# Gerar documentação (quando implementado)
-make docs
-```
-
-## 👥 Membros do Grupo
-
-<div align="center">
-    <table>
-    <tr>
-        <th>Nome</th>
-        <th>GitHub</th>
-    </tr>
-    <tr>
-        <td>Carla A. C. Ribeiro</td>
-        <td><a href="https://github.com/ccarlaa">@ccarlaa</a></td>
-    </tr>
-    <tr>
-        <td>Clara Marcelino Ribeiro de Sousa </td>
-        <td><a href="https://github.com/clara-ribeiro">@clara-ribeiro</a></td>
-    </tr>
-    <tr>
-        <td>Kallyne Macedo Passos</td>
-        <td><a href="https://github.com/kalipassos">@kalipassos</a></td>
-    </tr>
-    <tr>
-        <td>Kauan de Torres Eiras</td>
-       <td><a href="https://github.com/kauaneiras">@kauaneiras</a></td>
-    </tr>
-    <tr>
-        <td>Leonardo Sobrinho de Aguiar</td>
-        <td><a href="github.com/Leonardo0o0">@leonardo0o0</a></td>
-    </tr>
-        <tr>
-        <td>João Paulo Barros de Cristo</td>
-        <td><a href="github.com/joaopb1-xps">@joaopb1-xps</a></td>
-    </tr>
-    </table>
-</div>
+**Universidade de Brasília (UnB)**  
+**Disciplina**: Compiladores  
+**Projeto**: Tradutor C para Portugol
