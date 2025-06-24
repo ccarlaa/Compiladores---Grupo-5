@@ -1,0 +1,22 @@
+programa
+{
+    funcao inicio()
+    {
+        inteiro count = 0
+        enquanto (count < 5)
+        {
+            se (count % 2 == 0)
+            {
+                escreva("Even: ")
+                escreva(count)
+            }
+            senao
+            {
+                escreva("Odd: ")
+                escreva(count)
+            }
+            count = count + 1
+        }
+        // retorne 0
+    }
+}
