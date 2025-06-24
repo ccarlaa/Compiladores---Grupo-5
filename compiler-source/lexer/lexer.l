@@ -19,6 +19,8 @@ char* dupstr(const char* s) {
 
 /* Definições para evitar warnings de 'flex' não utilizado */
 %option noyywrap nounput noinput
+/* Habilita o Flex a contar o número de linhas */
+%option yylineno
 
 /* Definições de padrões para facilitar a leitura */
 DIGITO              [0-9]
@@ -105,9 +107,10 @@ CARACTERE           \'(.|\\.)\'
 ":"                 { return T_COLON; }
 
 
+ /* Captura strings que abriram mas não foram terminadas */
+\"([^\"\\]|\\.)*$    { fprintf(stderr, "Erro lexico na linha %d: string não terminada\n", yylineno); exit(1); }
 
-
- /* Trata qualquer outro caractere como um erro */
-.                   { fprintf(stderr, "Erro lexico: Caractere inesperado '%s'\n", yytext); }
+ /* Mensagem de erro léxico genérico com indicação de linha */
+.                   { fprintf(stderr, "Erro lexico na linha %d: Caractere inesperado '%s'\n", yylineno, yytext); exit(1); }
 
 %%
