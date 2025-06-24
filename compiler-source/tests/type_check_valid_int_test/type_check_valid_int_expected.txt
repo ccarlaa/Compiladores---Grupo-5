@@ -1,0 +1,37 @@
+
+===== ÁRVORE AST =====
+PROGRAM (programa)
+└── FUNCTION (main)
+    ├── TYPE (inteiro)
+    └── BLOCK
+        ├── DECLARATION_LIST
+        │   ├── DECLARATION (x)
+        │   │   └── TYPE (inteiro)
+        │   └── EMPTY
+        └── STATEMENT_LIST
+            ├── ASSIGNMENT (=)
+            │   ├── IDENTIFIER (x)
+            │   └── CONST_INT (10)
+            └── STATEMENT_LIST
+                ├── RETURN
+                │   └── CONST_INT (0)
+                └── EMPTY
+========================
+
+
+===== TABELA DE SÍMBOLOS =====
+NOME C               NOME PORTUGOL        TIPO            ESCOPO    
+----------------------------------------
+x                    x                    inteiro         0         
+main                 main                 inteiro         0         
+==============================
+
+programa
+{
+    funcao inicio()
+    {
+        inteiro x
+        x = 10
+        // retorne 0
+    }
+}
