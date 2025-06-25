@@ -5,6 +5,9 @@
 #include <string.h>
 #include "conversor.h"
 #include "ast.h"
+#include "y.tab.h"
+
+extern int yylineno;
 
 void yyerror(const char *s);
 int yylex(void);
@@ -150,12 +153,11 @@ declaration:
     type_specifier declarator T_SEMICOLON
     {
         $$ = create_declaration_node($1, $2, NULL);
-        insert_symbol($2, $1, current_scope);
-        free($1); free($2);
-    }
-    | type_specifier declarator T_ASSIGN expression T_SEMICOLON
-    {
-        $$ = create_declaration_node($1, $2, $4);
+        if (lookup_symbol($2) != NULL) {
+            char msg[256];
+            snprintf(msg, sizeof(msg), "Erro semântico na linha %d: Variável '%s' já declarada.", yylineno, $2);
+            yyerror(msg);
+        }
         insert_symbol($2, $1, current_scope);
         free($1); free($2);
     }
@@ -303,9 +305,24 @@ assignment_statement:
     T_ID T_ASSIGN expression T_SEMICOLON
     {
         if (lookup_symbol($1) == NULL) {
-            fprintf(stderr, "Erro semântico: Variável '%s' não declarada antes da atribuição.\n", $1);
-            yyerror("Variável não declarada");
+            char msg[256];
+            snprintf(msg, sizeof(msg), "Erro semântico na linha %d: Variável '%s' não declarada.", yylineno, $1);
+            yyerror(msg);
         }
+
+        // Recupera tipo da variável na tabela de símbolos
+        Symbol *sym = lookup_symbol($1);
+        char *tipo_variavel = sym->type;
+
+        // Recupera tipo da expressão (somente para literais inicialmente)
+        char *tipo_expressao = $3->data_type;
+
+        if (tipo_expressao != NULL && strcmp(tipo_variavel, tipo_expressao) != 0) {
+            char msg[256];
+            snprintf(msg, sizeof(msg), "Erro de tipo na linha %d: não é possível atribuir %s em %s.", yylineno, tipo_expressao, tipo_variavel);
+            yyerror(msg);
+        }
+
         $$ = create_assignment_node("=", 
             create_node(NODE_IDENTIFIER, $1), 
             $3);
@@ -319,17 +336,6 @@ assignment_statement:
         }
         ASTNode *lhs = create_node(NODE_IDENTIFIER, $1);
         ASTNode *rhs = create_binary_op("+", lhs, $3);
-        $$ = create_assignment_node("=", lhs, rhs);
-        free($1);
-    }
-    | T_ID T_MINUS_ASSIGN expression T_SEMICOLON
-    {
-        if (lookup_symbol($1) == NULL) {
-            fprintf(stderr, "Erro semântico: Variável '%s' não declarada antes da atribuição.\n", $1);
-            yyerror("Variável não declarada");
-        }
-        ASTNode *lhs = create_node(NODE_IDENTIFIER, $1);
-        ASTNode *rhs = create_binary_op("-", lhs, $3);
         $$ = create_assignment_node("=", lhs, rhs);
         free($1);
     }
@@ -442,26 +448,39 @@ if_statement:
 // Regra function_call_statement removida para corrigir erros de gramática
 
 expression:
-    T_ID                     {
-        // Verificar se a variável foi declarada antes do uso
+    T_ID
+    {
         Symbol *sym = lookup_symbol($1);
         if (sym == NULL) {
-            fprintf(stderr, "Erro semântico: Variável '%s' usada, mas não declarada\n", $1);
-            yyerror("erro semântico: variável não declarada");
+            char msg[256];
+            snprintf(msg, sizeof(msg), "Erro semântico na linha %d: Variável '%s' não declarada.", yylineno, $1);
+            yyerror(msg);
         }
         $$ = create_node(NODE_IDENTIFIER, $1);
+        $$->data_type = strdup(sym->type);
     }
-    | T_NUMBER_INT           { 
+    | T_NUMBER_INT           
+    { 
         char num[20]; 
         sprintf(num, "%d", $1); 
         $$ = create_node(NODE_CONST_INT, num); 
+        $$->data_type = strdup("inteiro");
     }
-    | T_NUMBER_FLOAT         { 
-        // Directly use the string representation from the lexer
+    | T_NUMBER_FLOAT         
+    { 
         $$ = create_node(NODE_CONST_FLOAT, $1); 
+        $$->data_type = strdup("real");
     }
-    | T_STRING               { $$ = create_node(NODE_CONST_STRING, $1); }
-    | T_CHAR_LITERAL         { $$ = create_node(NODE_CONST_CHAR, $1); }
+    | T_STRING               
+    { 
+        $$ = create_node(NODE_CONST_STRING, $1); 
+        $$->data_type = strdup("string");
+    }
+    | T_CHAR_LITERAL         
+    { 
+        $$ = create_node(NODE_CONST_CHAR, $1); 
+        $$->data_type = strdup("caracter");
+    }
     | expression T_PLUS expression    { $$ = create_binary_op("+", $1, $3); }
     | expression T_MINUS expression   { $$ = create_binary_op("-", $1, $3); }
     | expression T_MULT expression    { $$ = create_binary_op("*", $1, $3); }
@@ -541,6 +560,6 @@ ASTNode* create_unary_op(char *op, ASTNode *operand) {
 }
 
 void yyerror(const char *s) {
-    fprintf(stderr, "Erro de sintaxe: %s\n", s);
+    fprintf(stderr, "%s\n", s);
     exit(1);
 }

@@ -1,0 +1,1 @@
+Erro de tipo na linha 1: não é possível atribuir caracter em inteiro.
