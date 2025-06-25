@@ -1,0 +1,19 @@
+programa
+{
+    funcao inicio()
+    {
+        inteiro i = 0
+        enquanto (i < 3)
+        {
+            inteiro j = 0
+            enquanto (j < 2)
+            {
+                escreva(i)
+                escreva(j)
+                j = j + 1
+            }
+            i = i + 1
+        }
+        // retorne 0
+    }
+}

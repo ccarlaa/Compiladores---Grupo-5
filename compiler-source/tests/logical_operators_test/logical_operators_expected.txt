@@ -1,0 +1,25 @@
+programa
+{
+    funcao inicio()
+    {
+        inteiro x = 10
+        inteiro y = 5
+        inteiro z = 15
+
+        se (x > y e z > x)
+        {
+            escreva("Both conditions are true")
+        }
+
+        se (x < y ou z > y)
+        {
+            escreva("At least one condition is true")
+        }
+
+        se (nao (x == y))
+        {
+            escreva("x is not equal to y")
+        }
+        // retorne 0
+    }
+}
