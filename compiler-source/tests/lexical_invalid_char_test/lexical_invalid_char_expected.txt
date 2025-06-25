@@ -1,0 +1,1 @@
+Erro lexico na linha 2: Caractere inesperado '@'
