@@ -5,6 +5,9 @@
 #include <string.h>
 #include "conversor.h"
 #include "ast.h"
+#include "y.tab.h"
+
+extern int yylineno;
 
 void yyerror(const char *s);
 int yylex(void);
@@ -198,12 +201,22 @@ declaration:
     type_specifier declarator T_SEMICOLON
     {
         $$ = create_declaration_node($1, $2, NULL);
+        if (lookup_symbol($2) != NULL) {
+            char msg[256];
+            snprintf(msg, sizeof(msg), "Erro semântico na linha %d: Variável '%s' já declarada.", yylineno, $2);
+            yyerror(msg);
+        }
         insert_symbol($2, $1, current_scope);
         free($1); free($2);
     }
     | type_specifier declarator T_ASSIGN expression T_SEMICOLON
     {
         $$ = create_declaration_node($1, $2, $4);
+        if (lookup_symbol($2) != NULL) {
+            char msg[256];
+            snprintf(msg, sizeof(msg), "Erro semântico na linha %d: Variável '%s' já declarada.", yylineno, $2);
+            yyerror(msg);
+        }
         insert_symbol($2, $1, current_scope);
         free($1); free($2);
     }
@@ -350,9 +363,11 @@ assignment_statement:
     T_ID T_ASSIGN expression T_SEMICOLON
     {
         if (lookup_symbol($1) == NULL) {
-            fprintf(stderr, "Erro semântico: Variável '%s' não declarada antes da atribuição.\n", $1);
-            yyerror("Variável não declarada");
+            char msg[256];
+            snprintf(msg, sizeof(msg), "Erro semântico na linha %d: Variável '%s' não declarada.", yylineno, $1);
+            yyerror(msg);
         }
+
         $$ = create_assignment_node("=", 
             create_node(NODE_IDENTIFIER, $1), 
             $3);
@@ -361,9 +376,11 @@ assignment_statement:
     | T_ID T_PLUS_ASSIGN expression T_SEMICOLON
     {
         if (lookup_symbol($1) == NULL) {
-            fprintf(stderr, "Erro semântico: Variável '%s' não declarada antes da atribuição.\n", $1);
-            yyerror("Variável não declarada");
+            char msg[256];
+            snprintf(msg, sizeof(msg), "Erro semântico na linha %d: Variável '%s' não declarada.", yylineno, $1);
+            yyerror(msg);
         }
+
         ASTNode *lhs = create_node(NODE_IDENTIFIER, $1);
         ASTNode *rhs = create_binary_op("+", lhs, $3);
         $$ = create_assignment_node("=", lhs, rhs);
@@ -372,9 +389,11 @@ assignment_statement:
     | T_ID T_MINUS_ASSIGN expression T_SEMICOLON
     {
         if (lookup_symbol($1) == NULL) {
-            fprintf(stderr, "Erro semântico: Variável '%s' não declarada antes da atribuição.\n", $1);
-            yyerror("Variável não declarada");
+            char msg[256];
+            snprintf(msg, sizeof(msg), "Erro semântico na linha %d: Variável '%s' não declarada.", yylineno, $1);
+            yyerror(msg);
         }
+
         ASTNode *lhs = create_node(NODE_IDENTIFIER, $1);
         ASTNode *rhs = create_binary_op("-", lhs, $3);
         $$ = create_assignment_node("=", lhs, rhs);
@@ -577,7 +596,8 @@ ASTNode* create_unary_op(char *op, ASTNode *operand) {
     return unop;
 }
 
+// Mensagem de erro sintático com linha
 void yyerror(const char *s) {
-    fprintf(stderr, "Erro de sintaxe: %s\n", s);
+    fprintf(stderr, "%s\n", s);
     exit(1);
 }
