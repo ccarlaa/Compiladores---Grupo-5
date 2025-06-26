@@ -254,6 +254,9 @@ declaration:
             snprintf(msg, sizeof(msg), "Erro semântico na linha %d: Variável '%s' já declarada.", yylineno, $2);
             yyerror(msg);
         }
+        insert_symbol($2, $1, current_scope);
+        free($1); free($2);
+    }
     ;
 
 declarator:
@@ -403,19 +406,6 @@ assignment_statement:
             yyerror(msg);
         }
 
-        // Recupera tipo da variável na tabela de símbolos
-        Symbol *sym = lookup_symbol($1);
-        char *tipo_variavel = sym->type;
-
-        // Recupera tipo da expressão (somente para literais inicialmente)
-        char *tipo_expressao = $3->data_type;
-
-        if (tipo_expressao != NULL && strcmp(tipo_variavel, tipo_expressao) != 0) {
-            char msg[256];
-            snprintf(msg, sizeof(msg), "Erro de tipo na linha %d: não é possível atribuir %s em %s.", yylineno, tipo_expressao, tipo_variavel);
-            yyerror(msg);
-        }
-
         $$ = create_assignment_node("=", 
             create_node(NODE_IDENTIFIER, $1), 
             $3);
@@ -546,39 +536,26 @@ if_statement:
     ;
 
 expression:
-    T_ID
-    {
+    T_ID                     {
+        // Verificar se a variável foi declarada antes do uso
         Symbol *sym = lookup_symbol($1);
         if (sym == NULL) {
-            char msg[256];
-            snprintf(msg, sizeof(msg), "Erro semântico na linha %d: Variável '%s' não declarada.", yylineno, $1);
-            yyerror(msg);
+            fprintf(stderr, "Erro semântico: Variável '%s' usada, mas não declarada\n", $1);
+            yyerror("erro semântico: variável não declarada");
         }
         $$ = create_node(NODE_IDENTIFIER, $1);
-        $$->data_type = strdup(sym->type);
     }
-    | T_NUMBER_INT           
-    { 
+    | T_NUMBER_INT           { 
         char num[20]; 
         sprintf(num, "%d", $1); 
         $$ = create_node(NODE_CONST_INT, num); 
-        $$->data_type = strdup("inteiro");
     }
-    | T_NUMBER_FLOAT         
-    { 
+    | T_NUMBER_FLOAT         { 
+        // Directly use the string representation from the lexer
         $$ = create_node(NODE_CONST_FLOAT, $1); 
-        $$->data_type = strdup("real");
     }
-    | T_STRING               
-    { 
-        $$ = create_node(NODE_CONST_STRING, $1); 
-        $$->data_type = strdup("string");
-    }
-    | T_CHAR_LITERAL         
-    { 
-        $$ = create_node(NODE_CONST_CHAR, $1); 
-        $$->data_type = strdup("caracter");
-    }
+    | T_STRING               { $$ = create_node(NODE_CONST_STRING, $1); }
+    | T_CHAR_LITERAL         { $$ = create_node(NODE_CONST_CHAR, $1); }
     | expression T_PLUS expression    { $$ = create_binary_op("+", $1, $3); }
     | expression T_MINUS expression   { $$ = create_binary_op("-", $1, $3); }
     | expression T_MULT expression    { $$ = create_binary_op("*", $1, $3); }
