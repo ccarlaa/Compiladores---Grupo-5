@@ -20,6 +20,6 @@ programa
         {
             escreva("x is not equal to y")
         }
-        // retorne 0
+        retorne 0
     }
 }

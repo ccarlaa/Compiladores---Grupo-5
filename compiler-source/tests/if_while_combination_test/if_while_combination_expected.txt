@@ -17,6 +17,6 @@ programa
             }
             count = count + 1
         }
-        // retorne 0
+        retorne 0
     }
 }

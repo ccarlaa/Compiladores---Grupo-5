@@ -12,6 +12,6 @@ programa
         {
             escreva("menor ou igual")
         }
-        // retorne 0
+        retorne 0
     }
 }

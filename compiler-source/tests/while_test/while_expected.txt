@@ -9,6 +9,6 @@ programa
             escreva(i)
             i = i + 1
         }
-        // retorne 0
+        retorne 0
     }
 }

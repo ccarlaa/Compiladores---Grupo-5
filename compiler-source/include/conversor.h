@@ -3,7 +3,8 @@
 
 #include "ast.h"
 
-typedef struct Symbol {
+typedef struct Symbol
+{
     char *c_name;        // Nome original em C
     char *portugol_name; // Nome convertido para Portugol
     char *type;          // Tipo de dado (ex: "inteiro", "real")
@@ -12,12 +13,14 @@ typedef struct Symbol {
 } Symbol;
 
 void init_symbol_table();
-Symbol* insert_symbol(const char *c_name, const char *type, int scope);
-Symbol* lookup_symbol(const char *c_name);
+Symbol *insert_symbol(const char *c_name, const char *type, int scope);
+Symbol *lookup_symbol(const char *c_name);
+void add_parameters_to_symbol_table(ASTNode *param_list_node);
 void free_symbol_table();
 void generate_portugol(ASTNode *node);
-const char* c_type_to_portugol(const char *c_type);
+const char *c_type_to_portugol(const char *c_type);
 void print_symbol_table(void);
 void print_symbol_table_stderr(void);
 
+extern int current_scope;
 #endif

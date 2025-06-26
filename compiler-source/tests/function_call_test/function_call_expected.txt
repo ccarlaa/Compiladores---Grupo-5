@@ -1,0 +1,17 @@
+programa
+{
+    funcao inteiro calculate(inteiro a, inteiro b)
+    {
+        inteiro sum = a + b
+        escreva("The sum of ", a, " and ", b, " is: ", sum, "\n")    
+    
+    }
+    
+    funcao inicio()
+    {
+        calculate(15, 25)
+        calculate(7, 3)
+
+        retorne 0
+    }
+}
