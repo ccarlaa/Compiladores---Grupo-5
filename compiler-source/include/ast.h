@@ -25,6 +25,7 @@ typedef enum
     NODE_DO_WHILE,
     NODE_FOR,
     NODE_PRINTF,
+    NODE_PRINTF_ARGS,
     NODE_SCANF,
     NODE_RETURN,
     NODE_STRUCT,

@@ -1,0 +1,18 @@
+programa 
+{
+    funcao inteiro obterNumeroCurto()
+    {
+        inteiro x = 10
+        inteiro y = 20
+        inteiro z = x + y
+        retorne z
+    }
+
+    funcao inicio()
+    {
+        inteiro meuNumero = obterNumeroCurto()
+        escreva(meuNumero)
+
+        retorne 0
+}
+}

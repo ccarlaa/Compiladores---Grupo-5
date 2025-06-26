@@ -7,8 +7,8 @@ programa
 
         se (pi > 3)
         {
-            // retorne 1
+            retorne 1
         }
-        // retorne 0
+        retorne 0
     }
 }

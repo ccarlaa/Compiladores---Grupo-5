@@ -10,6 +10,6 @@ programa
         escreva(sum)
         escreva(product)
         escreva(grade)
-        // retorne 0
+        retorne 0
     }
 }

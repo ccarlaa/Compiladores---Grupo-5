@@ -1,18 +1,17 @@
-void calculate(int a, int b)
-{
-    int sum = a + b;
-    printf("The sum of %d and %d is: %d\n", a, b, sum);
-}
-
 int main()
 {
-
-    printf("Starting the program...");
-
-    calculate(15, 25);
-    calculate(7, 3);
-
-    printf("Program finished successfully.");
-
+    parameterTest(5, 10);
     return 0;
+}
+
+int parameterTest(int a, int b)
+{
+    int x;
+    x = a + b;
+
+    printf("\n--- TESTE DOS PARÂMETROS ---\n");
+    printf("Valor de a: %d\n", a);
+    printf("Valor de b: %d\n", b);
+    printf("Soma (a + b): %d\n", x);
+    printf("Os parâmetros estão funcionando corretamente!\n");
 }

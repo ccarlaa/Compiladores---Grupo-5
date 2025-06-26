@@ -9,6 +9,6 @@ programa
         {
             escreva("maior de idade")
         }
-        // retorne 0
+        retorne 0
     }
 }

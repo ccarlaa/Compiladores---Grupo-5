@@ -1,19 +1,20 @@
 programa
 {
-    funcao calcular(inteiro a, inteiro b)
-    {
-        inteiro soma = a + b
-        escreva("The sum of ", a, " and ", b, " is: ", soma, "\n")
-    }
-    
     funcao inicio()
     {
+        parameterTest(5, 10)
+        retorne 0
+    }
+    
+    funcao inteiro parameterTest(inteiro a, inteiro b)
+    {
+        inteiro x
+        x = a + b
 
-        escreva("Starting the program...")
-        
-        calcular(15, 25)
-        calcular(7, 3)
-        
-        escreva("Program finished successfully.")
+        escreva("\n", "--- TESTE DOS PARÂMETROS ---", "\n")
+        escreva("Valor de a: ", a, "\n")
+        escreva("Valor de b: ", b, "\n")
+        escreva("Soma (a + b): ", x, "\n")
+        escreva("Os parâmetros estão funcionando corretamente!", "\n")
     }
 }

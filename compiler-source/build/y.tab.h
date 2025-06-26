@@ -113,7 +113,8 @@ extern int yydebug;
     T_COMMA = 308,                 /* T_COMMA  */
     T_COLON = 309,                 /* T_COLON  */
     T_CONST = 310,                 /* T_CONST  */
-    T_UNSIGNED = 311               /* T_UNSIGNED  */
+    T_UNSIGNED = 311,              /* T_UNSIGNED  */
+    T_PRINTF_ARGS = 312            /* T_PRINTF_ARGS  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -129,7 +130,7 @@ union YYSTYPE
     float fval;
     ASTNode *ast;
 
-#line 133 "build/y.tab.h"
+#line 134 "build/y.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

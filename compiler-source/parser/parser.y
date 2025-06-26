@@ -49,6 +49,7 @@ static ASTNode *if_node_temp = NULL;
 %token T_AND T_OR T_NOT
 %token T_LPAREN T_RPAREN T_LBRACE T_RBRACE T_SEMICOLON T_COMMA T_COLON
 %token T_CONST T_UNSIGNED
+%token T_PRINTF_ARGS
 
 /* --- Precedência --- */
 %right T_ASSIGN T_PLUS_ASSIGN T_MINUS_ASSIGN
@@ -71,6 +72,8 @@ static ASTNode *if_node_temp = NULL;
 %type <ast> do_while_statement for_statement break_statement continue_statement
 %type <ast> increment_statement decrement_statement declaration_or_expression
 %type <ast> block
+%type <ast> function_call argument_list
+%type <ast> printf_args
 %type <sval> type_specifier declarator direct_declarator pointer
 
 
@@ -106,39 +109,43 @@ function_list:
     ;
 
 function_declaration:
-    type_specifier T_ID T_LPAREN function_parameter T_RPAREN T_LBRACE
+    type_specifier T_ID T_LPAREN function_parameter T_RPAREN
     {
-        // Inserir símbolo na tabela
-        insert_symbol($2, $1, 0);
-        
-        // Criar nó da função
+        current_scope++;
+
+        insert_symbol($2, $1, current_scope - 1);
+
+        add_parameters_to_symbol_table($4);
+
         ASTNode *func_node = create_node(NODE_FUNCTION, strdup($2));
         ASTNode *type_node = create_node(NODE_TYPE, strdup($1));
-        ASTNode *param_list_node = $4; // Lista de parâmetros já criada
         ASTNode *body_node = create_node(NODE_BLOCK, NULL);
 
         add_child(func_node, type_node);
-        add_child(func_node, param_list_node);
+        add_child(func_node, $4); 
         add_child(func_node, body_node);
-        
-        // Armazenar em variáveis temporárias
+
         func_node_temp = func_node;
         body_node_temp = body_node;
     }
+    T_LBRACE
     declarations
     statements
     T_RBRACE
     {
-        add_child(body_node_temp, $8);
-        add_child(body_node_temp, $9);
-        
+        if ($8 && $8->type != NODE_EMPTY) {
+            add_child(body_node_temp, $8);
+        }
+        if ($9 && $9->type != NODE_EMPTY) {
+            add_child(body_node_temp, $9);
+        }
         
         $$ = func_node_temp;
         
+        current_scope--;
+
         func_node_temp = NULL;
         body_node_temp = NULL;
-        
-         free($1); free($2);
     }
     ;
 
@@ -166,7 +173,6 @@ parameter_list:
         
         $$ = param_list_node;
         
-        // free($1); free($2);
     }
     | parameter_list T_COMMA type_specifier declarator
     {
@@ -181,6 +187,37 @@ parameter_list:
         // free($3); free($4);
     }
     ;
+
+    function_call:
+    T_ID T_LPAREN argument_list T_RPAREN
+    {
+        ASTNode *call_node = create_node(NODE_FUNCTION_CALL, $1);
+        add_child(call_node, $3);
+        $$ = call_node;
+    }
+    ;
+
+argument_list:
+    %empty
+    {
+        // Retorna um nó de lista vazio se não houver argumentos
+        $$ = create_node(NODE_STATEMENT_LIST, NULL); 
+    }
+    | expression
+    {
+        // Cria uma lista com um único argumento
+        ASTNode *list = create_node(NODE_STATEMENT_LIST, NULL);
+        add_child(list, $1);
+        $$ = list;
+    }
+    | argument_list T_COMMA expression
+    {
+        // Adiciona um novo argumento à lista existente
+        add_child($1, $3);
+        $$ = $1;
+    }
+    ;
+
 declarations:
     %empty
     {
@@ -272,6 +309,7 @@ statement:
 
     | return_statement
     | assignment_statement
+    | function_call T_SEMICOLON { $$ = $1; }
     | T_SEMICOLON { $$ = create_node(NODE_EMPTY, NULL); }
     ;
 
@@ -531,14 +569,30 @@ expression:
         free($3);
     }
     | '*' expression                  { $$ = create_unary_op("*", $2); }
+    | function_call { $$ = $1; }
     ;
 
 printf_statement:
-    T_PRINTF T_LPAREN expression T_RPAREN T_SEMICOLON
+    printf_statement:
+    T_PRINTF T_LPAREN printf_args T_RPAREN T_SEMICOLON
     {
         ASTNode *printf_node = create_node(NODE_PRINTF, NULL);
         add_child(printf_node, $3);
         $$ = printf_node;
+    }
+    ;
+
+printf_args:
+    expression
+    {
+        ASTNode *args = create_node(NODE_PRINTF_ARGS, NULL);
+        add_child(args, $1);
+        $$ = args;
+    }
+    | printf_args T_COMMA expression
+    {
+        add_child($1, $3);
+        $$ = $1;
     }
     ;
 

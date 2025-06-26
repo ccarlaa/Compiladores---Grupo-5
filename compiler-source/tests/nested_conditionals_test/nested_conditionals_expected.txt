@@ -25,6 +25,6 @@ programa
         {
             escreva("a and b are equal")
         }
-        // retorne 0
+        retorne 0
     }
 }
