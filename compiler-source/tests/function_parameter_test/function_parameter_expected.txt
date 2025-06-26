@@ -1,0 +1,19 @@
+programa
+{
+    funcao calcular(inteiro a, inteiro b)
+    {
+        inteiro soma = a + b
+        escreva("The sum of ", a, " and ", b, " is: ", soma, "\n")
+    }
+    
+    funcao inicio()
+    {
+
+        escreva("Starting the program...")
+        
+        calcular(15, 25)
+        calcular(7, 3)
+        
+        escreva("Program finished successfully.")
+    }
+}

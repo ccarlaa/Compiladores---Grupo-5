@@ -65,7 +65,7 @@ static ASTNode *if_node_temp = NULL;
 %right '*'
 
 /* --- Tipos AST --- */
-%type <ast> function_list function_declaration declarations declaration
+%type <ast> function_list function_declaration declarations declaration function_parameter parameter_list
 %type <ast> statements statement expression assignment_statement
 %type <ast> if_statement while_statement return_statement scanf_statement printf_statement
 %type <ast> do_while_statement for_statement break_statement continue_statement
@@ -106,17 +106,22 @@ function_list:
     ;
 
 function_declaration:
-    type_specifier T_ID T_LPAREN T_RPAREN T_LBRACE
+    type_specifier T_ID T_LPAREN function_parameter T_RPAREN T_LBRACE
     {
+        // Inserir símbolo na tabela
         insert_symbol($2, $1, 0);
-        ASTNode *func_node = create_node(NODE_FUNCTION, $2);
-        ASTNode *type_node = create_node(NODE_TYPE, $1);
+        
+        // Criar nó da função
+        ASTNode *func_node = create_node(NODE_FUNCTION, strdup($2));
+        ASTNode *type_node = create_node(NODE_TYPE, strdup($1));
+        ASTNode *param_list_node = $4; // Lista de parâmetros já criada
         ASTNode *body_node = create_node(NODE_BLOCK, NULL);
 
         add_child(func_node, type_node);
+        add_child(func_node, param_list_node);
         add_child(func_node, body_node);
         
-        // Usar variáveis globais declaradas
+        // Armazenar em variáveis temporárias
         func_node_temp = func_node;
         body_node_temp = body_node;
     }
@@ -124,25 +129,68 @@ function_declaration:
     statements
     T_RBRACE
     {
-        // Usa as variáveis temporárias
-        add_child(body_node_temp, $7);
         add_child(body_node_temp, $8);
+        add_child(body_node_temp, $9);
+        
+        
         $$ = func_node_temp;
-        free($1); free($2);
+        
+        func_node_temp = NULL;
+        body_node_temp = NULL;
+        
+         free($1); free($2);
     }
     ;
 
+function_parameter:
+    %empty
+    {
+        $$ = create_node(NODE_PARAM_LIST, NULL);
+    }
+    | parameter_list
+    {
+        $$ = $1;
+    }
+    ;
+
+parameter_list:
+    type_specifier declarator
+    {
+        // Criar a lista de parâmetros
+        ASTNode *param_list_node = create_node(NODE_PARAM_LIST, NULL);
+        ASTNode *param_node = create_node(NODE_PARAMETER, strdup($2));
+        ASTNode *type_node = create_node(NODE_TYPE, strdup($1));
+        
+        add_child(param_node, type_node);
+        add_child(param_list_node, param_node);
+        
+        $$ = param_list_node;
+        
+        // free($1); free($2);
+    }
+    | parameter_list T_COMMA type_specifier declarator
+    {
+        ASTNode *param_node = create_node(NODE_PARAMETER, strdup($4));
+        ASTNode *type_node = create_node(NODE_TYPE, strdup($3));
+        
+        add_child(param_node, type_node);
+        add_child($1, param_node);
+        
+        $$ = $1;
+        
+        // free($3); free($4);
+    }
+    ;
 declarations:
     %empty
     {
-        $$ = create_node(NODE_EMPTY, NULL);
+        $$ = create_node(NODE_DECLARATION_LIST, NULL);
     }
-    | declaration declarations
+    | declarations declaration
     {
         ASTNode *decls = create_node(NODE_DECLARATION_LIST, NULL);
-        add_child(decls, $1);
-        add_child(decls, $2);
-        $$ = decls;
+        add_child($1, $2);
+        $$ = $1;
     }
     ;
 
@@ -204,14 +252,13 @@ type_specifier:
 statements:
     %empty
     {
-        $$ = create_node(NODE_EMPTY, NULL);
+        $$ = create_node(NODE_STATEMENT_LIST, NULL);
     }
-    | statement statements
+    | statements statement
     {
-        ASTNode *stmts = create_node(NODE_STATEMENT_LIST, NULL);
-        add_child(stmts, $1);
-        add_child(stmts, $2);
-        $$ = stmts;
+        add_child($1, $2);
+        
+        $$ = $1;
     }
     ;
 
@@ -430,16 +477,6 @@ if_statement:
         $$ = if_node;
     }
     ;
-
-
-
-// Switch statement e regras relacionadas removidas para corrigir erros de gramática
-
-// Regras case_statement e default_statement removidas para corrigir erros de gramática
-
-// Regra statement_list removida para corrigir erros de gramática
-
-// Regra function_call_statement removida para corrigir erros de gramática
 
 expression:
     T_ID                     {

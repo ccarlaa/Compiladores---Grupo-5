@@ -1,10 +1,12 @@
 #ifndef AST_H
 #define AST_H
 
-typedef enum {
+typedef enum
+{
     NODE_PROGRAM,
     NODE_FUNCTION,
     NODE_TYPE,
+    NODE_PARAMETER,
     NODE_PARAM_LIST,
     NODE_BLOCK,
     NODE_DECLARATION,
@@ -42,14 +44,15 @@ typedef enum {
     NODE_EMPTY
 } NodeType;
 
-typedef struct ASTNode {
+typedef struct ASTNode
+{
     NodeType type;
     char *value;
     struct ASTNode **children;
     int child_count;
 } ASTNode;
 
-ASTNode* create_node(NodeType type, const char *value);
+ASTNode *create_node(NodeType type, const char *value);
 void add_child(ASTNode *parent, ASTNode *child);
 void free_ast(ASTNode *node);
 void print_ast(ASTNode *node, int depth);
