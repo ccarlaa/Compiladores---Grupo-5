@@ -4,7 +4,7 @@ set -e
 
 PROJECT_DIR="compiler-source"
 TESTS_DIR="$PROJECT_DIR/bash"
-COVERAGE_FILE="$PROJECT_DIR/cobertura.txt"
+COVERAGE_FILE="$PROJECT_DIR/coverage_report.txt"
 TEMP_STDERR="/tmp/compilador_stderr.txt"
 
 cd "$PROJECT_DIR"
