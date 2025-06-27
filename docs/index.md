@@ -38,9 +38,10 @@ Esta documentação está organizada em seções para facilitar a consulta confo
 
 - **Guia do Usuário:** explica como instalar, compilar, executar e interpretar a saída do compilador.
 - **Documentação Técnica:** detalha o funcionamento interno, desde a análise léxica até a geração de código.
-- **Testes:** lista os testes implementados e explica como executá-los.
-- **Sprints:** apresenta o histórico de desenvolvimento da equipe com base na metodologia Scrum.
+- **Contribuição:** explica como deve ser feito a contribuição ao projeto.
 - **Atas de Reunião:** registra decisões e alinhamentos feitos durante o semestre.
+- **Sprints:** apresenta o histórico de desenvolvimento da equipe com base na metodologia Scrum.
+- **Referências:** os principais materiais usados para o desenvolvimento do projeto.
 
 ---
 

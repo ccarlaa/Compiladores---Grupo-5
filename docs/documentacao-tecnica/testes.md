@@ -41,21 +41,83 @@ Isso percorre todos os scripts da pasta `bash/` e exibe um resumo no terminal.
 
 ---
 
-## Análise de Cobertura
+## Cobertura de Gramática
 
-Para gerar um relatório de cobertura da gramática:
+O projeto implementa um mecanismo de **análise de cobertura gramatical** para verificar, durante os testes, quais produções da gramática foram de fato exercitadas. Isso ajuda a identificar partes da gramática que não foram validadas por testes automatizados.
 
-```bash
+### Como funciona
+
+- Cada produção no `parser.y` chama a função `rule_hit("nome_da_regra")` dentro de suas ações semânticas.
+- A função `rule_hit()` registra cada ocorrência em memória.
+- Ao final da execução do compilador, a função `print_grammar_coverage()` grava um relatório em `cobertura.txt`.
+
+### Exemplo de regra instrumentada
+
+```bison
+function_list:
+    %empty 
+    {
+        rule_hit("function_list_empty");
+        $$ = create_node(NODE_EMPTY, NULL);
+    }
+  | function_list function_declaration
+    {
+        rule_hit("function_list_append");
+        // ...
+    }
+;
+```
+
+### Exemplo de relatório (`cobertura.txt`)
+
+```
+Cobertura:
+program: 1
+function_list_empty: 1
+function_declaration: 1
+expression_int: 4
+...
+```
+
+Esse relatório mostra quantas vezes cada regra foi ativada durante os testes.
+
+---
+
+### Execução no Makefile
+
+O alvo `make coverage` automatiza esse processo:
+
+```make
 make coverage
 ```
 
-Esse comando executa os mesmos testes, mas captura as produções gramaticais ativadas, salvando o relatório em:
+Esse comando:
 
-```
-build/cobertura.txt
-```
+- Executa todos os scripts de teste
+- Redireciona os erros para `build/coverage_logs/stderr.log`
+- Extrai do `stderr` os blocos com `"COBERTURA DAS REGRAS DA GRAMÁTICA"` e salva em `cobertura.txt`
 
 ---
+
+### Integração com GitHub Actions
+
+Na integração contínua (CI), o relatório é publicado automaticamente:
+
+```yaml
+- name: 🔧 Compila e roda testes com cobertura
+  run: make coverage
+
+- name: 📤 Publica relatório de cobertura
+  uses: actions/upload-artifact@v4
+  with:
+    name: cobertura
+    path: compiler-source/cobertura.txt
+```
+
+Isso garante que a equipe possa acompanhar a evolução da cobertura gramatical diretamente no repositório.
+
+---
+
 
 ## Organização dos Scripts
 
