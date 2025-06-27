@@ -111,15 +111,15 @@ coverage: $(TARGET)
 # Alvo para limpar os arquivos gerados
 .PHONY: all clean test
 clean:
-	@echo "Limpando arquivos gerados..."
+	@echo "🗑️  Limpando arquivos gerados..."
 	rm -f $(TARGET)
 	rm -rf $(BUILD_DIR)
-	@echo "Limpeza concluída."
+	@echo "✅ Limpeza concluída."
 
 help:
 	@echo "Comandos disponíveis no Makefile:"
-	@echo "  make (ou make all) - Compila o projeto e gera o executável $(TARGET)"
-	@echo "  make test          - Executa todos os testes automatizados (bash/)"
-	@echo "  make coverage      - Executa testes com análise de cobertura de gramática"
-	@echo "  make clean         - Remove arquivos de build e o executável"
-	@echo "  make help          - Exibe esta mensagem de ajuda"
+	@echo "  make (ou make all) - 🖥️  Compila o projeto e gera o executável $(TARGET)"
+	@echo "  make test          - 🚀 Executa todos os testes automatizados (bash/)"
+	@echo "  make coverage      - 🌐 Executa testes com análise de cobertura de gramática"
+	@echo "  make clean         - 🗑️  Remove arquivos de build e o executável"
+	@echo "  make help          - ❔ Exibe esta mensagem de ajuda"
