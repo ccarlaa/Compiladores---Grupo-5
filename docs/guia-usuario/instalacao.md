@@ -1,88 +1,113 @@
 # Instalação
 
-Este guia explica como instalar e configurar o Compilador C em Português em diferentes sistemas operacionais.
+Este guia apresenta as instruções para instalar e executar o **Compilador de C para Portugol** em diferentes sistemas operacionais. O projeto pode ser compilado localmente com `make`.
+
+---
 
 ## Pré-requisitos
 
-Antes de instalar o compilador, certifique-se de que seu sistema atenda aos seguintes requisitos:
+Antes de instalar o compilador, certifique-se de que seu sistema possui os seguintes componentes instalados:
 
-- GCC ou outro compilador C
-- Flex (analisador léxico)
-- Bison (analisador sintático)
-- Make
+- **GCC** (compilador C)
+- **Flex** (versão recomendada: 2.6.4)
+- **Bison** (versão recomendada: 3.8.2)
+- **Make** (automatizador de build)
 
-## Instalação no Linux
+Para instalar em distribuições baseadas em Debian (como Ubuntu):
 
-1. Clone o repositório:
-   ```bash
-   git clone https://github.com/ccarlaa/Compiladores---Grupo-5.git
-   cd Compiladores---Grupo-5
-   ```
+```bash
+sudo apt update
+sudo apt install build-essential flex bison -y
+```
 
-2. Execute o script de compilação:
-   ```bash
-   ./compilar-linux.sh
-   ```
+Para instalar em MACOS, Instale as dependências com Homebrew:
 
-3. Verifique se a instalação foi bem-sucedida:
-   ```bash
-   ./compilador.exe tests/teste1.txt
-   ```
+```bash
+brew install flex bison
+```
 
-## Instalação no macOS
+No Windows, recomenda-se o uso do **WSL** (Windows Subsystem for Linux) para garantir compatibilidade com o ambiente de desenvolvimento.
 
-1. Clone o repositório:
-   ```bash
-   git clone https://github.com/ccarlaa/Compiladores---Grupo-5.git
-   cd Compiladores---Grupo-5
-   ```
+### Usando WSL:
 
-2. Execute o script de compilação:
-   ```bash
-   ./compilar-macos.sh
-   ```
+1. Instale o WSL e abra um terminal Ubuntu.
 
-3. Verifique se a instalação foi bem-sucedida:
-   ```bash
-   ./compilador.exe tests/teste1.txt
-   ```
+```bash
+sudo apt update
+sudo apt install build-essential flex bison -y
+```
 
-## Instalação no Windows
+---
+
+## Instalação
 
 1. Clone o repositório:
-   ```bash
-   git clone https://github.com/ccarlaa/Compiladores---Grupo-5.git
-   cd Compiladores---Grupo-5
-   ```
 
-2. Execute o script de compilação:
-   ```bash
-   compilar.bat
-   ```
+```bash
+git clone https://github.com/ccarlaa/Compiladores---Grupo-5.git
+cd Compiladores---Grupo-5/compiler-source
+```
 
-3. Verifique se a instalação foi bem-sucedida:
-   ```bash
-   compilador.exe tests/teste1.txt
-   ```
+2. Compile o projeto:
 
-## Usando Docker
+```bash
+make
+```
 
-Para facilitar a instalação e evitar problemas de dependências, também fornecemos um Dockerfile:
+3. Execute um teste de verificação:
 
-1. Construa a imagem Docker:
-   ```bash
-   docker build -t compilador-portugues .
-   ```
+Você pode testar o compilador diretamente no terminal com um código simples:
 
-2. Execute o compilador usando Docker:
-   ```bash
-   ./docker-run.sh tests/teste1.txt
-   ```
+```bash
+echo "[CÓDIGO TESTE]" | ./compilador
+```
+
+Exemplo:
+
+
+```bash
+echo "int main() { return 0; }" | ./compilador
+```
+
+A saída esperada é a impressão da Árvore AST, o código compilado e a tabela de símbolos:
+
+![Exemplo1](../assets/images/terminal-exemplo-1.png)
+
+Ou, para códigos maiores e com múltiplas linhas, use:
+
+```bash
+./compilador <<EOF
+[CÓDIGO TESTE]
+EOF
+```
+
+Exemplo:
+```bash
+./compilador <<EOF
+int main() {
+    int x = 5;
+    return x;
+}
+EOF
+
+```
+
+A saída esperada é a impressão da Árvore AST, o código compilado e a tabela de símbolos:
+
+![Exemplo2](../assets/images/terminal-exemplo-2.png)
+
+---
 
 ## Solução de Problemas
 
-Se você encontrar problemas durante a instalação, verifique:
+Caso ocorra algum erro durante a instalação:
 
-1. Se todas as dependências estão instaladas corretamente
-2. Se os scripts de compilação têm permissão de execução (`chmod +x compilar-linux.sh`)
-3. Se há erros específicos no console durante a compilação
+* Verifique se todas as dependências estão instaladas corretamente.
+* Certifique-se de que os scripts tenham permissão de execução:
+
+```bash
+chmod +x compilar-linux.sh compilar-macos.sh docker-run.sh
+```
+
+* Consulte mensagens de erro exibidas no terminal para identificar a causa.
+* No caso de problemas com o `make`, execute `make clean` antes de recompilar.

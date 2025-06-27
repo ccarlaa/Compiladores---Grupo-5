@@ -102,7 +102,7 @@ sudo apt update
 sudo apt install flex bison build-essential -y
 ```
 
-## 👥 Membros do Grupo
+## Membros do Grupo
 
 <div align="center">
     <table>
