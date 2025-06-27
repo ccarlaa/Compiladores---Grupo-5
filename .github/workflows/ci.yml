@@ -1,4 +1,4 @@
-name: CI - Compilador
+name: CI Compilador
 
 on:
   push:
@@ -7,20 +7,19 @@ on:
 
 jobs:
   build-and-test:
-    name: Build & Test (Linux)
     runs-on: ubuntu-latest
 
     steps:
-    - name: 📥 Checkout do código
-      uses: actions/checkout@v3
+      - name: Checkout repositório
+        uses: actions/checkout@v3
 
-    - name: 🛠️ Instala dependências
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y build-essential flex bison
+      - name: Instala dependências (bison, flex, gcc, make)
+        run: sudo apt-get update && sudo apt-get install -y bison flex gcc make
 
-    - name: 🧱 Compila o projeto
-      run: make
+      - name: Compila com make
+        working-directory: compiler-source
+        run: make
 
-    - name: ✅ Roda os testes
-      run: make test
+      - name: Roda testes
+        working-directory: compiler-source
+        run: make test
