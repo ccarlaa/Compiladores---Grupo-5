@@ -4,29 +4,23 @@ on:
   push:
     branches: [ main ]
   pull_request:
-    
+
 jobs:
   build-and-test:
-    name: Build & Test
+    name: Build & Test (Linux)
     runs-on: ubuntu-latest
 
     steps:
-    - name: 📥 Checkout do repositório
+    - name: 📥 Checkout do código
       uses: actions/checkout@v3
 
-    - name: 🛠️ Instala dependências específicas
+    - name: 🛠️ Instala dependências
       run: |
         sudo apt-get update
-        sudo apt-get install -y build-essential
-        sudo apt-get install -y flex=2.6.4-8build3 bison=3:3.8.2+dfsg-1
+        sudo apt-get install -y build-essential flex bison
 
-    - name: 🔍 Verifica versões de Flex e Bison
-      run: |
-        flex --version
-        bison --version
-
-    - name: 🧱 Compila o projeto com make
+    - name: 🧱 Compila o projeto
       run: make
 
-    - name: ✅ Executa os testes com make test
+    - name: ✅ Roda os testes
       run: make test
