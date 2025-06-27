@@ -17,4 +17,3 @@ statement_while: 1
 return_statement: 1
 statement_return: 1
 function_list_append: 1
-

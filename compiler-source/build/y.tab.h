@@ -45,7 +45,7 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 27 "parser/parser.y"
+#line 61 "parser/parser.y"
 
     #include "ast.h"
 
@@ -123,7 +123,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 31 "parser/parser.y"
+#line 65 "parser/parser.y"
 
     char *sval;
     int ival;

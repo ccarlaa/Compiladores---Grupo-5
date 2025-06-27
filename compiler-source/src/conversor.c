@@ -247,8 +247,8 @@ void generate_portugol(ASTNode *node)
         break;
     }
 
-    // caso para a lista de parametros
     case NODE_PARAM_LIST:
+        // caso para a lista de parametros
         for (int i = 0; i < node->child_count; i++)
         {
             if (i > 0)
@@ -333,6 +333,7 @@ void generate_portugol(ASTNode *node)
         break;
 
     case NODE_IF:
+        // Imprime a estrutura if
         print_indent();
         printf("se (");
         if (node->child_count > 0)
@@ -360,6 +361,7 @@ void generate_portugol(ASTNode *node)
         break;
 
     case NODE_WHILE:
+        // Imprime a estrutura while
         print_indent();
         printf("enquanto (");
         if (node->child_count > 0)
@@ -418,6 +420,7 @@ void generate_portugol(ASTNode *node)
         break;
 
     case NODE_FUNCTION_CALL:
+        // Imprime a chamada de função
         if (node->value && node->child_count > 0)
         {
             print_indent();
@@ -542,6 +545,7 @@ void generate_portugol(ASTNode *node)
     }
 
     case NODE_PRINTF_ARGS:
+        // Imprime os argumentos de printf
         for (int i = 0; i < node->child_count; i++)
         {
             if (i > 0)
@@ -553,6 +557,7 @@ void generate_portugol(ASTNode *node)
         break;
 
     case NODE_SCANF:
+        // Imprime a chamada de scanf
         print_indent();
         printf("leia(");
         if (node->child_count > 0)
@@ -581,7 +586,7 @@ void generate_portugol(ASTNode *node)
         break;
 
     case NODE_CONST_FLOAT:
-        // Format float values with exactly two decimal places
+        // valores decimais
         if (node->value)
         {
             float value = atof(node->value);
@@ -594,17 +599,17 @@ void generate_portugol(ASTNode *node)
         break;
 
     case NODE_CONST_STRING:
-        // The node->value already contains the quotes, so we don't add more
+        // imprime a string entre aspas duplas
         printf("%s", node->value ? node->value : "\"\"");
         break;
 
     case NODE_CONST_CHAR:
-        // The node->value likely already contains the single quotes, so we don't add more
+        // imprime o caractere entre aspas simples
         printf("%s", node->value ? node->value : "' '");
         break;
 
     case NODE_BINARY_OP:
-        // Remover parênteses desnecessários para operações básicas
+        // operações binárias
         if (node->child_count > 0)
         {
             generate_portugol(node->children[0]); // Operando esquerdo
@@ -709,7 +714,7 @@ void generate_portugol(ASTNode *node)
         {
             generate_portugol(node->children[i]);
 
-            // Add a blank line after declarations if followed by a control statement
+            // Adiciona uma nova linha entre declarações e estruturas de controle
             if (i < node->child_count - 1 &&
                 (node->children[i]->type == NODE_DECLARATION ||
                  (i > 0 && node->children[i - 1]->type == NODE_DECLARATION)) &&
