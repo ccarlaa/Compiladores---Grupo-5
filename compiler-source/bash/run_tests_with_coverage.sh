@@ -2,12 +2,10 @@
 
 set -e
 
-PROJECT_DIR="compiler-source"
+PROJECT_DIR="$(dirname "$(dirname "$0")")"
 TESTS_DIR="$PROJECT_DIR/bash"
 COVERAGE_FILE="$PROJECT_DIR/coverage_report.txt"
 TEMP_STDERR="/tmp/compilador_stderr.txt"
-
-cd "$PROJECT_DIR"
 
 echo "🔍 Limpando cobertura anterior e stderr..."
 rm -f "$COVERAGE_FILE" "$TEMP_STDERR"
