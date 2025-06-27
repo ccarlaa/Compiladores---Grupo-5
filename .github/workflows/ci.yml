@@ -7,24 +7,22 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repositório
-        uses: actions/checkout@v3
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
 
-      - name: Instala dependências (bison, flex, gcc, make)
-        run: sudo apt-get update && sudo apt-get install -y bison flex gcc make
+      - name: Instalar dependências
+        run: sudo apt-get update && sudo apt-get install -y flex bison
 
-      - name: Compila com make
+      - name: Compilar o projeto
         working-directory: compiler-source
         run: make
 
-      - name: 🧪 Executar testes com cobertura de gramática
-        working-directory: compiler-source
-        run: bash bash/run_tests_with_coverage.sh
+      - name: Rodar testes e gerar cobertura
+        run: bash compiler-source/bash/run_tests_with_coverage.sh
 
-      - name: 📦 Salvar relatório de cobertura como artefato
+      - name: 📤 Upload da cobertura como artefato
         uses: actions/upload-artifact@v4
         with:
-          name: cobertura-de-gramatica
+          name: cobertura-gramatica
           path: compiler-source/cobertura.txt
