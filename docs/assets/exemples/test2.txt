@@ -1,0 +1,11 @@
+int main() {
+    int nota = 7;
+
+    if (nota >= 6) {
+        printf("Aprovado");
+    } else {
+        printf("Reprovado");
+    }
+
+    return 0;
+}

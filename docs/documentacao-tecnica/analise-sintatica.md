@@ -1,211 +1,226 @@
 # Análise Sintática
 
-Esta seção detalha a implementação do analisador sintático (parser) do Compilador C em Português.
+Esta seção documenta a implementação do analisador sintático definido no arquivo `parser.y`. O parser utiliza **Bison**, um gerador de analisadores descendentes para gramáticas livres de contexto. Ele valida a estrutura do código reconhecido pelo analisador léxico (`lexer.l`), constrói a **Árvore Sintática Abstrata (AST)** e realiza verificações de semântica.
 
-## Visão Geral
+---
 
-O analisador sintático é implementado usando o Bison (gerador de analisadores sintáticos) e é responsável por verificar se a sequência de tokens fornecida pelo analisador léxico segue a gramática da linguagem. Ele constrói uma árvore sintática abstrata (AST) que representa a estrutura do programa.
+## Objetivo
 
-## Implementação
+- Validar a estrutura sintática do programa segundo uma gramática definida
+- Construir a AST de maneira incremental
+- Preparar os dados para a verificação semântica e tradução
 
-O arquivo principal do analisador sintático é `src/parser/parser.y`, que contém as regras gramaticais para a linguagem C traduzida para português.
+---
 
-### Estrutura do Arquivo parser.y
+## Estratégia de Parsing Utilizada
 
-O arquivo `parser.y` é dividido em várias seções:
+O compilador utiliza a estratégia **LR (Left-to-Right)**, por meio da ferramenta **Bison**, que gera um parser ascendente com base em uma gramática livre de contexto.
 
-1. **Declarações**: Contém inclusões de arquivos, definições de tipos, tokens e precedência de operadores.
-2. **Regras Gramaticais**: Define a gramática da linguagem usando notação BNF.
-3. **Código do Usuário**: Contém funções auxiliares e código C adicional.
+### Por que LR?
 
-### Regras Gramaticais Principais
+O LR é adequado para esse projeto por atender aos seguintes critérios:
 
-#### Programa
+- **Poder gramatical**: é capaz de reconhecer uma classe maior de gramáticas do que LL (por exemplo, suporta recursão à esquerda), o que permite escrever regras mais próximas da linguagem C.
+- **Simplicidade de uso com Bison**: o Bison já fornece a infraestrutura pronta para geração de parsers LR, com tratamento automático de conflitos comuns e suporte a precedência de operadores.
+- **Precisão e robustez**: o parser LR detecta erros de forma mais precisa e oferece mensagens melhores do que parsers simples LL ou ad-hoc.
+- **Integração com ações semânticas**: o modelo de parser ascendente se encaixa bem com a construção da AST a partir das folhas para a raiz, refletindo naturalmente a semântica de linguagens imperativas.
 
-A regra inicial da gramática define um programa como uma sequência de declarações:
+### Comparação com outras estratégias
+
+| Estratégia | Características | Por que não foi usada? |
+|-----------|------------------|-------------------------|
+| **LL**    | Parser descendente, fácil de depurar, mais restrito (não suporta recursão à esquerda) | Exigiria reescrever a gramática em formato não natural para C |
+| **GLR**   | Suporta ambiguidade e múltiplos caminhos, mais poderoso | Complexidade maior e desnecessária para o escopo da linguagem implementada |
+
+A escolha por um parser **LR via Bison** oferece um bom equilíbrio entre **potência, suporte a gramáticas realistas**, e **integração com análise semântica e geração de código**, sendo a abordagem mais adequada para um compilador educacional que visa cobrir um subconjunto significativo da linguagem C.
+
+## Estrutura do Arquivo `parser.y`
+
+O arquivo segue o padrão de três seções:
+
+---
+
+### 1. **Declarações de código C (`%{ ... %}`)**
+
+Inclui bibliotecas e variáveis globais usadas nas ações semânticas:
 
 ```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "conversor.h"
+#include "ast.h"
+#include "y.tab.h"
+
+extern int yylineno;
+
+void yyerror(const char *s);
+int yylex(void);
+
+ASTNode *ast_root = NULL;
+int current_scope = 0;
+```
+
+Funções auxiliares como `create_binary_op()` e `create_assignment_node()` são usadas para montar a AST.
+
+---
+
+### 2. **Declarações de tokens, tipos e precedência**
+
+Tokens importados do lexer são declarados com tipos associados via `%token <tipo>`:
+
+```c
+%union {
+    char *sval;
+    int ival;
+    float fval;
+    ASTNode *ast;
+}
+
+%token <sval> T_ID T_STRING T_CHAR_LITERAL T_NUMBER_FLOAT
+%token <ival> T_NUMBER_INT
+```
+
+Também são declaradas as palavras-chave (`T_IF`, `T_RETURN`, etc.), operadores (`T_PLUS`, `T_EQ`, etc.), e símbolos (`T_LPAREN`, `T_RBRACE`, etc.).
+
+A precedência dos operadores é especificada para resolver ambiguidades:
+
+```c
+%right T_ASSIGN T_PLUS_ASSIGN T_MINUS_ASSIGN
+%left T_OR
+%left T_AND
+%left T_BIT_OR
+%left T_EQ T_NEQ
+%left T_GT T_LT T_GE T_LE
+%left T_PLUS T_MINUS
+%left T_MULT T_DIV
+%right T_NOT
+```
+
+---
+
+### 3. **Regras Gramaticais e Ações**
+
+As produções sintáticas são definidas com regras BNF-like, com ações em C entre `{}`. Exemplo:
+
+```bison
+programa:
+    declaracoes
+    {
+        ast_root = $1;
+    }
+;
+```
+
+Cada produção retorna (via `$$`) um ponteiro para um nó da AST.
+
+Outros exemplos de regras incluem:
+
+#### Função principal
+
+```bison
+funcao_main:
+    T_INT T_MAIN T_LPAREN T_RPAREN bloco
+    {
+        $$ = create_function_node("inteiro", "inicio", NULL, $5);
+    }
+;
+```
+
+#### Declaração de variável
+
+```bison
+declaracao:
+    tipo T_ID T_SEMICOLON
+    {
+        $$ = create_declaration_node($1, $2, NULL);
+    }
+;
+```
+
+#### Expressões aritméticas e relacionais
+
+```bison
+expressao:
+    expressao T_PLUS expressao
+    {
+        $$ = create_binary_op("+", $1, $3);
+    }
+  | T_LPAREN expressao T_RPAREN
+    {
+        $$ = $2;
+    }
+  | T_NUMBER_INT
+    {
+        $$ = create_literal_node("int", $1);
+    }
+;
+```
+
+---
+
+## Construção da AST
+
+Cada produção cria um nó da AST com chamadas:
+
+- `create_declaration_node()`
+- `create_binary_op()`
+- `create_assignment_node()`
+
+Essas funções estão implementadas em `ast.c` e representam cada parte do código como um nó com tipo, valor e filhos.
+
+A raiz da AST é armazenada em `ast_root`.
+
+---
+
+## Tratamento de Erros
+
+Erros sintáticos são tratados com a função `yyerror()`:
+
+```c
+void yyerror(const char *s) {
+    fprintf(stderr, "Erro na linha %d: %s
+", yylineno, s);
+}
+```
+
+Se ocorrer um erro durante a análise, ele será relatado com a linha correspondente.
+
+---
+
+## Exemplo de Fluxo
+
+**Entrada C:**
+
+```c
+int main() {
+    int x = 10;
+    return x;
+}
+```
+
+**Produções ativadas:**
+
+- `programa → declaracoes`
+- `funcao_main`
+- `bloco → comandos`
+- `comando → declaracao`
+- `declaracao → tipo T_ID T_SEMICOLON`
+- `comando → return`
+
+**AST gerada** (estrutura lógica simplificada):
+
+```
 programa
-    : declaracoes                { 
-                                    printf("Programa analisado com sucesso!\n");
-                                  }
-    ;
+└── funcao inicio
+    ├── declaracao: inteiro x
+    └── retorno: x
 ```
 
-#### Declarações
+---
 
-As declarações podem ser de variáveis, funções ou estruturas:
+## Integração com o Lexer
 
-```c
-declaracoes
-    : declaracao                 { }
-    | declaracoes declaracao     { }
-    ;
+O parser recebe tokens por meio da função `yylex()`, que é automaticamente invocada. Cada token enviado pelo lexer deve estar declarado no parser com `%token`, com os mesmos nomes e tipos.
 
-declaracao
-    : declaracao_variavel        { }
-    | declaracao_funcao          { }
-    | definicao_funcao           { }
-    | declaracao_estrutura       { }
-    ;
-```
-
-#### Declaração de Variáveis
-
-As variáveis podem ser declaradas com diferentes tipos e opcionalmente inicializadas:
-
-```c
-declaracao_variavel
-    : tipo IDENTIFICADOR PONTO_E_VIRGULA                        { }
-    | tipo IDENTIFICADOR ATRIBUICAO expressao PONTO_E_VIRGULA   { }
-    | tipo IDENTIFICADOR ABRE_COLCHETE NUMERO FECHA_COLCHETE PONTO_E_VIRGULA { }
-    ;
-```
-
-#### Declaração de Funções
-
-As funções podem ser declaradas com ou sem parâmetros:
-
-```c
-declaracao_funcao
-    : tipo IDENTIFICADOR ABRE_PAREN FECHA_PAREN PONTO_E_VIRGULA { }
-    | tipo IDENTIFICADOR ABRE_PAREN lista_parametros FECHA_PAREN PONTO_E_VIRGULA { }
-    ;
-```
-
-#### Definição de Funções
-
-As funções podem ser definidas com ou sem parâmetros, incluindo a função principal:
-
-```c
-definicao_funcao
-    : tipo IDENTIFICADOR ABRE_PAREN FECHA_PAREN bloco_comandos  { }
-    | tipo IDENTIFICADOR ABRE_PAREN lista_parametros FECHA_PAREN bloco_comandos { }
-    | PRINCIPAL ABRE_PAREN FECHA_PAREN bloco_comandos { }
-    | tipo PRINCIPAL ABRE_PAREN FECHA_PAREN bloco_comandos { }
-    ;
-```
-
-#### Declaração de Estruturas
-
-As estruturas são declaradas com uma lista de campos:
-
-```c
-declaracao_estrutura
-    : ESTRUTURA IDENTIFICADOR ABRE_CHAVE lista_campos FECHA_CHAVE PONTO_E_VIRGULA { }
-    ;
-
-lista_campos
-    : declaracao_campo        { }
-    | lista_campos declaracao_campo { }
-    ;
-
-declaracao_campo
-    : tipo IDENTIFICADOR PONTO_E_VIRGULA                        { }
-    | tipo IDENTIFICADOR ABRE_COLCHETE NUMERO FECHA_COLCHETE PONTO_E_VIRGULA { }
-    ;
-```
-
-#### Comandos
-
-A gramática suporta vários tipos de comandos, incluindo estruturas de controle:
-
-```c
-comando
-    : SE ABRE_PAREN expressao FECHA_PAREN comando                  { }
-    | SE ABRE_PAREN expressao FECHA_PAREN comando SENAO comando    { }
-    | ENQUANTO ABRE_PAREN expressao FECHA_PAREN comando            { }
-    | PARA ABRE_PAREN expressao_opt PONTO_E_VIRGULA expressao_opt PONTO_E_VIRGULA expressao_opt FECHA_PAREN comando { }
-    | FACA comando ENQUANTO ABRE_PAREN expressao FECHA_PAREN PONTO_E_VIRGULA { }
-    | bloco_comandos                                               { }
-    | expressao PONTO_E_VIRGULA                                    { }
-    | RETORNE expressao_opt PONTO_E_VIRGULA                        { }
-    | CONTINUE PONTO_E_VIRGULA                                     { }
-    | QUEBRE PONTO_E_VIRGULA                                       { }
-    | declaracao_variavel                                          { }
-    | PONTO_E_VIRGULA                                              { }
-    ;
-```
-
-#### Expressões
-
-A gramática suporta várias formas de expressões, incluindo operações aritméticas, lógicas e de comparação:
-
-```c
-expressao
-    : atribuicao                                                  { }
-    ;
-
-atribuicao
-    : condicional                                                 { }
-    | unario ATRIBUICAO atribuicao                                { }
-    | unario MAIS_IGUAL atribuicao                                { }
-    | unario MENOS_IGUAL atribuicao                               { }
-    | unario VEZES_IGUAL atribuicao                               { }
-    | unario DIVIDIDO_IGUAL atribuicao                            { }
-    | unario MODULO_IGUAL atribuicao                              { }
-    ;
-```
-
-## Resolução de Problemas Específicos
-
-### Suporte para Função Principal com Tipo de Retorno
-
-Adicionamos suporte para que a função principal possa ter um tipo de retorno:
-
-```c
-definicao_funcao
-    : /* ... outras regras ... */
-    | PRINCIPAL ABRE_PAREN FECHA_PAREN bloco_comandos { }
-    | tipo PRINCIPAL ABRE_PAREN FECHA_PAREN bloco_comandos { }
-    ;
-```
-
-### Suporte para Arrays em Campos de Estruturas
-
-Implementamos suporte para arrays dentro de campos de estruturas:
-
-```c
-declaracao_campo
-    : tipo IDENTIFICADOR PONTO_E_VIRGULA                        { }
-    | tipo IDENTIFICADOR ABRE_COLCHETE NUMERO FECHA_COLCHETE PONTO_E_VIRGULA { }
-    ;
-```
-
-### Suporte para o Operador de Módulo
-
-Adicionamos suporte para o operador de módulo (%) em expressões:
-
-```c
-multiplicativo
-    : cast                                                        { }
-    | multiplicativo VEZES cast                                   { }
-    | multiplicativo DIVIDIDO cast                                { }
-    | multiplicativo MODULO cast                                  { }
-    ;
-```
-
-### Suporte para Constantes e Variáveis Estáticas
-
-Adicionamos suporte para declarações de constantes e variáveis estáticas:
-
-```c
-declaracao_variavel
-    : /* ... outras regras ... */
-    | CONSTANTE tipo IDENTIFICADOR ATRIBUICAO expressao PONTO_E_VIRGULA { }
-    | ESTATICO tipo IDENTIFICADOR ATRIBUICAO expressao PONTO_E_VIRGULA { }
-    ;
-```
-
-## Conflitos na Gramática
-
-A gramática pode apresentar alguns conflitos, como o "conflito shift/reduce" relacionado ao "problema do else pendente". Este é um conflito comum em gramáticas para linguagens como C e pode ser resolvido usando a precedência de operadores.
-
-## Extensões Futuras
-
-Possíveis melhorias para o analisador sintático incluem:
-
-1. Melhor tratamento de erros sintáticos
-2. Suporte para mais construções da linguagem C
-3. Otimização da gramática para reduzir conflitos
-4. Implementação de ações semânticas para construir uma AST mais completa
+---

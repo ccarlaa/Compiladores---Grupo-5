@@ -34,16 +34,21 @@ markdown_extensions:
 nav:
   - Início: index.md
   - Guia do Usuário:
-    - Instalação: guia-usuario/instalacao.md
-    - Uso Básico: guia-usuario/uso-basico.md
-    - Exemplos: guia-usuario/exemplos.md
+      - Instalação: guia-usuario/instalacao.md
+      - Uso Básico: guia-usuario/uso-basico.md
+      - Exemplos: guia-usuario/exemplos.md
   - Documentação Técnica:
-    - Visão Geral: documentacao-tecnica/visao-geral.md
-    - Análise Léxica: documentacao-tecnica/analise-lexica.md
-    - Análise Sintática: documentacao-tecnica/analise-sintatica.md
-    - Gramática: documentacao-tecnica/gramatica.md
-    - Testes: documentacao-tecnica/testes.md
+      - Visão Geral: documentacao-tecnica/visao-geral.md
+      - Análise Léxica: documentacao-tecnica/analise-lexica.md
+      - Análise Sintática: documentacao-tecnica/analise-sintatica.md
+      - Gramática: documentacao-tecnica/gramatica.md
+      - Testes: documentacao-tecnica/testes.md
+      - CI/CD: documentacao-tecnica/ci-cd.md
+      - Evolução: documentacao-tecnica/evolucao.md
+      - Decisões Técnicas: documentacao-tecnica/decisoes-tecnicas.md
   - Contribuição: contribuicao.md
   - Atas de Reunião:
-    - Visão Geral: atas-reuniao/index.md
-    - Reunião 1: atas-reuniao/reuniao-01.md
+      - Visão Geral: atas-reuniao/index.md
+      - Reunião 1: atas-reuniao/reuniao-01.md
+  - Sprints: sprints/index.md
+  - Referências: referencias/referencias.md

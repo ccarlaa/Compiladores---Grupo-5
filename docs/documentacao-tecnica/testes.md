@@ -1,234 +1,897 @@
+
 # Testes do Compilador
 
-Esta seção detalha os procedimentos de teste implementados para validar o funcionamento do compilador C em Português.
+Esta seção documenta o sistema de testes automatizados desenvolvido para garantir a robustez, correção e cobertura da gramática do compilador de C para Portugol.
 
-## Visão Geral
+Os testes abrangem aspectos léxicos, sintáticos e semânticos da linguagem-fonte, bem como a qualidade da saída gerada. Todos os testes são executados por meio de **scripts shell localizados na pasta `compiler-source/bash/`**.
 
-O compilador possui diferentes tipos de testes para validar cada fase do processo de compilação:
+---
 
-- **Testes Léxicos**: Validam o reconhecimento de tokens e a detecção de erros léxicos
-- **Testes Sintáticos**: Verificam a correta análise da estrutura gramatical do código
-- **Testes Semânticos**: Avaliam a correta interpretação do significado do código
+## Objetivos dos Testes
 
-## Modo de Depuração
+- Verificar se o compilador aceita e traduz corretamente entradas válidas
+- Identificar se o compilador rejeita e trata adequadamente entradas inválidas
+- Validar regras de escopo, tipos, estruturas de controle e expressões
+- Garantir cobertura das principais produções gramaticais
+- Automatizar a execução e facilitar a regressão
 
-Foi implementado um modo de depuração no compilador que permite executar apenas o analisador léxico, facilitando a visualização de tokens e mensagens de erro léxico. Este modo é ativado através da flag `-d` ou `--debug` na linha de comando.
+---
 
-```bash
-./compilador arquivo.txt -d
-```
+## Organização dos Testes
 
-Quando ativado, o modo de depuração:
+Os testes estão organizados por categoria e nomeados com clareza para indicar o foco de cada caso de teste:
 
-1. Executa apenas o analisador léxico (`yylex()`)
-2. Exibe cada token reconhecido, incluindo seu código e lexema
-3. Mostra mensagens de erro léxico detalhadas
-4. Não executa a análise sintática ou semântica
+- **Léxicos**: testam caracteres inválidos, strings malformadas, comentários, etc.
+- **Sintáticos**: verificam combinações de estruturas (if, while, funções aninhadas)
+- **Semânticos**: avaliam declaração de variáveis, tipos, escopos, redeclarações
+- **Geração de código**: comparam a saída traduzida com a esperada
+- **Cobertura de gramática**: extraem trechos da execução com os caminhos percorridos
 
-Este modo é especialmente útil para testar e validar o tratamento de erros léxicos.
+---
 
-## Tipos de Testes
+## Como Executar os Testes
 
-O compilador possui diferentes tipos de testes para validar cada aspecto do seu funcionamento:
-
-1. **Testes de Funcionalidades Básicas**: Verificam o funcionamento correto do compilador com código válido
-2. **Testes Léxicos**: Validam o reconhecimento de tokens e a detecção de erros léxicos
-3. **Testes Sintáticos**: Verificam a correta análise da estrutura gramatical do código
-4. **Testes de Estruturas de Controle**: Focam especificamente em laços e estruturas condicionais
-
-## Testes de Funcionalidades Básicas
-
-### Arquivos de Teste
-
-Os testes básicos verificam o funcionamento correto do compilador com código válido em C e C traduzido para português.
-
-#### Arquivos Principais
-
-- **teste1.txt**: Teste básico de operações aritméticas e estruturas condicionais
-- **teste2.txt**: Teste de estruturas condicionais simples
-- **teste3.txt**: Teste de estruturas de repetição
-- **teste4.txt**: Teste de declaração e uso de variáveis
-- **teste5.txt**: Teste de funções e chamadas de função
-
-### Execução dos Testes Básicos
-
-Para executar os testes básicos, use o compilador sem a flag de depuração:
+Dentro da pasta `compiler-source/`, você pode executar todos os testes com:
 
 ```bash
-# Na pasta raiz do projeto
-make
-
-# Executar testes básicos
-./compilador tests/teste1.txt
-./compilador tests/teste2.txt
-./compilador tests/teste3.txt
-./compilador tests/teste4.txt
-./compilador tests/teste5.txt
+make test
 ```
 
-Se não houver erros de compilação, o teste foi bem-sucedido. Caso contrário, o compilador exibirá mensagens de erro.
+Isso percorre todos os scripts da pasta `bash/` e exibe um resumo no terminal.
 
-## Testes Léxicos
+---
 
-### Arquivos de Teste
+## Cobertura de Gramática
 
-Foram criados testes específicos para verificar as mensagens de erro implementadas. Estes testes estão organizados para demonstrar diferentes tipos de erros léxicos que podem ocorrer durante a compilação.
+O projeto implementa um mecanismo de **análise de cobertura gramatical** para verificar, durante os testes, quais produções da gramática foram de fato exercitadas. Isso ajuda a identificar partes da gramática que não foram validadas por testes automatizados.
 
-#### Arquivos Principais
+### Como funciona
 
-- **teste_erros_lexicos.txt**: Arquivo abrangente que demonstra todos os tipos de erros léxicos possíveis, incluindo:
-  - Símbolos especiais não permitidos (@, #, $)
-  - Sequências de escape inválidas (\z, \y, \p)
-  - Strings e caracteres não fechados
-  - Palavras-chave em inglês em vez de português
-  - Operadores não implementados
+- Cada produção no `parser.y` chama a função `rule_hit("nome_da_regra")` dentro de suas ações semânticas.
+- A função `rule_hit()` registra cada ocorrência em memória.
+- Ao final da execução do compilador, a função `print_grammar_coverage()` grava um relatório em `cobertura.txt`.
 
-- **teste_lacos.txt**: Foca especificamente em erros relacionados a estruturas de controle de fluxo:
-  - Uso de palavras-chave em inglês (while, for, do) em vez de português (enquanto, para, faca)
-  - Combinações de palavras-chave em inglês e português
-  - Estruturas de controle aninhadas com erros
+### Exemplo de regra instrumentada
 
-- **teste_pontuacao.txt**: Concentra-se em erros relacionados a operadores e pontuação:
-  - Operadores bit a bit não implementados (|, &, ^, ~)
-  - Operadores de deslocamento não implementados (<<, >>)
-  - Símbolos de pontuação inválidos (<=>)
-  - Combinações inválidas de operadores
+```bison
+function_list:
+    %empty 
+    {
+        rule_hit("function_list_empty");
+        $$ = create_node(NODE_EMPTY, NULL);
+    }
+  | function_list function_declaration
+    {
+        rule_hit("function_list_append");
+        // ...
+    }
+;
+```
 
-### Execução Manual dos Testes Léxicos
+### Exemplo de relatório (`cobertura.txt`)
 
-Para testar as mensagens de erro léxico usando o compilador completo:
+```
+Cobertura:
+program: 1
+function_list_empty: 1
+function_declaration: 1
+expression_int: 4
+...
+```
+
+Esse relatório mostra quantas vezes cada regra foi ativada durante os testes.
+
+---
+
+### Execução no Makefile
+
+O alvo `make coverage` automatiza esse processo:
+
+```make
+make coverage
+```
+
+Esse comando:
+
+- Executa todos os scripts de teste
+- Redireciona os erros para `build/coverage_logs/stderr.log`
+- Extrai do `stderr` os blocos com `"COBERTURA DAS REGRAS DA GRAMÁTICA"` e salva em `cobertura.txt`
+
+---
+
+### Integração com GitHub Actions
+
+Na integração contínua (CI), o relatório é publicado automaticamente:
+
+```yaml
+- name: 🔧 Compila e roda testes com cobertura
+  run: make coverage
+
+- name: 📤 Publica relatório de cobertura
+  uses: actions/upload-artifact@v4
+  with:
+    name: cobertura
+    path: compiler-source/cobertura.txt
+```
+
+Isso garante que a equipe possa acompanhar a evolução da cobertura gramatical diretamente no repositório.
+
+---
+
+
+## Organização dos Scripts
+
+Cada script `.sh`:
+
+- Executa um teste isolado com entrada padrão ou arquivo
+- Valida se a saída foi gerada corretamente
+- Retorna `0` em caso de sucesso ou `1` em caso de falha
+- Pode ser rodado individualmente:
 
 ```bash
-# Na pasta raiz do projeto
-make
-
-# Teste geral de erros léxicos
-./compilador tests/testes_lexicos/teste_erros_lexicos.txt -d
-
-# Teste específico para erros em laços
-./compilador tests/testes_lexicos/teste_lacos.txt -d
-
-# Teste específico para erros de pontuação
-./compilador tests/testes_lexicos/teste_pontuacao.txt -d
+bash bash/run_if_test.sh
 ```
 
-### Script de Automação de Testes Léxicos
+---
 
-Para facilitar a execução regular dos testes léxicos, foi criado um script de automação que executa todos os testes de uma vez:
 
+## Testes Implementados
+
+Esta seção descreve individualmente cada teste automatizado implementado na pasta `compiler-source/bash/`. Os testes foram desenvolvidos para validar funcionalidades específicas do compilador, cobrindo diferentes aspectos da linguagem.
+
+---
+
+### `run_else_test.sh`
+
+**Descrição:** Testa a tradução e o comportamento de comandos `if` com cláusula `else`.
+
+**Entrada**
 ```bash
-# Na pasta raiz do projeto
-./tests/testes_lexicos/executar_testes.sh
+int main()
+{
+    int x = 10;
+    if (x > 5)
+    {
+        printf("maior");
+    }
+    else
+    {
+        printf("menor ou igual");
+    }
+    return 0;
+}
+
 ```
 
-O script:
-1. Compila o projeto automaticamente
-2. Executa cada arquivo de teste com o modo de depuração ativado
-3. Exibe os resultados formatados para fácil visualização
-
-## Testes Sintáticos
-
-Os testes sintáticos verificam a capacidade do compilador de analisar corretamente a estrutura gramatical do código. Eles são executados automaticamente quando o compilador é usado sem a flag de depuração.
-
-### Execução dos Testes Sintáticos
-
-Para executar os testes sintáticos, use o compilador sem a flag de depuração:
-
+**Saída esperada**
 ```bash
-# Na pasta raiz do projeto
-make
+programa
+{
+    funcao inicio()
+    {
+        inteiro x = 10
 
-# Executar testes sintáticos
-./compilador tests/teste6.txt
+        se (x > 5)
+        {
+            escreva("maior")
+        }
+        senao
+        {
+            escreva("menor ou igual")
+        }
+        retorne 0
+    }
+}
+
 ```
 
-Se houver erros sintáticos no código, o compilador exibirá mensagens de erro indicando o tipo de erro e a linha onde ocorreu.
+---
 
-## Testes de Estruturas de Controle
+### `run_function_call_test.sh`
 
-Os testes de estruturas de controle verificam especificamente o funcionamento correto de laços, condicionais e outras estruturas de controle de fluxo.
+**Descrição:** Verifica chamadas de funções definidas pelo usuário.
 
-### Execução dos Testes de Estruturas de Controle
-
+**Entrada**
 ```bash
-# Na pasta raiz do projeto
-make
+int calculate(int a, int b)
+{
+    int sum = a + b;
+    printf("The sum of %d and %d is: %d\n", a, b, sum);
+}
 
-# Executar testes de estruturas de controle
-./compilador tests/teste_lacos.txt
+int main()
+{
+    calculate(15, 25);
+    calculate(7, 3);
+    return 0;
+}
+
 ```
 
-## Executando Todos os Testes
-
-Para executar todos os tipos de testes disponíveis no projeto, você pode criar um script personalizado ou executar os comandos manualmente:
-
+**Saída esperada**
 ```bash
-#!/bin/bash
+programa
+{
+    funcao inteiro calculate(inteiro a, inteiro b)
+    {
+        inteiro sum = a + b
+        escreva("The sum of ", a, " and ", b, " is: ", sum, "\n")
+    }
 
-# Compilar o projeto
-make
+    funcao inicio()
+    {
+        calculate(15, 25)
+        calculate(7, 3)
+        retorne 0
+    }
 
-# Testes básicos
-echo "Executando testes básicos..."
-for i in {1..5}; do
-    echo "\nTeste $i:"
-    ./compilador tests/teste$i.txt
-done
+}
 
-# Testes léxicos
-echo "\nExecutando testes léxicos..."
-./tests/testes_lexicos/executar_testes.sh
-
-# Testes sintáticos
-echo "\nExecutando testes sintáticos..."
-./compilador tests/teste6.txt
-
-# Testes de estruturas de controle
-echo "\nExecutando testes de estruturas de controle..."
-./compilador tests/teste_lacos.txt
 ```
 
-Salve este script como `executar_todos_testes.sh` na pasta raiz do projeto, torne-o executável com `chmod +x executar_todos_testes.sh` e execute-o com `./executar_todos_testes.sh`.
+---
 
-## Mensagens de Erro Implementadas
+### `run_function_parameter_test.sh`
 
-O analisador léxico foi aprimorado para fornecer mensagens de erro detalhadas e úteis quando encontra tokens inválidos ou mal formados. Estas melhorias ajudam os usuários a identificar e corrigir problemas em seus códigos mais facilmente.
+**Descrição:** Testa funções com parâmetros e passagem de argumentos.
 
-### Tipos de Erros Detectados
+**Entrada**
+```bash
+int main()
+{
+    parameterTest(5, 10);
+    return 0;
+}
 
-1. **Símbolos especiais não permitidos**:
-   ```
-   Erro léxico (linha X): Símbolo especial '@' não permitido. A linguagem não suporta estes caracteres.
-   ```
+int parameterTest(int a, int b)
+{
+    int x;
+    x = a + b;
 
-2. **Sequências de escape inválidas**:
-   ```
-   Erro léxico (linha X): Sequência de escape inválida '\z'. Sequências válidas: \n, \t, \r, \0.
-   ```
+    printf("\n--- TESTE DOS PARÂMETROS ---\n");
+    printf("Valor de a: %d\n", a);
+    printf("Valor de b: %d\n", b);
+    printf("Soma (a + b): %d\n", x);
+    printf("Os parâmetros estão funcionando corretamente!\n");
+}
+```
 
-3. **Strings não fechadas**:
-   ```
-   Erro léxico (linha X): String não fechada "texto...". Falta aspas duplas de fechamento.
-   ```
+**Saída esperada**
+```bash
+programa
+{
+    funcao inicio()
+    {
+        parameterTest(5, 10)
+        retorne 0
+    }
+    
+    funcao inteiro parameterTest(inteiro a, inteiro b)
+    {
+        inteiro x
+        x = a + b
 
-4. **Caracteres não fechados**:
-   ```
-   Erro léxico (linha X): Caractere não fechado 'a...'. Falta aspas simples de fechamento.
-   ```
+        escreva("\n", "--- TESTE DOS PARÂMETROS ---", "\n")
+        escreva("Valor de a: ", a, "\n")
+        escreva("Valor de b: ", b, "\n")
+        escreva("Soma (a + b): ", x, "\n")
+        escreva("Os parâmetros estão funcionando corretamente!", "\n")
+    }
+}
+```
 
-5. **Caracteres não reconhecidos**:
-   ```
-   Erro léxico (linha X): Caractere não reconhecido '|'. Verifique se há símbolos inválidos no seu código.
-   ```
+---
 
-6. **Pontuação não implementada**:
-   ```
-   Erro léxico (linha X): Pontuação '<=>' não implementada. Considere usar ';' para finalizar comandos.
-   ```
+### `run_if_test.sh`
 
-## Extensões Futuras
+**Descrição:** Valida a estrutura `if` isoladamente com expressões condicionais simples.
 
-Para o futuro, planeja-se expandir o sistema de testes para incluir:
+**Entrada**
+```bash
+int main() {
+    float pi = 3.14;
+    char letra = 'a';
 
-1. Testes automatizados com verificação de resultados esperados
-2. Testes de integração para validar o compilador completo
+    if (pi > 3) {
+        return 1;
+    }
+    return 0;
+}
+
+```
+
+**Saída esperada**
+```bash
+programa
+{
+    funcao inicio()
+    {
+        real pi = 3.14
+        caracter letra = 'a'
+
+        se (pi > 3)
+        {
+            retorne 1
+        }
+        retorne 0
+    }
+}
+
+```
+
+---
+
+### `run_if_while_combination_test.sh`
+
+**Descrição:** Testa o uso combinado de `if` e `while` dentro do mesmo bloco.
+
+**Entrada**
+```bash
+int main() {
+    int count = 0;
+    while (count < 5) {
+        if (count % 2 == 0) {
+            printf("Even: ");
+            printf(count);
+        } else {
+            printf("Odd: ");
+            printf(count);
+        }
+        count = count + 1;
+    }
+    return 0;
+}
+```
+
+**Saída esperada**
+```bash
+programa
+{
+    funcao inicio()
+    {
+        inteiro count = 0
+        enquanto (count < 5)
+        {
+            se (count % 2 == 0)
+            {
+                escreva("Even: ")
+                escreva(count)
+            }
+            senao
+            {
+                escreva("Odd: ")
+                escreva(count)
+            }
+            count = count + 1
+        }
+        retorne 0
+    }
+}
+```
+
+---
+
+### `run_lexical_invalid_char_text.sh`
+
+**Descrição:** Verifica se caracteres ilegais são corretamente rejeitados pelo analisador léxico.
+
+**Entrada**
+```bash
+int main() {
+    @
+    return 0;
+}
+
+```
+
+**Saída esperada**
+```bash
+Erro lexico na linha 2: Caractere inesperado '@'
+```
+
+---
+
+### `run_lexical_unterminated_string_test.sh`
+
+**Descrição:** Testa o tratamento de strings sem aspas de fechamento.
+
+**Entrada**
+```bash
+int main() {
+    printf("string without end);
+    return 0;
+}
+
+```
+
+**Saída esperada**
+```bash
+Erro lexico na linha 4: string não terminada
+```
+
+---
+
+### `run_logical_operators_test.sh`
+
+**Descrição:** Verifica operadores lógicos (`&&`, `||`, `!`) em expressões booleanas.
+
+**Entrada**
+```bash
+int main() {
+    int x = 10;
+    int y = 5;
+    int z = 15;
+
+    if (x > y && z > x) {
+        printf("Both conditions are true");
+    }
+
+    if (x < y || z > y) {
+        printf("At least one condition is true");
+    }
+
+    if (!(x == y)) {
+        printf("x is not equal to y");
+    }
+    return 0;
+}
+```
+
+**Saída esperada**
+```bash
+programa
+{
+    funcao inicio()
+    {
+        inteiro x = 10
+        inteiro y = 5
+        inteiro z = 15
+
+        se (x > y e z > x)
+        {
+            escreva("Both conditions are true")
+        }
+
+        se (x < y ou z > y)
+        {
+            escreva("At least one condition is true")
+        }
+
+        se (nao (x == y))
+        {
+            escreva("x is not equal to y")
+        }
+        retorne 0
+    }
+}
+```
+
+---
+
+### `run_multiple_vars_test.sh`
+
+**Descrição:** Testa declarações múltiplas de variáveis do mesmo tipo.
+
+**Entrada**
+```bash
+int main() {
+    int num1 = 10;
+    float num2 = 20.5;
+    char grade = 'A';
+    int sum = num1 + 5;
+    float product = num2 * 2.0;
+
+    printf(sum);
+    printf(product);
+    printf(grade);
+    return 0;
+}
+```
+
+**Saída esperada**
+```bash
+programa
+{
+    funcao inicio()
+    {
+        inteiro num1 = 10
+        real num2 = 20.50
+        caracter grade = 'A'
+        inteiro sum = num1 + 5
+        real product = num2 * 2.00
+        escreva(sum)
+        escreva(product)
+        escreva(grade)
+        retorne 0
+    }
+}
+```
+
+---
+
+### `run_nested_conditionals_test.sh`
+
+**Descrição:** Avalia `if` aninhados com múltiplos blocos.
+
+**Entrada**
+```bash
+int main() {
+    int a = 10;
+    int b = 5;
+
+    if (a > b) {
+        printf("a is greater than b");
+        if (a > 15) {
+            printf(" and a is greater than 15");
+        } else {
+            printf(" and a is not greater than 15");
+        }
+    } else if (b > a) {
+        printf("b is greater than a");
+    } else {
+        printf("a and b are equal");
+    }
+    return 0;
+}
+```
+
+**Saída esperada**
+```bash
+programa
+{
+    funcao inicio()
+    {
+        inteiro a = 10
+        inteiro b = 5
+
+        se (a > b)
+        {
+            escreva("a is greater than b")
+            se (a > 15)
+            {
+                escreva(" and a is greater than 15")
+            }
+            senao
+            {
+                escreva(" and a is not greater than 15")
+            }
+        }
+        senao se (b > a)
+        {
+            escreva("b is greater than a")
+        }
+        senao
+        {
+            escreva("a and b are equal")
+        }
+        retorne 0
+    }
+}
+```
+
+---
+
+### `run_nested_while_test.sh`
+
+**Descrição:** Verifica laços `while` dentro de outros laços `while`.
+
+**Entrada**
+```bash
+int main() {
+    int i = 0;
+    while (i < 3) {
+        int j = 0;
+        while (j < 2) {
+            printf(i);
+            printf(j);
+            j = j + 1;
+        }
+        i = i + 1;
+    }
+    return 0;
+}
+```
+
+**Saída esperada**
+```bash
+programa
+{
+    funcao inicio()
+    {
+        inteiro i = 0
+        enquanto (i < 3)
+        {
+            inteiro j = 0
+            enquanto (j < 2)
+            {
+                escreva(i)
+                escreva(j)
+                j = j + 1
+            }
+            i = i + 1
+        }
+        retorne 0
+    }
+}
+```
+
+---
+
+### `run_printf_test.sh`
+
+**Descrição:** Testa o uso do comando `printf` com argumentos simples e múltiplos.
+
+**Entrada**
+```bash
+int main() {
+    int x = 10;
+    x = x + 3;
+    printf(x);
+}
+
+```
+
+**Saída esperada**
+```bash
+programa
+{
+    funcao inicio()
+    {
+        inteiro x = 10
+
+        x = x + 3
+        escreva(x)
+    }
+}
+```
+
+---
+
+### `run_return_test.sh`
+
+**Descrição:** Verifica instruções `return` e seu impacto na tradução.
+
+**Entrada**
+```bash
+int obterNumeroCurto()
+{
+    int x = 10;
+    int y = 20;
+    int z = x + y;
+    return z;
+}
+
+int main()
+{
+    int meuNumero = obterNumeroCurto();
+
+    printf(meuNumero);
+
+    return 0;
+}
+```
+
+**Saída esperada**
+```bash
+programa 
+{
+    funcao inteiro obterNumeroCurto()
+    {
+        inteiro x = 10
+        inteiro y = 20
+        inteiro z = x + y
+        retorne z
+    }
+
+    funcao inicio()
+    {
+        inteiro meuNumero = obterNumeroCurto()
+        escreva(meuNumero)
+
+        retorne 0
+}
+}
+```
+
+---
+
+### `run_scanf_test.sh`
+
+**Descrição:** Testa o reconhecimento e tradução de comandos `scanf`.
+
+**Entrada**
+```bash
+int main() {
+    int idade;
+    scanf("%d", &idade);
+    if (idade >= 18) {
+        printf("maior de idade");
+    }
+    return 0;
+}
+
+```
+
+**Saída esperada**
+```bash
+programa
+{
+    funcao inicio()
+    {
+        inteiro idade
+
+        leia(idade)
+        se (idade >= 18)
+        {
+            escreva("maior de idade")
+        }
+        retorne 0
+    }
+}
+
+```
+
+---
+
+### `run_semantic_redeclared_var_test.sh`
+
+**Descrição:** Verifica erro ao redeclarar uma variável no mesmo escopo.
+
+**Entrada**
+```bash
+int main() {
+    int x;
+    int x;
+    return 0;
+}
+```
+
+**Saída esperada**
+```bash
+Erro semântico na linha 3: Variável 'x' já declarada.
+```
+
+---
+
+### `run_semantic_undeclared_var_test.sh`
+
+**Descrição:** Testa o uso de variáveis não declaradas (erro semântico).
+
+**Entrada**
+```bash
+int main() {
+    x = 5;
+    return 0;
+}
+
+```
+
+**Saída esperada**
+```bash
+Erro semântico na linha 2: Variável 'x' não declarada.
+```
+
+---
+
+### `run_type_check_invalid_char_to_int_test.sh`
+
+**Descrição:** Testa atribuição incorreta de `char` em variável `int`.
+
+**Entrada**
+```bash
+int main() {
+    int x;
+    x = 'a';
+    return 0;
+}
+
+```
+
+**Saída esperada**
+```bash
+Erro de tipo na linha 3: não é possível atribuir caracter a variável do tipo inteiro.
+
+```
+
+---
+
+### `run_type_check_invalid_float_to_int_test.sh`
+
+**Descrição:** Testa conversão implícita incorreta de `float` para `int`.
+
+**Entrada**
+```bash
+int main() {
+    int x;
+    x = 3.14;
+    return 0;
+}
+
+```
+
+**Saída esperada**
+```bash
+Erro de tipo na linha 3: não é possível atribuir real a variável do tipo inteiro.
+
+```
+
+---
+
+### `run_type_check_invalid_string_to_float_test.sh`
+
+**Descrição:** Verifica erro ao atribuir `string` a `float`.
+
+**Entrada**
+```bash
+int main() {
+    float y;
+    y = "texto";
+    return 0;
+}
+
+```
+
+**Saída esperada**
+```bash
+Erro de tipo na linha 3: não é possível atribuir string a variável do tipo real.
+
+```
+
+---
+
+### `run_type_check_valid_int_test.sh`
+
+**Descrição:** Confirma atribuição correta entre variáveis do tipo `int`.
+
+**Entrada**
+```bash
+int main() {
+    int x;
+    x = 10;
+    return 0;
+}
+
+```
+
+**Saída esperada**
+```bash
+[Compilação sem erros]
+```
+
+---
+
+### `run_while_test.sh`
+
+**Descrição:** Testa laços simples `while` com condição e corpo válido.
+
+**Entrada**
+```bash
+int main() {
+    int i = 0;
+    while (i < 5) {
+        printf(i);
+        i = i + 1;
+    }
+    return 0;
+}
+
+```
+
+**Saída esperada**
+```bash
+programa
+{
+    funcao inicio()
+    {
+        inteiro i = 0
+
+        enquanto (i < 5)
+        {
+            escreva(i)
+            i = i + 1
+        }
+        retorne 0
+    }
+}
+
+```
