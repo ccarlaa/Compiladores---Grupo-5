@@ -12,6 +12,28 @@ Esta seção documenta a implementação do analisador sintático definido no ar
 
 ---
 
+## Estratégia de Parsing Utilizada
+
+O compilador utiliza a estratégia **LR (Left-to-Right)**, por meio da ferramenta **Bison**, que gera um parser ascendente com base em uma gramática livre de contexto.
+
+### Por que LR?
+
+O LR é adequado para esse projeto por atender aos seguintes critérios:
+
+- **Poder gramatical**: é capaz de reconhecer uma classe maior de gramáticas do que LL (por exemplo, suporta recursão à esquerda), o que permite escrever regras mais próximas da linguagem C.
+- **Simplicidade de uso com Bison**: o Bison já fornece a infraestrutura pronta para geração de parsers LR, com tratamento automático de conflitos comuns e suporte a precedência de operadores.
+- **Precisão e robustez**: o parser LR detecta erros de forma mais precisa e oferece mensagens melhores do que parsers simples LL ou ad-hoc.
+- **Integração com ações semânticas**: o modelo de parser ascendente se encaixa bem com a construção da AST a partir das folhas para a raiz, refletindo naturalmente a semântica de linguagens imperativas.
+
+### Comparação com outras estratégias
+
+| Estratégia | Características | Por que não foi usada? |
+|-----------|------------------|-------------------------|
+| **LL**    | Parser descendente, fácil de depurar, mais restrito (não suporta recursão à esquerda) | Exigiria reescrever a gramática em formato não natural para C |
+| **GLR**   | Suporta ambiguidade e múltiplos caminhos, mais poderoso | Complexidade maior e desnecessária para o escopo da linguagem implementada |
+
+A escolha por um parser **LR via Bison** oferece um bom equilíbrio entre **potência, suporte a gramáticas realistas**, e **integração com análise semântica e geração de código**, sendo a abordagem mais adequada para um compilador educacional que visa cobrir um subconjunto significativo da linguagem C.
+
 ## Estrutura do Arquivo `parser.y`
 
 O arquivo segue o padrão de três seções:
@@ -200,3 +222,5 @@ programa
 ## Integração com o Lexer
 
 O parser recebe tokens por meio da função `yylex()`, que é automaticamente invocada. Cada token enviado pelo lexer deve estar declarado no parser com `%token`, com os mesmos nomes e tipos.
+
+---

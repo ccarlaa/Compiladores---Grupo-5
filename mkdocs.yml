@@ -43,6 +43,7 @@ nav:
       - Análise Sintática: documentacao-tecnica/analise-sintatica.md
       - Gramática: documentacao-tecnica/gramatica.md
       - Testes: documentacao-tecnica/testes.md
+      - CI/CD: documentacao-tecnica/ci-cd.md
       - Evolução: documentacao-tecnica/evolucao.md
       - Decisões Técnicas: documentacao-tecnica/decisoes-tecnicas.md
   - Contribuição: contribuicao.md

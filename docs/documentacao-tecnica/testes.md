@@ -185,8 +185,6 @@ programa
 
 ```
 
-![Teste1](../assets/images/terminal-teste-1.png)
-
 ---
 
 ### `run_function_call_test.sh`
@@ -230,8 +228,6 @@ programa
 }
 
 ```
-
-![Teste1](../assets/images/terminal-teste-1.png)
 
 ---
 
@@ -284,8 +280,6 @@ programa
 }
 ```
 
-![Teste1](../assets/images/terminal-teste-1.png)
-
 ---
 
 ### `run_if_test.sh`
@@ -324,8 +318,6 @@ programa
 }
 
 ```
-
-![Teste1](../assets/images/terminal-teste-1.png)
 
 ---
 
@@ -377,8 +369,6 @@ programa
 }
 ```
 
-![Teste1](../assets/images/terminal-teste-1.png)
-
 ---
 
 ### `run_lexical_invalid_char_text.sh`
@@ -399,8 +389,6 @@ int main() {
 Erro lexico na linha 2: Caractere inesperado '@'
 ```
 
-![Teste1](../assets/images/terminal-teste-1.png)
-
 ---
 
 ### `run_lexical_unterminated_string_test.sh`
@@ -420,8 +408,6 @@ int main() {
 ```bash
 Erro lexico na linha 4: string não terminada
 ```
-
-![Teste1](../assets/images/terminal-teste-1.png)
 
 ---
 
@@ -480,8 +466,6 @@ programa
 }
 ```
 
-![Teste1](../assets/images/terminal-teste-1.png)
-
 ---
 
 ### `run_multiple_vars_test.sh`
@@ -522,8 +506,6 @@ programa
     }
 }
 ```
-
-![Teste1](../assets/images/terminal-teste-1.png)
 
 ---
 
@@ -587,8 +569,6 @@ programa
 }
 ```
 
-![Teste1](../assets/images/terminal-teste-1.png)
-
 ---
 
 ### `run_nested_while_test.sh`
@@ -635,8 +615,6 @@ programa
 }
 ```
 
-![Teste1](../assets/images/terminal-teste-1.png)
-
 ---
 
 ### `run_printf_test.sh`
@@ -666,8 +644,6 @@ programa
     }
 }
 ```
-
-![Teste1](../assets/images/terminal-teste-1.png)
 
 ---
 
@@ -717,8 +693,6 @@ programa
 }
 ```
 
-![Teste1](../assets/images/terminal-teste-1.png)
-
 ---
 
 ### `run_scanf_test.sh`
@@ -757,8 +731,6 @@ programa
 
 ```
 
-![Teste1](../assets/images/terminal-teste-1.png)
-
 ---
 
 ### `run_semantic_redeclared_var_test.sh`
@@ -779,8 +751,6 @@ int main() {
 Erro semântico na linha 3: Variável 'x' já declarada.
 ```
 
-![Teste1](../assets/images/terminal-teste-1.png)
-
 ---
 
 ### `run_semantic_undeclared_var_test.sh`
@@ -800,8 +770,6 @@ int main() {
 ```bash
 Erro semântico na linha 2: Variável 'x' não declarada.
 ```
-
-![Teste1](../assets/images/terminal-teste-1.png)
 
 ---
 
@@ -825,8 +793,6 @@ Erro de tipo na linha 3: não é possível atribuir caracter a variável do tipo
 
 ```
 
-![Teste1](../assets/images/terminal-teste-1.png)
-
 ---
 
 ### `run_type_check_invalid_float_to_int_test.sh`
@@ -848,8 +814,6 @@ int main() {
 Erro de tipo na linha 3: não é possível atribuir real a variável do tipo inteiro.
 
 ```
-
-![Teste1](../assets/images/terminal-teste-1.png)
 
 ---
 
@@ -873,8 +837,6 @@ Erro de tipo na linha 3: não é possível atribuir string a variável do tipo r
 
 ```
 
-![Teste1](../assets/images/terminal-teste-1.png)
-
 ---
 
 ### `run_type_check_valid_int_test.sh`
@@ -895,8 +857,6 @@ int main() {
 ```bash
 [Compilação sem erros]
 ```
-
-![Teste1](../assets/images/terminal-teste-1.png)
 
 ---
 
@@ -935,5 +895,3 @@ programa
 }
 
 ```
-
-![Teste1](../assets/images/terminal-teste-1.png)
