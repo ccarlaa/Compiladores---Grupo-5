@@ -16,7 +16,7 @@ A principal decisão técnica foi definir um subconjunto limitado e estruturado 
 
 ## 2. Justificativa para as Funcionalidades Não Implementadas
 
-A escolha de não implementar certas características avançadas do C foi uma decisão técnica crucial para manter a complexidade do projeto gerenciável, provavelmente alinhada a objetivos acadêmicos ou de prova de conceito.
+A escolha de não implementar certas características avançadas do C foi uma decisão técnica crucial para manter a complexidade do projeto gerenciável, considerando o tempo para implementação e aprendizado das ferramentas utilizadas.
 
 ### Por que não há `for`?
 
