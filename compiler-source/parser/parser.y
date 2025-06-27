@@ -6,6 +6,37 @@
 #include "conversor.h"
 #include "ast.h"
 #include "y.tab.h"
+#include <stdarg.h>
+
+#define MAX_RULES 1000
+char *rule_names[MAX_RULES];
+int rule_counts[MAX_RULES];
+int rule_total = 0;
+
+void rule_hit(const char *name) {
+    for (int i = 0; i < rule_total; ++i) {
+        if (strcmp(rule_names[i], name) == 0) {
+            rule_counts[i]++;
+            return;
+        }
+    }
+    if (rule_total < MAX_RULES) {
+        rule_names[rule_total] = strdup(name);
+        rule_counts[rule_total] = 1;
+        rule_total++;
+    }
+}
+
+void print_grammar_coverage() {
+    FILE *f = fopen("cobertura.txt", "w");
+    if (!f) return;
+
+    fprintf(f, "Cobertura:\n");
+    for (int i = 0; i < rule_total; ++i) {
+        fprintf(f, "%s: %d\n", rule_names[i], rule_counts[i]);
+    }
+    fclose(f);
+}
 
 extern int yylineno;
 
@@ -86,26 +117,30 @@ static ASTNode *if_node_temp = NULL;
 
 program:
     {
+        rule_hit("program");
         init_symbol_table();
         ast_root = create_node(NODE_PROGRAM, "programa");
     }
     function_list
     {
-        print_ast_stderr(ast_root, 0);  // Imprime a árvore AST no stderr
-        generate_portugol(ast_root);    // Gera código Portugol
+        generate_portugol(ast_root);
         free_ast(ast_root);
-        print_symbol_table_stderr();    // Imprime a tabela de símbolos no stderr
+        print_symbol_table_stderr();
         free_symbol_table();
+
+        print_grammar_coverage();
     }
-    ;
+;
 
 function_list:
     %empty 
     {
+        rule_hit("function_list_empty");
         $$ = create_node(NODE_EMPTY, NULL);
     }
     | function_list function_declaration
     {
+        rule_hit("function_list_append");
         add_child(ast_root, $2);
         $$ = $1;
     }
@@ -114,6 +149,7 @@ function_list:
 function_declaration:
     type_specifier T_ID T_LPAREN function_parameter T_RPAREN
     {
+        rule_hit("function_declaration");
         current_scope++;
 
         insert_symbol($2, $1, current_scope - 1);
@@ -166,7 +202,7 @@ function_parameter:
 parameter_list:
     type_specifier declarator
     {
-        // Criar a lista de parâmetros
+        rule_hit("parameter_list_single");
         ASTNode *param_list_node = create_node(NODE_PARAM_LIST, NULL);
         ASTNode *param_node = create_node(NODE_PARAMETER, strdup($2));
         ASTNode *type_node = create_node(NODE_TYPE, strdup($1));
@@ -179,6 +215,7 @@ parameter_list:
     }
     | parameter_list T_COMMA type_specifier declarator
     {
+        rule_hit("parameter_list_multiple");
         ASTNode *param_node = create_node(NODE_PARAMETER, strdup($4));
         ASTNode *type_node = create_node(NODE_TYPE, strdup($3));
         
@@ -194,6 +231,7 @@ parameter_list:
     function_call:
     T_ID T_LPAREN argument_list T_RPAREN
     {
+        rule_hit("function_call");
         ASTNode *call_node = create_node(NODE_FUNCTION_CALL, $1);
         add_child(call_node, $3);
         $$ = call_node;
@@ -203,19 +241,19 @@ parameter_list:
 argument_list:
     %empty
     {
-        // Retorna um nó de lista vazio se não houver argumentos
+        rule_hit("argument_list_empty");
         $$ = create_node(NODE_STATEMENT_LIST, NULL); 
     }
     | expression
     {
-        // Cria uma lista com um único argumento
+        rule_hit("argument_list_single");
         ASTNode *list = create_node(NODE_STATEMENT_LIST, NULL);
         add_child(list, $1);
         $$ = list;
     }
     | argument_list T_COMMA expression
     {
-        // Adiciona um novo argumento à lista existente
+        rule_hit("argument_list_multiple");
         add_child($1, $3);
         $$ = $1;
     }
@@ -237,6 +275,7 @@ declarations:
 declaration:
     type_specifier declarator T_SEMICOLON
     {
+        rule_hit("declaration_simple");
         $$ = create_declaration_node($1, $2, NULL);
         if (lookup_symbol($2) != NULL) {
             char msg[256];
@@ -248,6 +287,7 @@ declaration:
     }
     | type_specifier declarator T_ASSIGN expression T_SEMICOLON
     {
+        rule_hit("declaration_with_assignment");
         // Checagem de tipo da atribuição
         if ($4->data_type && strcmp($1, $4->data_type) != 0) {
             char msg[256];
@@ -313,6 +353,7 @@ type_specifier:
 statements:
     %empty
     {
+        rule_hit("statements_empty");
         $$ = create_node(NODE_STATEMENT_LIST, NULL);
     }
     | statements statement
@@ -324,18 +365,18 @@ statements:
     ;
 
 statement:
-    printf_statement
-    | scanf_statement
-    | declaration
-    | if_statement
-    | while_statement
-    | do_while_statement
-
-    | return_statement
-    | assignment_statement
-    | function_call T_SEMICOLON { $$ = $1; }
-    | T_SEMICOLON { $$ = create_node(NODE_EMPTY, NULL); }
+    printf_statement                  { rule_hit("statement_printf"); $$ = $1; }
+    | scanf_statement                   { rule_hit("statement_scanf"); $$ = $1; }
+    | declaration                       { rule_hit("statement_declaration"); $$ = $1; }
+    | if_statement                      { rule_hit("statement_if"); $$ = $1; }
+    | while_statement                   { rule_hit("statement_while"); $$ = $1; }
+    | do_while_statement                { rule_hit("statement_do_while"); $$ = $1; }
+    | return_statement                  { rule_hit("statement_return"); $$ = $1; }
+    | assignment_statement              { rule_hit("statement_assignment"); $$ = $1; }
+    | function_call T_SEMICOLON        { rule_hit("statement_function_call"); $$ = $1; }
+    | T_SEMICOLON                       { rule_hit("statement_empty"); $$ = create_node(NODE_EMPTY, NULL); }
     ;
+
 
 block:
     T_LBRACE statements T_RBRACE
@@ -347,6 +388,7 @@ block:
 do_while_statement:
     T_DO T_LBRACE statements T_RBRACE T_WHILE T_LPAREN expression T_RPAREN T_SEMICOLON
     {
+        rule_hit("do_while_statement");
         ASTNode *do_while = create_node(NODE_DO_WHILE, NULL);
         add_child(do_while, $3); // Bloco de statements
         add_child(do_while, $7); // Condição
@@ -357,6 +399,7 @@ do_while_statement:
 break_statement:
     T_BREAK T_SEMICOLON
     {
+        rule_hit("break_statement");
         $$ = create_node(NODE_BREAK, NULL);
     }
     ;
@@ -364,6 +407,7 @@ break_statement:
 continue_statement:
     T_CONTINUE T_SEMICOLON
     {
+        rule_hit("continue_statement");
         $$ = create_node(NODE_CONTINUE, NULL);
     }
     ;
@@ -381,6 +425,7 @@ scanf_statement:
 while_statement:
     T_WHILE T_LPAREN expression T_RPAREN T_LBRACE statements T_RBRACE
     {
+        rule_hit("while_statement");
         ASTNode *while_node = create_node(NODE_WHILE, NULL);
         add_child(while_node, $3); // Condição
         add_child(while_node, $6); // Corpo
@@ -392,6 +437,7 @@ for_statement:
     T_FOR T_LPAREN declaration_or_expression T_SEMICOLON expression T_SEMICOLON expression T_RPAREN
     T_LBRACE statements T_RBRACE
     {
+        rule_hit("for_statement");
         ASTNode *for_node = create_node(NODE_FOR, NULL);
         add_child(for_node, $3); // Inicialização
         add_child(for_node, $5); // Condição
@@ -403,14 +449,32 @@ for_statement:
 
 declaration_or_expression:
     declaration
-    | assignment_statement
-    | expression
-    | %empty { $$ = create_node(NODE_EMPTY, NULL); }
-    ;
+    {
+        rule_hit("declaration_or_expression_declaration");
+        $$ = $1;
+    }
+  | assignment_statement
+    {
+        rule_hit("declaration_or_expression_assignment");
+        $$ = $1;
+    }
+  | expression
+    {
+        rule_hit("declaration_or_expression_expression");
+        $$ = $1;
+    }
+  | %empty
+    {
+        rule_hit("declaration_or_expression_empty");
+        $$ = create_node(NODE_EMPTY, NULL);
+    }
+;
+
 
 assignment_statement:
     | T_ID T_ASSIGN expression T_SEMICOLON
     {
+        rule_hit("assignment_simple");
         Symbol *sym = lookup_symbol($1);
         if (sym == NULL) {
             char msg[256];
@@ -431,6 +495,7 @@ assignment_statement:
     }
     | T_ID T_PLUS_ASSIGN expression T_SEMICOLON
     {
+        rule_hit("assignment_simple");
         if (lookup_symbol($1) == NULL) {
             char msg[256];
             snprintf(msg, sizeof(msg), "Erro semântico na linha %d: Variável '%s' não declarada.", yylineno, $1);
@@ -444,6 +509,7 @@ assignment_statement:
     }
     | T_ID T_MINUS_ASSIGN expression T_SEMICOLON
     {
+        rule_hit("assignment_simple");
         if (lookup_symbol($1) == NULL) {
             char msg[256];
             snprintf(msg, sizeof(msg), "Erro semântico na linha %d: Variável '%s' não declarada.", yylineno, $1);
@@ -460,6 +526,7 @@ assignment_statement:
 increment_statement:
     T_ID T_INC T_SEMICOLON
     {
+        rule_hit("increment_statement_post");
         ASTNode *inc = create_node(NODE_UNARY_OP, "++");
         add_child(inc, create_node(NODE_IDENTIFIER, $1));
         $$ = inc;
@@ -467,6 +534,7 @@ increment_statement:
     }
     | T_INC T_ID T_SEMICOLON
     {
+        rule_hit("increment_statement_pre");
         ASTNode *inc = create_node(NODE_UNARY_OP, "++");
         add_child(inc, create_node(NODE_IDENTIFIER, $2));
         $$ = inc;
@@ -477,6 +545,7 @@ increment_statement:
 decrement_statement:
     T_ID T_DEC T_SEMICOLON
     {
+        rule_hit("decrement_statement_post");
         ASTNode *dec = create_node(NODE_UNARY_OP, "--");
         add_child(dec, create_node(NODE_IDENTIFIER, $1));
         $$ = dec;
@@ -484,6 +553,7 @@ decrement_statement:
     }
     | T_DEC T_ID T_SEMICOLON
     {
+        rule_hit("decrement_statement_pre");
         ASTNode *dec = create_node(NODE_UNARY_OP, "--");
         add_child(dec, create_node(NODE_IDENTIFIER, $2));
         $$ = dec;
@@ -494,6 +564,7 @@ decrement_statement:
 return_statement:
     T_RETURN expression T_SEMICOLON
     {
+        rule_hit("return_statement");
         ASTNode *ret = create_node(NODE_RETURN, NULL);
         add_child(ret, $2);
         $$ = ret;
@@ -503,6 +574,7 @@ return_statement:
 if_statement:
     T_IF T_LPAREN expression T_RPAREN T_LBRACE statements T_RBRACE
     {
+        rule_hit("if_simple");
         ASTNode *if_node = create_node(NODE_IF, NULL);
         add_child(if_node, $3); // Condição
         add_child(if_node, $6); // Then
@@ -511,6 +583,7 @@ if_statement:
     }
     | T_IF T_LPAREN expression T_RPAREN T_LBRACE statements T_RBRACE T_ELSE T_IF T_LPAREN expression T_RPAREN T_LBRACE statements T_RBRACE
     {
+        rule_hit("if_simple");
         ASTNode *if_node = create_node(NODE_IF, NULL);
         add_child(if_node, $3); // Condição
         add_child(if_node, $6); // Then
@@ -524,6 +597,7 @@ if_statement:
     }
     | T_IF T_LPAREN expression T_RPAREN T_LBRACE statements T_RBRACE T_ELSE T_LBRACE statements T_RBRACE
     {
+        rule_hit("if_simple");
         ASTNode *if_node = create_node(NODE_IF, NULL);
         add_child(if_node, $3); // Condição
         add_child(if_node, $6); // Then
@@ -536,6 +610,7 @@ if_statement:
     }
     | T_IF T_LPAREN expression T_RPAREN T_LBRACE statements T_RBRACE T_ELSE T_IF T_LPAREN expression T_RPAREN T_LBRACE statements T_RBRACE T_ELSE T_LBRACE statements T_RBRACE
     {
+        rule_hit("if_simple");
         ASTNode *if_node = create_node(NODE_IF, NULL);
         add_child(if_node, $3); // Condição
         add_child(if_node, $6); // Then
@@ -554,8 +629,9 @@ if_statement:
     ;
 
 expression:
-    T_ID                     {
-        // Verificar se a variável foi declarada antes do uso
+    T_ID
+    {
+        rule_hit("expression_id");
         Symbol *sym = lookup_symbol($1);
         if (sym == NULL) {
             fprintf(stderr, "Erro semântico: Variável '%s' usada, mas não declarada\n", $1);
@@ -565,6 +641,7 @@ expression:
     }
     | T_NUMBER_INT           
     { 
+        rule_hit("expression_int");
         char num[20]; 
         sprintf(num, "%d", $1); 
         $$ = create_node(NODE_CONST_INT, num); 
@@ -572,35 +649,38 @@ expression:
     }
     | T_NUMBER_FLOAT         
     { 
+        rule_hit("expression_float");
         $$ = create_node(NODE_CONST_FLOAT, $1); 
         $$->data_type = strdup("real");
     }
     | T_STRING               
     { 
+        rule_hit("expression_string");
         $$ = create_node(NODE_CONST_STRING, $1); 
         $$->data_type = strdup("string");
     }
     | T_CHAR_LITERAL         
     { 
+        rule_hit("expression_char");
         $$ = create_node(NODE_CONST_CHAR, $1); 
         $$->data_type = strdup("caracter");
     }
-    | expression T_PLUS expression    { $$ = create_binary_op("+", $1, $3); }
-    | expression T_MINUS expression   { $$ = create_binary_op("-", $1, $3); }
-    | expression T_MULT expression    { $$ = create_binary_op("*", $1, $3); }
-    | expression T_DIV expression     { $$ = create_binary_op("/", $1, $3); }
-    | expression T_MOD expression     { $$ = create_binary_op("%", $1, $3); }
-    | expression T_EQ expression      { $$ = create_binary_op("==", $1, $3); }
-    | expression T_NEQ expression     { $$ = create_binary_op("!=", $1, $3); }
-    | expression T_LT expression      { $$ = create_binary_op("<", $1, $3); }
-    | expression T_GT expression      { $$ = create_binary_op(">", $1, $3); }
-    | expression T_LE expression      { $$ = create_binary_op("<=", $1, $3); }
-    | expression T_GE expression      { $$ = create_binary_op(">=", $1, $3); }
-    | expression T_AND expression     { $$ = create_binary_op("e", $1, $3); }
-    | expression T_OR expression      { $$ = create_binary_op("ou", $1, $3); }
-    | expression T_BIT_OR expression  { $$ = create_binary_op("|", $1, $3); }
-    | T_AMPERSAND expression         { $$ = create_unary_op("&", $2); }
-    | T_NOT expression               { $$ = create_unary_op("nao", $2); }
+    | expression T_PLUS expression    { rule_hit("expression_plus"); $$ = create_binary_op("+", $1, $3); }
+    | expression T_MINUS expression   { rule_hit("expression_minus"); $$ = create_binary_op("-", $1, $3); }
+    | expression T_MULT expression    { rule_hit("expression_mult"); $$ = create_binary_op("*", $1, $3); }
+    | expression T_DIV expression     { rule_hit("expression_div"); $$ = create_binary_op("/", $1, $3); }
+    | expression T_MOD expression     { rule_hit("expression_mod"); $$ = create_binary_op("%", $1, $3); }
+    | expression T_EQ expression      { rule_hit("expression_eq"); $$ = create_binary_op("==", $1, $3); }
+    | expression T_NEQ expression     { rule_hit("expression_neq"); $$ = create_binary_op("!=", $1, $3); }
+    | expression T_LT expression      { rule_hit("expression_lt"); $$ = create_binary_op("<", $1, $3); }
+    | expression T_GT expression      { rule_hit("expression_gt"); $$ = create_binary_op(">", $1, $3); }
+    | expression T_LE expression      { rule_hit("expression_le"); $$ = create_binary_op("<=", $1, $3); }
+    | expression T_GE expression      { rule_hit("expression_ge"); $$ = create_binary_op(">=", $1, $3); }
+    | expression T_AND expression     { rule_hit("expression_and"); $$ = create_binary_op("e", $1, $3); }
+    | expression T_OR expression      { rule_hit("expression_or"); $$ = create_binary_op("ou", $1, $3); }
+    | expression T_BIT_OR expression  { rule_hit("expression_bit_or"); $$ = create_binary_op("|", $1, $3); }
+    | T_AMPERSAND expression         { rule_hit("expression_amp"); $$ = create_unary_op("&", $2); }
+    | T_NOT expression               { rule_hit("expression_not"); $$ = create_unary_op("nao", $2); }
     | T_LPAREN expression T_RPAREN   { $$ = $2; } // Remove parênteses
     | expression T_DOT T_ID           { 
         ASTNode *dot = create_node(NODE_MEMBER_ACCESS, ".");
@@ -621,7 +701,6 @@ expression:
     ;
 
 printf_statement:
-    printf_statement:
     T_PRINTF T_LPAREN printf_args T_RPAREN T_SEMICOLON
     {
         ASTNode *printf_node = create_node(NODE_PRINTF, NULL);
@@ -633,12 +712,14 @@ printf_statement:
 printf_args:
     expression
     {
+        rule_hit("printf_args_single");
         ASTNode *args = create_node(NODE_PRINTF_ARGS, NULL);
         add_child(args, $1);
         $$ = args;
     }
     | printf_args T_COMMA expression
     {
+        rule_hit("printf_args_multiple");
         add_child($1, $3);
         $$ = $1;
     }

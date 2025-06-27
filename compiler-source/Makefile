@@ -85,6 +85,27 @@ test: $(TARGET)
 		exit 1; \
 	fi
 
+# Regra para rodar a cobertura
+coverage: $(TARGET)
+	@echo "🧪 Executando testes com análise de cobertura de gramática..."
+	@mkdir -p build/coverage_logs
+	@> cobertura.txt
+	@success=true; \
+	for script in $(TEST_SCRIPTS); do \
+		echo "🔍 Rodando $$script com captura de stderr..."; \
+		if ! bash $$script 2>build/coverage_logs/stderr.log; then \
+			success=false; \
+			echo "❌ Falha no teste $$script"; \
+		fi; \
+		grep "COBERTURA DAS REGRAS DA GRAMÁTICA" -A 100 build/coverage_logs/stderr.log >> cobertura.txt || true; \
+		echo "" >> cobertura.txt; \
+	done; \
+	if [ "$$success" = true ]; then \
+		echo "✅ Todos os testes passaram com cobertura registrada em cobertura.txt"; \
+	else \
+		echo "⚠️ Alguns testes falharam — cobertura parcial registrada em cobertura.txt"; \
+	fi
+
 # Alvo para limpar os arquivos gerados
 .PHONY: all clean test
 clean:
@@ -92,3 +113,5 @@ clean:
 	rm -f $(TARGET)
 	rm -rf $(BUILD_DIR)
 	@echo "Limpeza concluída."
+
+	
