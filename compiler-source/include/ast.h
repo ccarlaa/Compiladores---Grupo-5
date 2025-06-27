@@ -51,6 +51,7 @@ typedef struct ASTNode
     char *value;
     struct ASTNode **children;
     int child_count;
+    char *data_type;
 } ASTNode;
 
 ASTNode *create_node(NodeType type, const char *value);
