@@ -24,3 +24,9 @@ jobs:
         with:
           name: cobertura
           path: compiler-source/cobertura.txt
+
+      - name: 📦 Publica binário compilador
+        uses: actions/upload-artifact@v4
+        with:
+          name: compilador
+          path: compiler-source/compilador
