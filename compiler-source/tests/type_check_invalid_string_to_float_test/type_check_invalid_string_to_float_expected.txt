@@ -1,1 +1,1 @@
-Erro de tipo na linha 1: não é possível atribuir string em real.
+Erro de tipo na linha 3: não é possível atribuir string a variável do tipo real.

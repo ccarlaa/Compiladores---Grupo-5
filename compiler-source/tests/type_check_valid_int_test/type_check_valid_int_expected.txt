@@ -3,26 +3,24 @@
 PROGRAM (programa)
 └── FUNCTION (main)
     ├── TYPE (inteiro)
-    └── BLOCK
-        ├── DECLARATION_LIST
-        │   ├── DECLARATION (x)
-        │   │   └── TYPE (inteiro)
-        │   └── EMPTY
-        └── STATEMENT_LIST
-            ├── ASSIGNMENT (=)
-            │   ├── IDENTIFIER (x)
-            │   └── CONST_INT (10)
-            └── STATEMENT_LIST
-                ├── RETURN
-                │   └── CONST_INT (0)
-                └── EMPTY
+    ├── BLOCK
+    └── DECLARATION
+        ├── MEMBER_ACCESS
+        │   └── ASSIGNMENT (x)
+        │       └── TYPE (inteiro)
+        └── FUNCTION_CALL
+            ├── IDENTIFIER (=)
+            │   ├── CONST_INT (x)
+            │   └── CONST_FLOAT (10)
+            └── STRUCT_MEMBER
+                └── CONST_FLOAT (0)
 ========================
 
 
 ===== TABELA DE SÍMBOLOS =====
 NOME C               NOME PORTUGOL        TIPO            ESCOPO    
 ----------------------------------------
-x                    x                    inteiro         0         
+x                    x                    inteiro         1         
 main                 main                 inteiro         0         
 ==============================
 
@@ -32,6 +30,7 @@ programa
     {
         inteiro x
         x = 10
-        // retorne 0
+        retorne 0
     }
+
 }

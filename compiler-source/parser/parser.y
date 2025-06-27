@@ -248,12 +248,23 @@ declaration:
     }
     | type_specifier declarator T_ASSIGN expression T_SEMICOLON
     {
+        // Checagem de tipo da atribuição
+        if ($4->data_type && strcmp($1, $4->data_type) != 0) {
+            char msg[256];
+            snprintf(msg, sizeof(msg),
+                "Erro de tipo na linha %d: não é possível atribuir %s em %s.",
+                yylineno, $4->data_type, $1);
+            yyerror(msg);
+        }
+
         $$ = create_declaration_node($1, $2, $4);
+
         if (lookup_symbol($2) != NULL) {
             char msg[256];
             snprintf(msg, sizeof(msg), "Erro semântico na linha %d: Variável '%s' já declarada.", yylineno, $2);
             yyerror(msg);
         }
+
         insert_symbol($2, $1, current_scope);
         free($1); free($2);
     }
@@ -398,17 +409,24 @@ declaration_or_expression:
     ;
 
 assignment_statement:
-    T_ID T_ASSIGN expression T_SEMICOLON
+    | T_ID T_ASSIGN expression T_SEMICOLON
     {
-        if (lookup_symbol($1) == NULL) {
+        Symbol *sym = lookup_symbol($1);
+        if (sym == NULL) {
             char msg[256];
             snprintf(msg, sizeof(msg), "Erro semântico na linha %d: Variável '%s' não declarada.", yylineno, $1);
             yyerror(msg);
         }
 
-        $$ = create_assignment_node("=", 
-            create_node(NODE_IDENTIFIER, $1), 
-            $3);
+        if ($3->data_type && strcmp(sym->type, $3->data_type) != 0) {
+            char msg[256];
+            snprintf(msg, sizeof(msg),
+                "Erro de tipo na linha %d: não é possível atribuir %s a variável do tipo %s.",
+                yylineno, $3->data_type, sym->type);
+            yyerror(msg);
+        }
+
+        $$ = create_assignment_node("=", create_node(NODE_IDENTIFIER, $1), $3);
         free($1);
     }
     | T_ID T_PLUS_ASSIGN expression T_SEMICOLON
@@ -545,17 +563,28 @@ expression:
         }
         $$ = create_node(NODE_IDENTIFIER, $1);
     }
-    | T_NUMBER_INT           { 
+    | T_NUMBER_INT           
+    { 
         char num[20]; 
         sprintf(num, "%d", $1); 
         $$ = create_node(NODE_CONST_INT, num); 
+        $$->data_type = strdup("inteiro");
     }
-    | T_NUMBER_FLOAT         { 
-        // Directly use the string representation from the lexer
+    | T_NUMBER_FLOAT         
+    { 
         $$ = create_node(NODE_CONST_FLOAT, $1); 
+        $$->data_type = strdup("real");
     }
-    | T_STRING               { $$ = create_node(NODE_CONST_STRING, $1); }
-    | T_CHAR_LITERAL         { $$ = create_node(NODE_CONST_CHAR, $1); }
+    | T_STRING               
+    { 
+        $$ = create_node(NODE_CONST_STRING, $1); 
+        $$->data_type = strdup("string");
+    }
+    | T_CHAR_LITERAL         
+    { 
+        $$ = create_node(NODE_CONST_CHAR, $1); 
+        $$->data_type = strdup("caracter");
+    }
     | expression T_PLUS expression    { $$ = create_binary_op("+", $1, $3); }
     | expression T_MINUS expression   { $$ = create_binary_op("-", $1, $3); }
     | expression T_MULT expression    { $$ = create_binary_op("*", $1, $3); }

@@ -1,1 +1,1 @@
-Erro de tipo na linha 1: não é possível atribuir real em inteiro.
+Erro de tipo na linha 3: não é possível atribuir real a variável do tipo inteiro.
