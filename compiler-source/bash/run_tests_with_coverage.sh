@@ -1,34 +1,33 @@
-name: CI
+#!/bin/bash
 
-on:
-  push:
-    branches: [ "**" ]
-  pull_request:
-    branches: [ "**" ]
+COMPILADOR=./compilador
+LOG="/tmp/grammar_coverage.txt"
 
-jobs:
-  build-and-test:
-    runs-on: ubuntu-latest
+echo "🧪 Executando testes com cobertura..."
+rm -f "$LOG"
 
-    steps:
-      - name: 🔄 Checkout do repositório
-        uses: actions/checkout@v3
+success=true
+for script in bash/*.sh; do
+    # Evita executar a si mesmo
+    if [[ "$script" == "bash/run_tests_with_coverage.sh" ]]; then
+        continue
+    fi
 
-      - name: 🛠️ Instalar dependências
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y flex bison
+    echo "Executando $script..."
+    if ! bash "$script" | tee -a "$LOG"; then
+        echo "❌ Falha no teste $script"
+        success=false
+    fi
+    echo ""
+done
 
-      - name: 🧱 Compilar projeto
-        working-directory: compiler-source
-        run: make
+echo ""
+if $success; then
+    echo "✅ Todos os testes passaram!"
+else
+    echo "⚠️ Alguns testes falharam!"
+fi
 
-      - name: 🧪 Executar testes com cobertura de gramática
-        working-directory: compiler-source
-        run: bash bash/run_tests_with_coverage.sh
-
-      - name: 📦 Salvar relatório de cobertura como artefato
-        uses: actions/upload-artifact@v3
-        with:
-          name: cobertura-de-gramatica
-          path: compiler-source/cobertura.txt
+echo ""
+echo "📊 Relatório de cobertura das regras da gramática:"
+grep 'COBERTURA DAS REGRAS DA GRAMÁTICA' -A 100 "$LOG" || echo "⚠️ Nenhum relatório encontrado"
