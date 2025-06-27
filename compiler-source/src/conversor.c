@@ -360,6 +360,7 @@ void generate_portugol(ASTNode *node)
         break;
 
     case NODE_WHILE:
+        // Gera o código para um loop while
         print_indent();
         printf("enquanto (");
         if (node->child_count > 0)
@@ -542,6 +543,7 @@ void generate_portugol(ASTNode *node)
     }
 
     case NODE_PRINTF_ARGS:
+        // Gera os argumentos para printf, separados por vírgula
         for (int i = 0; i < node->child_count; i++)
         {
             if (i > 0)
@@ -553,6 +555,7 @@ void generate_portugol(ASTNode *node)
         break;
 
     case NODE_SCANF:
+        // Imprime a chamada de scanf
         print_indent();
         printf("leia(");
         if (node->child_count > 0)
@@ -581,7 +584,7 @@ void generate_portugol(ASTNode *node)
         break;
 
     case NODE_CONST_FLOAT:
-        // Format float values with exactly two decimal places
+        // Imprime o valor como float com duas casas decimais
         if (node->value)
         {
             float value = atof(node->value);
@@ -594,12 +597,12 @@ void generate_portugol(ASTNode *node)
         break;
 
     case NODE_CONST_STRING:
-        // The node->value already contains the quotes, so we don't add more
+        // Imprime a string entre aspas duplas
         printf("%s", node->value ? node->value : "\"\"");
         break;
 
     case NODE_CONST_CHAR:
-        // The node->value likely already contains the single quotes, so we don't add more
+        // Imprime o caractere entre aspas simples
         printf("%s", node->value ? node->value : "' '");
         break;
 
@@ -617,13 +620,13 @@ void generate_portugol(ASTNode *node)
         break;
 
     case NODE_UNARY_OP:
-        // Handle unary operators
+        //
         if (node->value && strcmp(node->value, "nao") == 0)
         {
-            // For 'nao' operator
+
             printf("nao ");
 
-            // Check if the operand is a binary operation that needs parentheses
+            // Se o operando for uma operação binária, envolva em parênteses
             if (node->child_count > 0)
             {
                 if (node->children[0]->type == NODE_BINARY_OP)
@@ -640,7 +643,7 @@ void generate_portugol(ASTNode *node)
         }
         else
         {
-            // Standard handling for other unary operators
+            // Imprime o operador unário seguido do operando
             printf("%s", node->value ? node->value : "?");
             if (node->child_count > 0)
             {
@@ -709,7 +712,7 @@ void generate_portugol(ASTNode *node)
         {
             generate_portugol(node->children[i]);
 
-            // Add a blank line after declarations if followed by a control statement
+            // Adiciona uma nova linha entre declarações e estruturas de controle
             if (i < node->child_count - 1 &&
                 (node->children[i]->type == NODE_DECLARATION ||
                  (i > 0 && node->children[i - 1]->type == NODE_DECLARATION)) &&
