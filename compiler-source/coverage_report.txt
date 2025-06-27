@@ -1,0 +1,19 @@
+Cobertura:
+program: 1
+function_list_empty: 1
+function_declaration: 1
+expression_int: 4
+declaration_with_assignment: 1
+statements_empty: 2
+expression_id: 3
+expression_lt: 1
+printf_args_single: 1
+statement_printf: 1
+expression_plus: 1
+assignment_simple: 1
+statement_assignment: 1
+while_statement: 1
+statement_while: 1
+return_statement: 1
+statement_return: 1
+function_list_append: 1
