@@ -1,0 +1,32 @@
+name: CI - Compilador
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    
+jobs:
+  build-and-test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 📥 Checkout do repositório
+      uses: actions/checkout@v3
+
+    - name: 🛠️ Instala dependências específicas
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential
+        sudo apt-get install -y flex=2.6.4-8build3 bison=3:3.8.2+dfsg-1
+
+    - name: 🔍 Verifica versões de Flex e Bison
+      run: |
+        flex --version
+        bison --version
+
+    - name: 🧱 Compila o projeto com make
+      run: make
+
+    - name: ✅ Executa os testes com make test
+      run: make test
