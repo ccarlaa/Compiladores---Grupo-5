@@ -88,6 +88,7 @@ void print_ast_branch(ASTNode *node, char *prefix, int is_last, int is_root) {
 }
 
 void print_ast_stderr(ASTNode *node, int depth) {
+    (void)depth;
     fprintf(stderr, "\n===== ÁRVORE AST =====\n");
     
     if (node) {

@@ -1,7 +1,8 @@
 # Compilador a ser usado (GNU C Compiler)
 CC=gcc
 # Flags de compilação (-I para incluir diretórios)
-CFLAGS=-Iinclude -I$(BUILD_DIR) -Wall -Wextra
+
+CFLAGS=-Iinclude -I$(BUILD_DIR) -Wall -Wextra -Wno-unused-parameter -Wno-unused-variable -Wno-unused-function
 # Ferramentas de análise
 LEX=flex
 YACC=bison
@@ -41,6 +42,7 @@ all: $(TARGET)
 # Regra para linkar tudo e criar o executável final
 $(TARGET): $(C_OBJECTS) $(LEX_OBJECT) $(YACC_OBJECT)
 	$(CC) $(CFLAGS) $^ -o $@
+	@echo "\033[1;32m✅ Código final gerado com sucesso!\033[0m"
 
 # Regra para compilar cada arquivo .c do diretório src para um .o no diretório build
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c | $(BUILD_DIR)
@@ -60,7 +62,7 @@ $(LEX_GENERATED_C): $(LEX_SOURCE) | $(BUILD_DIR)
 
 # Regra para gerar os arquivos .c e .h do Bison
 $(YACC_GENERATED_C) $(YACC_GENERATED_H): $(YACC_SOURCE) | $(BUILD_DIR)
-	$(YACC) -d -o $(YACC_GENERATED_C) $<
+	$(YACC) -Wnone -d -o $(YACC_GENERATED_C) $<
 
 # Regra para criar o diretório de build se ele não existir
 $(BUILD_DIR):
@@ -114,4 +116,10 @@ clean:
 	rm -rf $(BUILD_DIR)
 	@echo "Limpeza concluída."
 
-	
+help:
+	@echo "Comandos disponíveis no Makefile:"
+	@echo "  make (ou make all) - Compila o projeto e gera o executável $(TARGET)"
+	@echo "  make test          - Executa todos os testes automatizados (bash/)"
+	@echo "  make coverage      - Executa testes com análise de cobertura de gramática"
+	@echo "  make clean         - Remove arquivos de build e o executável"
+	@echo "  make help          - Exibe esta mensagem de ajuda"
