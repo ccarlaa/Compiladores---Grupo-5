@@ -108,25 +108,64 @@ O relatório será salvo em `cobertura.txt`, contendo trechos do `stderr` que in
 
 ## Tipos de Dados Suportados
 
-A linguagem-fonte reconhece os seguintes tipos:
+A linguagem-fonte reconhece os seguintes tipos de dados:
 
-* `int` → traduzido como `inteiro`
-* `float` → traduzido como `real`
-* `char` → traduzido como `caracter`
+- **`int`** — Representa valores inteiros.  
+  Traduzido internamente como tipo `inteiro`.
 
-Cada tipo é verificado durante a análise semântica para garantir atribuições e usos corretos.
+- **`float`** — Representa números de ponto flutuante.  
+  Traduzido internamente como tipo `real`.
+
+- **`char`** — Representa um único caractere.  
+  Traduzido internamente como tipo `caracter`.
+
+Além desses, outros modificadores e palavras-chave relacionadas a tipos também são reconhecidos:
+
+- **`void`** — Indica ausência de tipo (ex.: funções sem retorno).
+- **`const`** — Indica que o valor da variável não pode ser modificado após a inicialização.
+- **`unsigned`** — Modificador que restringe o tipo numérico a valores não negativos.
+
+Durante a **análise semântica**, o compilador realiza verificações como:
+
+- Uso de tipos válidos em declarações e expressões.
+- Compatibilidade entre tipos em atribuições, operações e chamadas de função.
+- Respeito a modificadores como `const` em tentativas de modificação de variáveis.
+
+Essas verificações garantem a coerência semântica do programa antes da geração de código.
 
 ---
 
 ## Estruturas de Controle
 
-A linguagem implementa as seguintes estruturas de controle:
+A linguagem implementa diversas estruturas de controle da linguagem C, adaptadas com possíveis traduções para facilitar a leitura. A seguir estão listadas as principais estruturas reconhecidas:
 
-* Condicional: `if`, `else` → traduzido como `se`, `senao`
-* Laço de repetição: `while` → traduzido como `enquanto`
-* Retorno: `return` → traduzido como `retorne`
-* Entrada: `scanf(...)` → traduzido como `leia(...)`
-* Saída: `printf(...)` → traduzido como `escreva(...)`
+### Condicionais
+- **`if`** — Condicional principal  
+  Traduzido como `se`
+- **`else`** — Alternativa condicional  
+  Traduzido como `senao`
+
+### Laços de Repetição
+- **`while`** — Laço com teste no início  
+  Traduzido como `enquanto`
+- **`do ... while`** — Laço com teste no final  
+  Traduzido como `faca ... enquanto`
+- **`for`** — Laço com inicialização, condição e incremento  
+  Traduzido como `para`
+- **`break`** — Interrompe o laço atual  
+  Traduzido como `pare`
+- **`continue`** — Pula para a próxima iteração do laço  
+  Traduzido como `continue`
+
+### Funções
+- **`return`** — Finaliza uma função e retorna um valor  
+  Traduzido como `retorne`
+
+### Entrada e Saída
+- **`scanf(...)`** — Leitura de entrada padrão  
+  Traduzido como `leia(...)`
+- **`printf(...)`** — Impressão na saída padrão  
+  Traduzido como `escreva(...)`
 
 Exemplo:
 
