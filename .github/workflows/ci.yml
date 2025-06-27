@@ -1,4 +1,4 @@
-name: CI
+name: CI Compilador
 
 on:
   push:
@@ -11,15 +11,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 🔄 Checkout do repositório
+      - name: Checkout repositório
         uses: actions/checkout@v3
 
-      - name: 🛠️ Instalar dependências
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y flex bison
+      - name: Instala dependências (bison, flex, gcc, make)
+        run: sudo apt-get update && sudo apt-get install -y bison flex gcc make
 
-      - name: 🧱 Compilar projeto
+      - name: Compila com make
         working-directory: compiler-source
         run: make
 
@@ -28,7 +26,7 @@ jobs:
         run: bash bash/run_tests_with_coverage.sh
 
       - name: 📦 Salvar relatório de cobertura como artefato
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: cobertura-de-gramatica
           path: compiler-source/cobertura.txt
