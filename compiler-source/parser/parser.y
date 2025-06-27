@@ -28,7 +28,7 @@ void rule_hit(const char *name) {
 }
 
 void print_grammar_coverage() {
-    FILE *f = fopen("coverage_report.txt", "w");
+    FILE *f = fopen("cobertura.txt", "w");
     if (!f) return;
 
     fprintf(f, "Cobertura:\n");
