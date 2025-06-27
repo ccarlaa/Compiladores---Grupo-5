@@ -86,6 +86,12 @@ bash run_if_test.sh
 
 Há vários scripts disponíveis para testar diferentes estruturas da linguagem.
 
+### Rodar testes com docker-compose
+
+```bash
+docker-compose up
+```
+
 ## 6. Pré-Requisitos
 
 Este projeto foi desenvolvido e testado com as seguintes versões:
