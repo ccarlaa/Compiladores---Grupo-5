@@ -2,7 +2,9 @@ name: Deploy da Documentação
 
 on:
   push:
-    branches: ["main"]
+    branches:
+      - main
+      - clara/ci-cd
 
 permissions:
   contents: write
