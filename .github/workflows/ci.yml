@@ -1,0 +1,32 @@
+name: CI Compilador
+
+on:
+  push:
+    branches: ["**"]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout do código
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Instala dependências (bison/flex)
+        run: sudo apt-get update && sudo apt-get install -y bison flex
+
+      - name: 🔧 Compila e roda testes com cobertura
+        working-directory: compiler-source
+        run: make coverage
+
+      - name: 📤 Publica relatório de cobertura
+        uses: actions/upload-artifact@v4
+        with:
+          name: cobertura
+          path: compiler-source/cobertura.txt
+
+      - name: 📦 Publica binário compilador
+        uses: actions/upload-artifact@v4
+        with:
+          name: compilador
+          path: compiler-source/compilador

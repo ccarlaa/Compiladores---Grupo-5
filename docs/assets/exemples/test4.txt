@@ -1,0 +1,9 @@
+int quadrado(int x) {
+    return x * x;
+}
+
+int main() {
+    int resultado = quadrado(4);
+    printf("%d", resultado);
+    return 0;
+}

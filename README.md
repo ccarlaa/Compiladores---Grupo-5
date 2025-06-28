@@ -1,227 +1,114 @@
-# Compiladores - Grupo 5
+# Compilador - Grupo 5
 
-## 📝 Sobre
+Este repositório contém o projeto desenvolvido na disciplina **Compiladores**, ministrada pelo professor **Sergio Freitas** na Universidade de Brasília (UnB). O trabalho foi desenvolvido com o objetivo de aplicar na prática os conhecimentos sobre análise léxica, sintática e semântica, utilizando as ferramentas Flex, Bison.
 
-**C em Português: Derrubando barreiras linguísticas na programação**
+## 1. Apresentação do Projeto
 
-Este projeto implementa um compilador que permite escrever código na linguagem C utilizando sintaxe e palavras-chave em português. Nosso objetivo é democratizar o acesso à programação, permitindo que estudantes brasileiros sem fluência em inglês possam aprender conceitos fundamentais de programação sem a barreira linguística adicional.
+O projeto consiste na implementação de um **compilador funcional** de C para portugol. O compilador é capaz de realizar:
 
-O compilador é desenvolvido utilizando as ferramentas clássicas de construção de compiladores: **Flex** para análise léxica e **Bison** para análise sintática, com implementação em C. O sistema traduz código-fonte escrito com comandos em português para C padrão, permitindo que o programa seja executado normalmente em qualquer ambiente que suporte C.
+- Análise léxica (identificação de tokens e tratamento de erros)
+- Análise sintática (verificação de estruturas gramaticais)
+- Análise semântica (verificação de declaração de variáveis e tipos)
+- Geração de representação intermediária via árvore sintática abstrata (AST)
+- Execução de testes automatizados com foco em validação de funcionalidades e erros
 
-## 📂 Estrutura do Repositório
+## 2. Definição da Linguagem-Fonte
 
-```
+O compilador desenvolvido neste projeto tem como objetivo traduzir programas escritos na linguagem **C** para uma representação em **Portugol**. A linguagem-fonte aceita uma **subconjunto simplificado da linguagem C**, com suporte às seguintes construções:
+
+- Declaração de variáveis
+- Atribuições e expressões aritméticas
+- Estruturas condicionais
+- Laços de repetição
+- Definição e chamada de funções com parâmetros e retorno
+- Comandos de entrada e saída
+
+A linguagem-alvo, Portugol, é utilizada como uma representação intermediária legível, com sintaxe mais próxima da linguagem natural, facilitando a compreensão dos programas traduzidos.
+
+A especificação da linguagem-fonte, incluindo tokens e regras gramaticais, está implementada nos arquivos `lexer.l` (analisador léxico) e `parser.y` (analisador sintático), localizados no diretório `compiler-source/`.
+
+## 3. Estrutura do Repositório
+
+```plaintext
 .
-├── build/                  # Diretório para arquivos compilados
-├── docs/                   # Documentação do projeto
-│   ├── CONTRIBUTING.md     # Guia de contribuição
-│   ├── design/             # Documentos de design do compilador
-│   └── grammar/            # Definição formal da gramática
-├── include/                # Arquivos de cabeçalho
-│   ├── ast/                # Estruturas da Árvore Sintática Abstrata (AST)
-│   └── tokens/             # Definições de tokens
-├── src/                    # Código-fonte
-│   ├── codegen/            # Geração de código
-│   ├── lexer/              # Analisador léxico (Flex)
-│   │   └── lexer.l         # Arquivo Flex para análise léxica
-│   ├── main.c              # Ponto de entrada da aplicação
-│   ├── parser/             # Analisador sintático (Bison)
-│   │   └── parser.y        # Arquivo Bison para análise sintática
-│   └── semantic/           # Análise semântica
-├── tests/                  # Testes do compilador
-│   └── teste1.txt          # Exemplo de arquivo de teste
-├── .gitignore              # Arquivos ignorados pelo Git
-├── Makefile                # Regras de compilação do projeto
-└── README.md               # Este arquivo
+├── compiler-source/         # Código-fonte do compilador
+│   ├── lexer.l              # Regras léxicas (Flex)
+│   ├── parser.y             # Gramática e regras sintáticas (Bison)
+│   ├── ast.[c|h]            # Estrutura da árvore sintática abstrata
+│   ├── tabela.[c|h]         # Implementação da tabela de símbolos
+│   ├── main.c               # Ponto de entrada do compilador
+│   ├── Makefile             # Automação da compilação
+│   └── bash/                # Scripts de testes automatizados
+├── docs/                    # Documentação em Markdown (MkDocs)
+├── .vscode/                 # Configurações locais do VS Code
+├── README.md                # Este arquivo
+└── .gitignore               # Arquivos ignorados pelo Git
 ```
 
-## 📁 Acesso ao projeto
+## 4. Acesso ao Projeto
 
-Você pode [acessar o código fonte do projeto](https://github.com/ccarlaa/Compiladores---Grupo-5) ou [baixá-lo](https://github.com/ccarlaa/Compiladores---Grupo-5/archive/refs/heads/main.zip).
-
-## 🛠️ Abrir e rodar o projeto
-
-Após baixar o projeto, você pode abri-lo com o Visual Studio Code. Para isso, na tela de launcher clique em:
-
-1. File > Open Folder
-2. Procure o local onde o projeto está e o selecione (Caso o projeto seja baixado via zip, é necessário extraí-lo antes de procurá-lo)
-3. Por fim clique em Abrir
-
-### Pré-requisitos
-
-Certifique-se de ter os seguintes pré-requisitos instalados:
+Para clonar este repositório:
 
 ```bash
-# Ubuntu/Debian
-sudo apt-get install flex bison build-essential
-
-# Fedora
-sudo dnf install flex bison gcc make
-
-# Arch Linux
-sudo pacman -S flex bison gcc make
-
-# macOS (usando Homebrew)
-brew install flex bison gcc
-
-# Windows (usando MSYS2/MinGW)
-pacman -S flex bison gcc make
+git clone https://github.com/SEU-USUARIO/compiladores-grupo5.git
+cd compiladores-grupo5/compiler-source
 ```
 
-### Compilando e Executando no Linux
+> Substitua `SEU-USUARIO` pela sua conta do GitHub ou do grupo.
 
-Para compilar e executar no Linux, você pode usar o script incluído:
+## 5. Como Rodar o Projeto
 
-```bash
-# Tornar o script executável
-chmod +x compilar-linux.sh
+A partir do diretório `compiler-source/`, siga os passos abaixo:
 
-# Executar o script
-./compilar-linux.sh
-```
-
-O script irá:
-1. Verificar e instalar as dependências necessárias
-2. Compilar o projeto
-3. Oferecer a opção de executar o teste padrão
-
-### Compilando e Executando no macOS
-
-Para compilar e executar no macOS, você pode usar o script incluído:
+### Compilar o Compilador
 
 ```bash
-# Tornar o script executável
-chmod +x compilar-macos.sh
-
-# Executar o script
-./compilar-macos.sh
-```
-
-O script irá:
-1. Verificar e instalar as dependências necessárias usando Homebrew
-2. Compilar o projeto
-3. Oferecer a opção de executar o teste padrão
-
-### Instalação do Flex e Bison no Windows
-
-Para instalar o Flex e o Bison no Windows, você pode usar o MSYS2:
-
-1. Baixe e instale o [MSYS2](https://www.msys2.org/)
-2. Abra o terminal do MSYS2 MinGW64
-3. Execute os seguintes comandos:
-
-```bash
-pacman -Syu
-pacman -S mingw-w64-x86_64-gcc mingw-w64-x86_64-flex mingw-w64-x86_64-bison make
-```
-
-4. Adicione o diretório `C:\msys64\mingw64\bin` ao PATH do Windows:
-   - Clique com o botão direito em "Este Computador" > Propriedades
-   - Clique em "Configurações avançadas do sistema"
-   - Clique em "Variáveis de ambiente"
-   - Edite a variável "Path" e adicione o diretório
-
-5. Para compilar o projeto, execute:
-
-```bash
+make clean
 make
 ```
 
-6. Para executar um teste com um arquivo de entrada:
+Isso irá gerar o executável `compilador`.
+
+### Executar o Compilador com Entrada Padrão
 
 ```bash
-# Executa o teste padrão (teste1.txt)
-make test
-
-# Executa um teste específico
-make run TEST=seu_arquivo_de_teste.txt
-
-# Ou diretamente
-./build/compilador < tests/seu_arquivo_de_teste.txt
+./compilador < entrada.txt
 ```
 
-7. Outras opções de compilação e execução:
+Para encerrar a entrada manual via terminal, pressione `Ctrl+D` (Linux/macOS) ou `Ctrl+Z` (Windows).
+
+### Rodar Testes Automatizados
 
 ```bash
-# Compilar em modo debug (com informações para depuração)
-make DEBUG=1
-
-# Limpar arquivos gerados
-make clean
-
-# Limpar completamente (remove diretório build)
-make distclean
-
-# Gerar documentação (quando implementado)
-make docs
+cd bash
+bash run_if_test.sh
 ```
 
-### Compilando no Windows
+Há vários scripts disponíveis para testar diferentes estruturas da linguagem.
 
-Para facilitar a compilação no Windows, você pode usar o script batch fornecido:
-
-```batch
-compilar.bat
-```
-
-Este script irá:
-
-1. Verificar se o Flex e o Bison estão instalados
-2. Compilar os arquivos fonte
-3. Gerar o executável `compilador.exe`
-4. Oferecer a opção de executar o teste padrão
-
-### Usando Docker
-
-O projeto inclui suporte para Docker, permitindo que você compile e execute o compilador em qualquer plataforma que suporte Docker, sem a necessidade de instalar dependências localmente.
+### Rodar testes com docker-compose
 
 ```bash
-# Tornar o script executável (Linux/macOS)
-chmod +x docker-run.sh
-
-# Executar o script
-./docker-run.sh
+docker-compose up
 ```
 
-Para Windows, você pode construir e executar a imagem Docker diretamente:
+## 6. Pré-Requisitos
+
+Este projeto foi desenvolvido e testado com as seguintes versões:
+
+* **Flex**: 2.6.4
+* **Bison**: 3.8.2
+* **GCC (GNU Compiler Collection)**: Recomendado 9.4 ou superior
+* **Make**: utilitário para automação da compilação
+
+Para instalar as dependências em sistemas baseados em Debian (como Ubuntu):
 
 ```bash
-# Construir a imagem
-docker build -t c-em-portugues .
-
-# Executar um teste
-docker run --rm -it c-em-portugues /bin/bash -c "cd /app && ./build/compilador < tests/teste1.txt"
-
-# Ou iniciar um shell interativo
-docker run --rm -it c-em-portugues
+sudo apt update
+sudo apt install flex bison build-essential -y
 ```
 
-## Opções de Compilação e Execução
-
-```bash
-# Executa o teste padrão (teste1.txt)
-make test
-
-# Executa um teste específico
-make run TEST=seu_arquivo_de_teste.txt
-
-# Ou diretamente
-./build/compilador < tests/seu_arquivo_de_teste.txt
-
-# Compilar em modo debug (com informações para depuração)
-make DEBUG=1
-
-# Limpar arquivos gerados
-make clean
-
-# Limpar completamente (remove diretório build)
-make distclean
-
-# Gerar documentação (quando implementado)
-make docs
-```
-
-## 👥 Membros do Grupo
+## Membros do Grupo
 
 <div align="center">
     <table>

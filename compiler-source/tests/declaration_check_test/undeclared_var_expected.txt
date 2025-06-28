@@ -1,0 +1,2 @@
+Erro semântico: Variável 'x' usada, mas não declarada
+erro semântico: variável não declarada

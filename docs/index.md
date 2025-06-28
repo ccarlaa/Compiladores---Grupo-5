@@ -1,78 +1,219 @@
-# Compilador C em Português
+# Compilador de C para Portugol
 
-Bem-vindo à documentação oficial do Compilador C em Português, desenvolvido pelo Grupo 5.
+Bem-vindo à documentação do projeto **Compilador de C para Portugol**, desenvolvido na disciplina *Compiladores (2025/1)* da Universidade de Brasília (UnB), sob orientação do professor Sergio Freitas.
+
+Este compilador é capaz de processar programas escritos em uma linguagem simplificada de C e traduzí-los para Portugol, uma linguagem algorítmica didática, facilitando o entendimento de fluxos de controle e estruturas de programação.
+
+---
 
 ## Sobre o Projeto
 
-Este projeto implementa um compilador para a linguagem C traduzida para português, permitindo que programadores escrevam código usando palavras-chave em português em vez das tradicionais palavras-chave em inglês.
+Este projeto foi construído com base nos conceitos fundamentais de construção de compiladores, abordando as principais fases: análise léxica, sintática e semântica, geração de árvore sintática abstrata (AST), e tradução para a linguagem-alvo.
+
+A linguagem-fonte aceita um subconjunto de C, e a saída gerada corresponde a um equivalente funcional em Portugol. O projeto inclui também uma suíte de testes automatizados para validar a robustez do compilador.
+
+---
 
 ## Características Principais
 
-- **Analisador Léxico**: Reconhece tokens em português (inteiro, real, caractere, etc.)
-- **Analisador Sintático**: Suporta a gramática completa de C traduzida para português
-- **Suporte para Estruturas**: Declaração e uso de estruturas com campos
-- **Suporte para Funções**: Declaração e definição de funções com parâmetros
-- **Estruturas de Controle**: Suporte para estruturas como `se`, `senao`, `enquanto`, `para`
-- **Tratamento de Erros Léxicos**: Mensagens de erro detalhadas para facilitar a identificação de problemas
-- **Modo de Depuração**: Permite visualizar tokens e erros léxicos com a flag `-d`
-- **Testes Automatizados**: Scripts para validar o funcionamento do compilador
+- Reconhecimento de estruturas básicas da linguagem C:
+  - Declaração e uso de variáveis (`int`, `float`, `char`)
+  - Expressões aritméticas e relacionais
+  - Condicionais (`if`, `else`)
+  - Laços de repetição (`while`)
+  - Funções definidas pelo usuário
+  - Entrada e saída com `scanf` e `printf`
+
+- Detecção de erros léxicos, sintáticos e semânticos
+- Geração de árvore sintática abstrata (AST)
+- Tradução para Portugol
+- Testes automatizados via shell scripts
+- Modularidade com uso de Flex, Bison e C
+
+---
 
 ## Como Usar Esta Documentação
 
-- **Guia do Usuário**: Instruções de instalação e uso básico do compilador
-- **Documentação Técnica**: Detalhes sobre a implementação e arquitetura do compilador
-  - **Análise Léxica**: Detalhes sobre o reconhecimento de tokens e tratamento de erros léxicos
-  - **Testes**: Informações sobre como executar e validar os testes do compilador
-- **Contribuição**: Como contribuir para o desenvolvimento do projeto
+Esta documentação está organizada em seções para facilitar a consulta conforme o objetivo do usuário:
+
+- **Guia do Usuário:** explica como instalar, compilar, executar e interpretar a saída do compilador.
+- **Documentação Técnica:** detalha o funcionamento interno, desde a análise léxica até a geração de código.
+- **Contribuição:** explica como deve ser feito a contribuição ao projeto.
+- **Atas de Reunião:** registra decisões e alinhamentos feitos durante o semestre.
+- **Sprints:** apresenta o histórico de desenvolvimento da equipe com base na metodologia Scrum.
+- **Referências:** os principais materiais usados para o desenvolvimento do projeto.
+
+---
 
 ## Exemplos Rápidos
 
-### Código em Português
+### Compilando e Executando o Compilador
+
+Para compilar o compilador, acesse o diretório `compiler-source/` e execute:
+
+```bash
+make
+```
+
+Em seguida, utilize o executável gerado para processar arquivos `.c` e gerar sua tradução para Portugol:
+
+```bash
+./compilador < entrada.c > saida.por
+```
+
+O conteúdo de `saida.por` poderá ser aberto no **Portugol Studio** para execução e visualização do programa traduzido.
+
+---
+
+### Exemplo de Entrada e Saída
+
+Considere o seguinte arquivo `entrada.c`:
 
 ```c
-// Exemplo de código em C traduzido para português
-inteiro principal() {
-    inteiro a = 10;
-    real b = 3.14;
-    
-    se (a > 5) {
-        imprimir("a é maior que 5");
-    } senao {
-        imprimir("a é menor ou igual a 5");
+int main() {
+    float pi = 3.14;
+    char letra = 'a';
+
+    if (pi > 3) {
+        return 1;
     }
-    
-    retorne 0;
+    return 0;
 }
 ```
 
-### Usando o Modo de Depuração
+Ao executar:
 
 ```bash
-# Compilar o projeto
-make
-
-# Executar o compilador no modo de depuração
-./compilador meu_programa.txt -d
-
-# Saída de exemplo:
-# Modo de depuração ativado - mostrando tokens e erros léxicos
-# Token: 318 (IDENTIFICADOR) - Lexema: 'inteiro'
-# Token: 286 (PRINCIPAL) - Lexema: 'principal'
-# Token: 308 (ABRE_PAREN) - Lexema: '('
-# ...
-# Erro léxico (linha 5): Símbolo especial '@' não permitido.
+./compilador < entrada.c > saida.por
 ```
+
+A saída `saida.por` será:
+
+```portugol
+programa
+{
+    funcao inicio()
+    {
+        real pi = 3.14
+        caracter letra = 'a'
+
+        se (pi > 3)
+        {
+            retorne 1
+        }
+        retorne 0
+    }
+}
+```
+
+Esse código pode ser **copiado e colado diretamente no Portugol Studio** para ser executado e testado.
+
+---
+
+### Dica: Visualizar diretamente no terminal
+
+Se preferir visualizar a saída traduzida diretamente no terminal, sem redirecionar para arquivo, basta executar:
+
+```bash
+./compilador < entrada.c
+```
+
+O código traduzido será exibido no console.
+
+---
 
 ### Executando Testes Automatizados
 
-```bash
-# Executar apenas os testes léxicos
-./tests/testes_lexicos/executar_testes.sh
+O projeto conta com uma bateria de testes automatizados organizados em scripts localizados no diretório `compiler-source/bash/`.
 
-# Executar todos os tipos de testes
-./executar_todos_testes.sh
+Esses testes cobrem diferentes aspectos do compilador, como:
+
+- Reconhecimento de estruturas da linguagem
+- Verificação semântica de variáveis e tipos
+- Testes negativos com entradas inválidas
+- Tradução correta de códigos para Portugol
+
+---
+
+#### Rodando todos os testes
+
+Você pode executar todos os testes de uma só vez com o comando:
+
+```bash
+make test
 ```
 
-## Equipe
+O resultado de cada script será exibido no terminal, com uma mensagem final indicando o sucesso ou falha geral da bateria.
 
-Este projeto foi desenvolvido pelo Grupo 5 como parte da disciplina de Compiladores.
+---
+
+#### Análise de Cobertura da Gramática
+
+Para obter um relatório da cobertura das regras da gramática (útil para verificar quais construções foram testadas), execute:
+
+```bash
+make coverage
+```
+
+Esse comando:
+
+* Executa todos os scripts de teste
+* Captura saídas específicas relacionadas à cobertura
+* Salva o resultado no arquivo `cobertura.txt`, na raiz do projeto
+
+Você pode visualizar o conteúdo com:
+
+```bash
+cat cobertura.txt
+```
+
+Esse relatório é especialmente útil durante o desenvolvimento da gramática no Bison, ajudando a identificar regras não exercitadas pelos testes.
+
+---
+
+#### Limpando arquivos gerados
+
+Para remover arquivos de build e compilações anteriores:
+
+```bash
+make clean
+```
+
+Isso ajuda a manter o ambiente de desenvolvimento organizado e evitar conflitos de versões antigas.
+
+---
+
+## Membros do Grupo
+
+<div align="center">
+    <table>
+    <tr>
+        <th>Nome</th>
+        <th>GitHub</th>
+    </tr>
+    <tr>
+        <td>Carla A. C. Ribeiro</td>
+        <td><a href="https://github.com/ccarlaa">@ccarlaa</a></td>
+    </tr>
+    <tr>
+        <td>Clara Marcelino Ribeiro de Sousa </td>
+        <td><a href="https://github.com/clara-ribeiro">@clara-ribeiro</a></td>
+    </tr>
+    <tr>
+        <td>Kallyne Macedo Passos</td>
+        <td><a href="https://github.com/kalipassos">@kalipassos</a></td>
+    </tr>
+    <tr>
+        <td>Kauan de Torres Eiras</td>
+       <td><a href="https://github.com/kauaneiras">@kauaneiras</a></td>
+    </tr>
+    <tr>
+        <td>Leonardo Sobrinho de Aguiar</td>
+        <td><a href="github.com/Leonardo0o0">@leonardo0o0</a></td>
+    </tr>
+        <tr>
+        <td>João Paulo Barros de Cristo</td>
+        <td><a href="github.com/joaopb1-xps">@joaopb1-xps</a></td>
+    </tr>
+    </table>
+</div>

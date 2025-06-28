@@ -1,0 +1,14 @@
+programa
+{
+    funcao inicio()
+    {
+        inteiro idade
+
+        leia(idade)
+        se (idade >= 18)
+        {
+            escreva("maior de idade")
+        }
+        retorne 0
+    }
+}

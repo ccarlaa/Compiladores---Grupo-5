@@ -1,0 +1,18 @@
+
+===== TABELA DE SÍMBOLOS =====
+NOME C               NOME PORTUGOL        TIPO            ESCOPO    
+----------------------------------------
+x                    x                    inteiro         1         
+main                 main                 inteiro         0         
+==============================
+
+programa
+{
+    funcao inicio()
+    {
+        inteiro x
+        x = 10
+        retorne 0
+    }
+
+}

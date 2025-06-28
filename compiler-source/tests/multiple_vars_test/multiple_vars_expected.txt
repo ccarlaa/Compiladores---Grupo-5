@@ -1,0 +1,15 @@
+programa
+{
+    funcao inicio()
+    {
+        inteiro num1 = 10
+        real num2 = 20.50
+        caracter grade = 'A'
+        inteiro sum = num1 + 5
+        real product = num2 * 2.00
+        escreva(sum)
+        escreva(product)
+        escreva(grade)
+        retorne 0
+    }
+}

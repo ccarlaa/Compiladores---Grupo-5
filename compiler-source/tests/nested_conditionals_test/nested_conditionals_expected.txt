@@ -1,0 +1,30 @@
+programa
+{
+    funcao inicio()
+    {
+        inteiro a = 10
+        inteiro b = 5
+
+        se (a > b)
+        {
+            escreva("a is greater than b")
+            se (a > 15)
+            {
+                escreva(" and a is greater than 15")
+            }
+            senao
+            {
+                escreva(" and a is not greater than 15")
+            }
+        }
+        senao se (b > a)
+        {
+            escreva("b is greater than a")
+        }
+        senao
+        {
+            escreva("a and b are equal")
+        }
+        retorne 0
+    }
+}

@@ -1,0 +1,14 @@
+programa
+{
+    funcao inicio()
+    {
+        real pi = 3.14
+        caracter letra = 'a'
+
+        se (pi > 3)
+        {
+            retorne 1
+        }
+        retorne 0
+    }
+}

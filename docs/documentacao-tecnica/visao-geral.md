@@ -1,75 +1,95 @@
 # Visão Geral
 
-Esta seção fornece uma visão geral da arquitetura e dos componentes do Compilador C em Português.
+Esta seção fornece uma visão geral da arquitetura, estrutura e funcionamento do Compilador de C para Portugol, desenvolvido com base em Flex, Bison e C.
+
+---
 
 ## Arquitetura do Compilador
 
-O compilador segue a arquitetura tradicional de compiladores, dividida em várias fases:
+O compilador foi implementado em C e segue a arquitetura clássica em etapas, composta por:
 
-1. **Análise Léxica**: Implementada usando Flex, converte o código-fonte em tokens.
-2. **Análise Sintática**: Implementada usando Bison, verifica se a sequência de tokens segue a gramática da linguagem.
-3. **Análise Semântica**: Verifica se o programa faz sentido semanticamente (tipos, escopo, etc.).
-4. **Geração de Código**: Traduz o programa para código executável.
+1. **Análise Léxica (Lexer)**  
+   Utiliza o Flex para reconhecer tokens válidos a partir do código-fonte.
+
+2. **Análise Sintática (Parser)**  
+   Utiliza o Bison para validar a estrutura do programa com base em uma gramática livre de contexto.
+
+3. **Análise Semântica**  
+   Realiza verificação de escopo, declaração de variáveis, tipos e regras semânticas personalizadas.
+
+4. **Geração de AST (Árvore Sintática Abstrata)**  
+   Representação intermediária do código, utilizada para facilitar a tradução.
+
+5. **Geração de Código**  
+   Traduz a AST para uma versão equivalente em Portugol, respeitando a estrutura lógica do programa original.
+
+---
 
 ## Estrutura do Projeto
 
 O projeto está organizado da seguinte forma:
 
+```plaintext
+compiler-source/
+├── bash/                    # Scripts automatizados de testes
+├── build/                   # Arquivos gerados durante a compilação (temporários)
+├── include/                 # Arquivos de cabeçalho (headers)
+│   ├── ast.h
+│   ├── conversor.h
+│   └── parser.tab.h         # Gerado automaticamente pelo Bison
+├── lexer/
+│   └── lexer.l              # Regras léxicas (Flex)
+├── parser/
+│   └── parser.y             # Gramática e ações semânticas (Bison)
+├── src/                     # Implementações dos módulos em C
+│   ├── ast.c                # Construção e manipulação da AST
+│   ├── conversor.c          # Tradução da AST para Portugol
+│   └── main.c               # Função principal que invoca o compilador
+├── tests/                   # Arquivos de entrada para testes manuais
+├── compilador               # Executável gerado após a compilação
+├── Makefile                 # Script de build automatizado
 ```
-Compiladores---Grupo-5/
-├── include/             # Arquivos de cabeçalho
-├── src/                 # Código-fonte
-│   ├── lexer/           # Analisador léxico (Flex)
-│   ├── parser/          # Analisador sintático (Bison)
-│   └── ...              # Outros componentes
-├── tests/               # Arquivos de teste
-├── docs/                # Documentação
-├── Makefile             # Script de compilação
-├── compilar-linux.sh    # Script para Linux
-├── compilar-macos.sh    # Script para macOS
-└── compilar.bat         # Script para Windows
-```
+
+---
 
 ## Fluxo de Compilação
 
-O processo de compilação segue o seguinte fluxo:
+O fluxo completo da execução do compilador é o seguinte:
 
-1. O arquivo de entrada é lido pelo analisador léxico (lexer.l).
-2. O analisador léxico converte o texto em tokens.
-3. Os tokens são passados para o analisador sintático (parser.y).
-4. O analisador sintático verifica se a sequência de tokens segue a gramática da linguagem.
-5. Se a análise sintática for bem-sucedida, o compilador gera uma árvore sintática abstrata (AST).
-6. A AST é usada para análise semântica e geração de código.
+1. **Entrada**: código-fonte em C via stdin (`./compilador < arquivo.c`)
+2. **Flex (`lexer.l`)** identifica os tokens do código-fonte
+3. **Bison (`parser.y`)** interpreta os tokens com base na gramática
+4. **Construção da AST** com base nas ações sintáticas
+5. **Verificações semânticas** (tipos, escopos, redeclarações)
+6. **Geração do código em Portugol**
+7. **Saída**: código equivalente impresso em stdout
+
+---
 
 ## Componentes Principais
 
-### Analisador Léxico (lexer.l)
+* **Flex (`lexer.l`)**: identifica identificadores, palavras-chave, números, strings, operadores, delimitadores, etc.
+* **Bison (`parser.y`)**: define a estrutura da linguagem-fonte e associa ações semânticas às produções.
+* **`ast.c/h`**: define a estrutura em árvore das instruções analisadas, com suporte a nós compostos, operadores, chamadas de função, etc.
+* **`tabela.c/h`**: armazena símbolos como variáveis, funções e seus respectivos tipos e escopos.
+* **`main.c`**: inicializa a compilação, invoca o parser, exibe mensagens de erro e imprime a saída final.
 
-O analisador léxico é responsável por:
-- Reconhecer tokens como identificadores, números, palavras-chave, etc.
-- Ignorar espaços em branco e comentários
-- Reportar erros léxicos (caracteres inválidos)
+---
 
-### Analisador Sintático (parser.y)
+### Tradução para Portugol
 
-O analisador sintático é responsável por:
-- Verificar se a sequência de tokens segue a gramática da linguagem
-- Construir a árvore sintática abstrata (AST)
-- Reportar erros sintáticos (estrutura inválida)
+Uma das características centrais deste compilador é a **tradução direta das palavras-chave da linguagem C para Portugol**. Alguns exemplos:
 
-### Árvore Sintática Abstrata (AST)
+| C        | Portugol   |
+| -------- | ---------- |
+| `int`    | `inteiro`  |
+| `float`  | `real`     |
+| `char`   | `caracter` |
+| `if`     | `se`       |
+| `else`   | `senao`    |
+| `while`  | `enquanto` |
+| `return` | `retorne`  |
+| `printf` | `escreva`  |
+| `scanf`  | `leia`     |
 
-A AST representa a estrutura do programa de forma hierárquica, facilitando:
-- Análise semântica
-- Otimização
-- Geração de código
-
-## Tradução de C para Português
-
-Uma das características principais deste compilador é a tradução das palavras-chave de C para português. Isso inclui:
-
-- Tipos de dados: `int` → `inteiro`, `float` → `real`, etc.
-- Estruturas de controle: `if` → `se`, `while` → `enquanto`, etc.
-- Palavras-chave: `struct` → `estrutura`, `return` → `retorne`, etc.
-
-Esta tradução é implementada no analisador léxico, que reconhece as palavras-chave em português e as mapeia para os tokens correspondentes em C.
+Essa substituição é feita durante a travessia da AST e a geração da saída textual.
