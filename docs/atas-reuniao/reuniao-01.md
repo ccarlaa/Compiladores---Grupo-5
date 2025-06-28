@@ -62,3 +62,7 @@ Na segunda semana, o grupo irá focar no desenvolvimento do analisador sintátic
 6. **João:** Implementar o reconhecimento de operadores no analisador léxico
 7. **Clara:** Implementar o reconhecimento de pontuação e comentários no analisador léxico
 8. **Todos os membros:** Preparar a estrutura do projeto e ambiente de desenvolvimento
+
+## Próxima Reunião
+
+A próxima reunião ficou agendada para o domingo seguinte (20/04/25), com o objetivo de acompanhar a evolução das tarefas.
