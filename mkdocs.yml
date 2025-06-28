@@ -50,5 +50,10 @@ nav:
   - Atas de Reunião:
       - Visão Geral: atas-reuniao/index.md
       - Reunião 1: atas-reuniao/reuniao-01.md
+      - Reunião 2: atas-reuniao/reuniao-02.md
+      - Reunião 3: atas-reuniao/reuniao-03.md
+      - Reunião 4: atas-reuniao/reuniao-04.md
+      - Reunião 5: atas-reuniao/reuniao-05.md
+      - Reunião 6: atas-reuniao/reuniao-06.md
   - Sprints: sprints/index.md
   - Referências: referencias/referencias.md

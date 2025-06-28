@@ -15,8 +15,9 @@ Cada ata de reunião contém as seguintes informações:
 
 ## Lista de Reuniões
 
-- [Reunião 1 - Planejamento Inicial](reuniao-01.md) - 10/03/2025
-- [Reunião 2 - Análise Léxica](reuniao-02.md) - 24/03/2025
-- [Reunião 3 - Análise Sintática](reuniao-03.md) - 07/04/2025
-- [Reunião 4 - Testes e Correções](reuniao-04.md) - 21/04/2025
-- [Reunião 5 - Finalização](reuniao-05.md) - 01/05/2025
+- [Reunião 1 - Planejamento Inicial](reuniao-01.md) - 13/04/2025
+- [Reunião 2 - Análise Léxica e Sintática](reuniao-02.md) - 20/04/2025
+- [Reunião 3 - Análise Sintática e Semântica](reuniao-03.md) - 07/05/2025
+- [Reunião 4 - Análise Semântica e Código Intermediário](reuniao-04.md) - 12/05/2025
+- [Reunião 5 - Alterações de Escopo](reuniao-05.md) - 04/06/2025
+- [Reunião 6 - Finalizações](reuniao-06.md) - 20/06/2025 
