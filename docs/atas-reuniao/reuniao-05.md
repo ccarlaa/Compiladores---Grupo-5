@@ -1,6 +1,6 @@
 # Reunião 5 - Alterações de Escopo
 **Data e Hora:** 04/06/2025, 21:00   
-**Local:** Sala de Reuniões Virtual  
+**Local:** Google Meets   
 **Participantes:** Todos os membros do Grupo 5
 
 ## Pauta

@@ -1,7 +1,7 @@
 # Reunião 1 - Planejamento Inicial
 
 **Data e Hora:** 13/04/2025, 20:00   
-**Local:** Sala de Reuniões Virtual  
+**Local:** Google Meets   
 **Participantes:** Todos os membros do Grupo 5
 
 ## Pauta

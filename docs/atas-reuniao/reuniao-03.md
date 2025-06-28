@@ -1,6 +1,6 @@
 # Reunião 3 - Análise Sintática e Semântica
 **Data e Hora:** 07/05/2025, 20:00   
-**Local:** Sala de Reuniões Virtual  
+**Local:** Google Meets   
 **Participantes:** Todos os membros do Grupo 5
 
 ## Pauta

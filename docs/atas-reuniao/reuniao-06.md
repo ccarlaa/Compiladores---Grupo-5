@@ -1,6 +1,6 @@
 # Reunião 6 - Finalizações
 **Data e Hora:** 20/06/2025, 20:00
-**Local:** Sala de Reuniões Virtual
+**Local:** Google Meets 
 **Participantes:** Todos os membros do Grupo 5
 
 ## Pauta

@@ -1,6 +1,6 @@
 # Reunião 2 - Análise Semântica e Código Intermediário
 **Data e Hora:** 12/05/2025, 21:00   
-**Local:** Sala de Reuniões Virtual  
+**Local:** Google Meets   
 **Participantes:** Todos os membros do Grupo 5
 
 ## Pauta
